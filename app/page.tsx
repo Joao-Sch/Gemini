@@ -29,7 +29,7 @@ export default function Chat() {
 
   const generateResponse = async (prompt: string) => {
     const genAI = new GoogleGenerativeAI("AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ");
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     try {
       const result = await model.generateContent(prompt);
@@ -65,20 +65,44 @@ export default function Chat() {
 
     setConversations(updatedConversations);
 
-    const id = parseInt(input.trim());
     let botMessageContent = "";
 
-    if (!isNaN(id)) {
-      const entrega = mockData.find((item) => Number(item.id) === id);
+    // Extrair o ID da mensagem do usuário usando regex
+    const idMatch = input.match(/\b\d+\b/); // Encontra o primeiro número na mensagem
+    const id = idMatch ? parseInt(idMatch[0]) : NaN;
 
-      if (entrega) {
-        const prompt = `Detalhes da entrega:\n- Situação: ${entrega.situacao}\n- Nome do Entregador: ${entrega.nomeEntregador}\n- Veículo: ${entrega.veiculo}\n- Valor: R$ ${entrega.valor}\n\nFormule uma resposta amigável com essas informações.`;
-        botMessageContent = await generateResponse(prompt);
-      } else {
-        botMessageContent = "Por favor, forneça um ID válido para consultar a entrega.";
+    switch (true) {
+      case !isNaN(id): {
+        // Caso o input contenha um número (possível ID)
+        const entrega = mockData.find((item) => Number(item.id) === id);
+
+        if (entrega) {
+          // Dados da entrega encontrados
+          const prompt = `Detalhes da entrega:\n- Situação: ${entrega.situacao}\n- Nome do Entregador: ${entrega.nomeEntregador}\n- Veículo: ${entrega.veiculo}\n- Valor: R$ ${entrega.valor}\n\nFormule uma resposta amigável com essas informações.`;
+          botMessageContent = await generateResponse(prompt);
+        } else {
+          // ID não encontrado
+          botMessageContent =
+            "Desculpe, não consegui encontrar uma entrega com o ID fornecido. Poderia verificar o número?";
+        }
+        break;
       }
-    } else {
-      botMessageContent = await generateResponse(input);
+      case /entrega/i.test(input): {
+        // Caso a mensagem seja sobre entrega, mas sem ID
+        botMessageContent =
+          "Para que eu possa verificar o status da sua entrega, por favor, me informe o número de ID dela.";
+        break;
+      }
+      case input.trim().length > 0: {
+        // Caso seja uma mensagem geral
+        botMessageContent = await generateResponse(input);
+        break;
+      }
+      default: {
+        // Caso o input esteja vazio ou inválido
+        botMessageContent = "Por favor, insira uma mensagem válida.";
+        break;
+      }
     }
 
     const botMessage: UIMessage = {
@@ -124,7 +148,7 @@ export default function Chat() {
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
         <button
           onClick={createNewConversation}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-500 mb-4"
+          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
         >
           Nova Conversa
         </button>
@@ -135,8 +159,8 @@ export default function Chat() {
               onClick={() => switchConversation(conv.id)}
               className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
                 conv.id === currentConversationId
-                  ? "bg-green-500 text-white scale-110" 
-                  : "bg-gray-200 text-gray-800 hover:scale-105" 
+                  ? "bg-green-500 text-white scale-110"
+                  : "bg-gray-200 text-gray-800 hover:scale-105"
               }`}
             >
               {conv.id}
