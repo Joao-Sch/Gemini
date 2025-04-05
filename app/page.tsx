@@ -89,8 +89,8 @@ export default function Chat() {
       }
       case /entrega/i.test(input): {
         // Caso a mensagem seja sobre entrega, mas sem ID
-        botMessageContent =
-          "Para que eu possa verificar o status da sua entrega, por favor, me informe o número de ID dela.";
+        const prompt = `O usuário está perguntando sobre o status de uma entrega, mas não forneceu um ID. Responda de forma amigável e solicite o ID da entrega.`;
+        botMessageContent = await generateResponse(prompt);
         break;
       }
       case input.trim().length > 0: {
