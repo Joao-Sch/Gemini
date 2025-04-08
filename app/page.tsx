@@ -1,9 +1,17 @@
 "use client";
 
+/*anotação de ideia, pegar uma atitude e uma longitude fixa,
+  chumbar ela e tentar fazer um claculo com da media de tempo
+  para o pedido chegar apartir da latitude e longitude passada
+  no json dods motoboys
+*/
+
+
 import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import mockData from "../lib/mockData.json";
 import Image from "next/image";
+import { IoMdMenu } from "react-icons/io";
 
 type UIMessage = {
   id: string;
@@ -22,6 +30,13 @@ export default function Chat() {
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingMessage, setStreamingMessage] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Estado para controlar a sidebar
+  
+  // Função para alternar a visibilidade da sidebar
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -38,6 +53,22 @@ export default function Chat() {
       console.error("Erro ao gerar resposta:", error);
       return "Desculpe, ocorreu um erro ao gerar a resposta.";
     }
+  };
+
+  const streamMessage = (message: string) => {
+    setStreamingMessage(""); // Começa com uma mensagem vazia
+    let index = 0;
+
+    const interval = setInterval(() => {
+      if (index < message.length) {
+        setStreamingMessage((prev) => (prev || "") + message[index]);
+        index++;
+      } else {
+        clearInterval(interval); // Para o intervalo quando a mensagem estiver completa
+        setStreamingMessage(null); // Limpa o estado de streaming
+        setIsLoading(false); // Permite enviar outra mensagem
+      }
+    }, 35); // Ajuste o tempo (em milissegundos) entre cada caractere
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -111,6 +142,10 @@ export default function Chat() {
       content: botMessageContent,
     };
 
+    // Inicie o efeito de streaming
+    streamMessage(botMessageContent);
+
+    // Adicione a mensagem completa ao estado após o streaming
     setConversations((prevConversations) =>
       prevConversations.map((conv) =>
         conv.id === currentConversationId
@@ -120,7 +155,6 @@ export default function Chat() {
     );
 
     setInput("");
-    setIsLoading(false);
   };
 
   const createNewConversation = () => {
@@ -143,8 +177,31 @@ export default function Chat() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
+      <link rel="stylesheet" href="./style.css" />
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md p-4 overflow-y-auto max-h-screen text-center">
+      <div
+        className={`w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } sm:translate-x-0 sm:block`} 
+        style={{
+          boxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          WebkitBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          MozBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+        }}
+      >
+        <div className="mb-4">
+          <Image
+            src="/fb-og.png"
+            alt="Logo"
+            width={150}
+            height={150}
+            className="mx-auto"
+            style={{
+              marginBottom: "10px",
+            }}
+          />
+        </div>
+
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
         <button
           onClick={createNewConversation}
@@ -157,16 +214,25 @@ export default function Chat() {
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
-                conv.id === currentConversationId
+              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${conv.id === currentConversationId
                   ? "bg-green-500 text-white scale-110"
-                  : "bg-gray-200 text-gray-800 hover:scale-105"
-              }`}
+                  : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+                }`}
             >
               {conv.id}
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Toggle Sidebar Button */}
+      <div className="sm:hidden absolute top-4 left-4 z-10">
+        <button
+          onClick={toggleSidebar}
+          className="bg-gray-800 text-white p-2 rounded-full"
+        >
+          <IoMdMenu size={30} />
+        </button>
       </div>
 
       {/* Chat Area */}
@@ -190,31 +256,31 @@ export default function Chat() {
           </div>
           <div className="h-[60vh] overflow-y-auto p-4 space-y-4">
             {currentConversation &&
-            currentConversation.messages.length === 0 ? (
+              currentConversation.messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 Envie uma mensagem para começar a conversa
               </div>
             ) : (
-              currentConversation?.messages.map((m) => (
+              currentConversation?.messages.map((m, index) => (
                 <div
                   key={m.id}
-                  className={`flex ${
-                    m.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      m.role === "user"
+                    className={`max-w-[80%] p-3 rounded-lg ${m.role === "user"
                         ? "bg-green-800 text-white"
                         : "bg-gray-200 text-gray-800"
-                    }`}
+                      }`}
                   >
-                    {m.content.split("\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                    {m.role === "assistant" && index === currentConversation.messages.length - 1 && streamingMessage !== null
+                      ? streamingMessage // Exibe a mensagem em streaming
+                      : m.content.split("\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
                   </div>
                 </div>
               ))
@@ -227,13 +293,15 @@ export default function Chat() {
                 onChange={handleInputChange}
                 placeholder="Digite o ID da entrega ou pergunte algo..."
                 className="flex-grow p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isLoading} // Desabilita o campo enquanto está carregando
               />
               <button
                 type="submit"
-                className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 cursor-pointer"
-                disabled={!currentConversationId || isLoading}
+                className={`bg-gray-400 text-white px-4 py-2 rounded-md transition-colors duration-500 cursor-pointer ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+                  }`}
+                disabled={isLoading} // Desabilita o botão enquanto está carregando
               >
-                {isLoading ? "..." : "Enviar"}
+                Enviar
               </button>
             </form>
           </div>

@@ -1,0 +1,31 @@
+/* Sidebar - Ajustes para ficar por cima e quase ocupar a tela inteira */
+.dropdownMenu {
+  position: fixed; /* Fixa a sidebar sobre a tela */
+  top: 0;
+  left: 0;
+  width: 90%; /* A largura será 90% da tela */
+  height: 100%; /* A altura ocupa toda a tela */
+  background: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+  backdrop-filter: blur(10px); /* Para efeito de desfoque */
+  box-shadow: 16px 6px 11px -11px rgba(0, 0, 0, 0.5); /* Adiciona sombra */
+  z-index: 1000; /* Garante que a sidebar fique acima da conversa */
+ 
+  transition: transform 0.5s ease-in-out; /* Transição suave */
+}
+
+.dropdownMenu.show {
+  transform: translateX(0); /* Quando a sidebar for aberta, ela vem para a tela */
+}
+
+.dropdownMenu li {
+  color: red;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdownMenu .actionButton {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
