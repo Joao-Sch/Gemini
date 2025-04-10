@@ -1,6 +1,7 @@
 "use client";
 
-/*anotação de ideia, pegar uma latitude e uma longitude fixa,
+/*
+  anotação de ideia, pegar uma latitude e uma longitude fixa,
   chumbar ela e tentar fazer um calculo com da media de tempo
   para o pedido chegar apartir da latitude e longitude passada
   no json do motoboys
@@ -8,6 +9,7 @@
 
 import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import mockData from "@/lib/mockData.json";
 import Image from "next/image";
 import { IoMdMenu } from "react-icons/io";
 
@@ -40,7 +42,7 @@ export default function Chat() {
   };
 
   const generateResponse = async (prompt: string) => {
-    const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
+    const genAI = new GoogleGenerativeAI("AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ");
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     try {
@@ -65,7 +67,7 @@ export default function Chat() {
         setStreamingMessage(null);
         setIsLoading(false);
       }
-    }, 35);
+    }, 2.5);
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -95,30 +97,62 @@ export default function Chat() {
 
     let botMessageContent = "";
 
-    // Enviar a mensagem para o Gemini para análise
-    const prompt = `Analise a seguinte mensagem e determine se ela está relacionada a entregas. Retorne um JSON com o campo "event" indicando "entrega" ou "outro". Mensagem: "${input}"`;
+    const prompt = `Analise a seguinte mensagem e determine se ela está relacionada
+                    a entregas ou se o cliente esta passando o id de uma entrega. Retorne um texto indicando "entrega" 
+                    ou "outro" ou "id". Mensagem: "${input}"`;
     const analysisResponse = await generateResponse(prompt);
 
-    try {
-      // Verifique se a resposta é um JSON válido
-      const analysis = JSON.parse(analysisResponse);
 
-      if (analysis.event === "entrega") {
-        // Caso a mensagem esteja relacionada a entregas
-        const promptEntrega = `O usuário está perguntando sobre uma entrega. Solicite o ID da entrega ou outras informações necessárias para continuar.`;
-        botMessageContent = await generateResponse(promptEntrega);
-      } else {
-        // Caso a mensagem não esteja relacionada a entregas
-        botMessageContent = await generateResponse(input);
+    try {
+      switch (analysisResponse.trim().toLowerCase()) {
+        case "entrega":
+          const prompt = `A mensagem te haver com entrega "${input}"
+                          peça gentilmente e usando emojis a cada p
+                          alavra muitos emojis mesmo o id da entreg
+                          a para o cliente `;
+
+          botMessageContent = await generateResponse(prompt);
+          console.log("ENTREGA")
+          break;
+
+        case "outro":
+          botMessageContent = await generateResponse(input);
+          console.log("OUTRO")
+          break;
+
+        case "id":
+          const idMatch = input.match(/\d+/); // Procura por números na mensagem
+          const id = idMatch ? parseInt(idMatch[0], 10) : null;
+
+          if (id) {
+            // Buscar as informações no mockData.json
+            const delivery = mockData.find((item) => item.id === id);
+
+            if (delivery) {
+              const prompt = `Detalhes da entrega:\n- Situação: ${delivery.situacao}\n- Nome do Entregador: ${delivery.nomeEntregador}\n- Veículo: ${delivery.veiculo}\n- Valor: R$ ${delivery.valor}\n\nFormule uma resposta amigável com essas informações.`;
+              
+              botMessageContent = await generateResponse(prompt);
+              console.log("ID RESPOSTA")
+            }else {
+              botMessageContent = "ID não encontrado. Por favor, verifique o ID novamente.";
+              console.log("ID NÃO ENCONTRADO")
+            }
+            
+          }
+
+          const idPrompt = ``;
+          botMessageContent = await generateResponse(idPrompt);
+          console.log("ID")
+          break;
+        
+          default:
+            botMessageContent = "Desculpe, ocorreu um erro ao processar sua mensagem.";
+          console.log("ERROR")
+            break;
       }
     } catch (error) {
       console.error("Erro ao analisar a mensagem:", error);
-
-      if (error instanceof Error) {
-        botMessageContent = `Desculpe, ocorreu um erro ao processar sua mensagem. Detalhes do erro: ${error.message}`;
-      } else {
-        botMessageContent = "Desculpe, ocorreu um erro desconhecido ao processar sua mensagem.";
-      }
+      botMessageContent = "Desculpe, ocorreu um erro ao processar sua mensagem.";
     }
 
     const botMessage: UIMessage = {
@@ -161,9 +195,13 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div
-        className={`w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0 sm:block`}
+        className={`w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } sm:translate-x-0 sm:block`}
+        style={{
+          boxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          WebkitBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          MozBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+        }}
       >
         <div className="mb-4">
           <Image
@@ -187,11 +225,10 @@ export default function Chat() {
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
-                conv.id === currentConversationId
+              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${conv.id === currentConversationId
                   ? "bg-green-500 text-white scale-110"
                   : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-              }`}
+                }`}
             >
               {conv.id}
             </button>
@@ -209,7 +246,14 @@ export default function Chat() {
       </div>
 
       <div className="flex-grow flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden">
+        <div
+          className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden"
+          style={{
+            boxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            WebkitBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            MozBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+          }}
+        >
           <div className="bg-green-600 text-white p-4 flex justify-between items-center">
             <h1 className="text-xl font-bold">Chatbot I9</h1>
             <Image
@@ -221,7 +265,7 @@ export default function Chat() {
           </div>
           <div className="h-[60vh] overflow-y-auto p-4 space-y-4">
             {currentConversation &&
-            currentConversation.messages.length === 0 ? (
+              currentConversation.messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 Envie uma mensagem para começar a conversa
               </div>
@@ -229,27 +273,25 @@ export default function Chat() {
               currentConversation?.messages.map((m, index) => (
                 <div
                   key={m.id}
-                  className={`flex ${
-                    m.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      m.role === "user"
+                    className={`max-w-[80%] p-3 rounded-lg ${m.role === "user"
                         ? "bg-green-800 text-white"
                         : "bg-gray-200 text-gray-800"
-                    }`}
+                      }`}
                   >
                     {m.role === "assistant" &&
-                    index === currentConversation.messages.length - 1 &&
-                    streamingMessage !== null
+                      index === currentConversation.messages.length - 1 &&
+                      streamingMessage !== null
                       ? streamingMessage
                       : m.content.split("\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
                   </div>
                 </div>
               ))
@@ -261,16 +303,18 @@ export default function Chat() {
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Digite o ID da entrega ou pergunte algo..."
-                className="flex-grow p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-grow bg-gray-300 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
+                click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-500"
                 disabled={isLoading}
               />
               <button
                 type="submit"
-                className={`bg-gray-400 text-white px-4 py-2 rounded-md transition-colors duration-500 cursor-pointer ${
-                  isLoading
+                className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
+                            focus:scale-105 focus:bg-green-800 transition-color duration-600 focus:text-white
+                  ${isLoading
                     ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-green-700"
-                }`}
+                    : "hover:bg-gray-300 hover:text-green-800 transition-colors duration-500"
+                  }`}
                 disabled={isLoading}
               >
                 Enviar
