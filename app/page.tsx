@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Type } from "@google/genai";
 import mockData from "@/lib/mockData.json"; // Dados simulados
 import Image from "next/image";
 
@@ -23,104 +23,19 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const genAI = new GoogleGenerativeAI("AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ");
-
-  // Função para extrair o ID
-  const extractDeliveryId = async (text: string): Promise<number | null> => {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: `
-        Você é um especialista em chatbots de entrega.
-        Quando receber uma mensagem, identifique se há um ID de entrega.
-        Um ID de entrega é um número inteiro de 1 a 999999.
-        Responda SOMENTE com o número do ID (por exemplo, "12345") se encontrar.
-        Se não houver ID, responda exatamente "null".
-      `,
-    });
-
-    try {
-      const result = await model.generateContent(text);
-      const raw = result.response.text().trim();
-      const id = parseInt(raw, 10);
-      return isNaN(id) ? null : id;
-    } catch (error) {
-      console.error("Erro ao extrair delivery ID:", error);
-      return null;
-    }
+  const createNewConversation = () => {
+    const newConv: Conversation = { id: `Conversa ${conversationCounter}`, messages: [] };
+    setConversations((prev) => [...prev, newConv]);
+    setCurrentConversationId(newConv.id);
+    setConversationCounter((c) => c + 1);
   };
 
-  // Função principal do input
-  const pocessUserInput = async (userInput: string) => {
-    // Extrai o ID via Gemini
-    const deliveryId = await extractDeliveryId(userInput);
-
-    // Modelo para gerar a resposta final
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: `
-            Você é um assistente especializado em entregas. 
-            Quando o usuário falar algo sobre entregas, peça o ID caso ele não tenha fornecido,
-            e tente ajudar com oque ele precisar em sua entrega.
-            Quando receber um ID, o sistema irá fornecer os dados da entrega.
-            Caso não tiver haver com entrega, você pode responder normalmente com base no contexto.
-            sempre que o usuário falar sobre macacos, responda que ama o BOLSONARO E O FLAMENGO.
-            Responda de forma clara e amigável, com emojis.
-      `,
-    });
-
-    try {
-      if (deliveryId !== null) {
-        // Busca no mockData
-        const delivery = mockData.find((item) => item.id === deliveryId);
-        if (delivery) {
-          // Monta o prompt com os dados do mockData
-          const prompt = `
-            O usuário forneceu o ID de entrega: ${delivery.id}.
-            Aqui estão os dados da entrega:
-            - Situação: ${delivery.situacao}
-            - Nome do Entregador: ${delivery.nomeEntregador}
-            - Veículo: ${delivery.veiculo}
-            - Valor: R$ ${delivery.valor.toFixed(2)}
-            - faça uma estimativa de tempo para a entrega usando
-              a as coodernadas 23.554435 e -46.633308 com as coo
-              rdenadas do motoboy: ${delivery.coordenadas}
-
-            Com base nesses dados, responda de forma clara, organizada em tópicos e com emojis,
-            incluindo uma estimativa de tempo de chegada (velocidade média 30 km/h).
-          `;
-          const result = await model.generateContent(prompt);
-          return result.response.text();
-        } else {
-          return "❌ Entrega não encontrada. Verifique o ID e tente novamente.";
-        }
-      } else {
-        // Sem ID, responde normalmente
-        const result = await model.generateContent(userInput);
-        return result.response.text();
-      }
-    } catch (error) {
-      console.error("Erro ao gerar resposta:", error);
-      return "❌ Desculpe, ocorreu um erro ao processar sua mensagem.";
-    }
+  const switchConversation = (id: string) => {
+    setCurrentConversationId(id);
   };
 
-  // 3️⃣ Função para enviar a resposta do bot
-  const sendResponse = (response: string) => {
-    const botMessage: UIMessage = {
-      id: `bot-message-${Date.now()}`,
-      role: "assistant",
-      content: response,
-    };
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === currentConversationId
-          ? { ...conv, messages: [...conv.messages, botMessage] }
-          : conv
-      )
-    );
-  };
+  const currentConversation = conversations.find((c) => c.id === currentConversationId);
 
-  // Handlers de UI
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
@@ -131,7 +46,7 @@ export default function Chat() {
 
     setIsLoading(true);
 
-    // Envia a mensagem do usuário
+    // Adiciona a mensagem do usuário
     const userMessage: UIMessage = {
       id: `user-message-${Date.now()}`,
       role: "user",
@@ -146,29 +61,150 @@ export default function Chat() {
     );
 
     try {
-      const response = await pocessUserInput(input);
+      const response = await processUserInput(input);
       sendResponse(response);
     } catch (error) {
       console.error("Erro ao processar a mensagem:", error);
-      sendResponse("❌ Desculpe, ocorreu um erro inesperado.");
+      sendResponse("Desculpe, ocorreu um erro inesperado.");
     }
 
     setInput("");
     setIsLoading(false);
   };
 
-  const createNewConversation = () => {
-    const newConv: Conversation = { id: `Conversa ${conversationCounter}`, messages: [] };
-    setConversations((prev) => [...prev, newConv]);
-    setCurrentConversationId(newConv.id);
-    setConversationCounter((c) => c + 1);
+  const processUserInput = async (userInput: string) => {
+    const ai = new GoogleGenAI({
+      apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
+    });
+  
+    const config = {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          event: {
+            type: Type.OBJECT,
+            properties: {
+              code: { type: Type.STRING },
+              correlation: { type: Type.STRING },
+              data: {
+                type: Type.OBJECT,
+                properties: {
+                  meta: { type: Type.STRING },
+                  value: { type: Type.STRING },
+                },
+              },
+            },
+          },
+          message: { type: Type.STRING },
+        },
+      },
+      systemInstruction: [
+        {
+          text: `Você é um assistente especializado em entregas. 
+          Quando o usuário falar algo sobre entregas, peça o ID caso ele não tenha fornecido,
+          e tente ajudar com o que ele precisar em sua entrega.
+          Quando receber um ID, o sistema irá fornecer os dados da entrega.
+          Caso não tiver haver com entrega, você pode responder normalmente com base no contexto.
+          Responda de forma clara e amigável.`,
+        },
+      ],
+    };
+  
+    const model = "gemini-2.0-flash";
+    const contents = [
+      {
+        role: "user",
+        parts: [
+          {
+            text: userInput,
+          },
+        ],
+      },
+    ];
+  
+    try {
+      const response = await ai.models.generateContentStream({
+        model,
+        config,
+        contents,
+      });
+  
+      let accumulatedText = ""; // Variável para acumular as partes do texto
+  
+      for await (const chunk of response) {
+        // Garantir que chunk.text seja uma string
+        const text = chunk.text ?? ""; // Fallback para string vazia se chunk.text for undefined
+  
+        // Acumular o texto recebido
+        accumulatedText += text;
+  
+        // Logar o conteúdo acumulado para depuração
+        console.log("Texto acumulado:", accumulatedText);
+  
+        // Verificar se o texto acumulado é um JSON válido
+        if (!isValidJSON(accumulatedText)) {
+          console.warn("Texto ainda não é um JSON válido. Aguardando mais partes...");
+          continue; // Esperar por mais partes
+        }
+  
+        // Fazer o parse do JSON completo
+        const structuredResponse = JSON.parse(accumulatedText);
+  
+        if (structuredResponse.event?.data?.value) {
+          const id = parseInt(structuredResponse.event.data.value, 10);
+  
+          // Busca no mockData
+          const delivery = mockData.find((item) => item.id === id);
+  
+          if (delivery) {
+            return `
+              Detalhes da entrega:
+              - Situação: ${delivery.situacao}
+              - Nome do Entregador: ${delivery.nomeEntregador}
+              - Veículo: ${delivery.veiculo}
+              - Valor: R$ ${delivery.valor}
+              - Localização do entregador: ${delivery.coordenadas}
+  
+              Se precisar de mais informações, é só falar comigo! 😊
+            `;
+          } else {
+            return "ID não encontrado. Por favor, verifique o ID.";
+          }
+        } else {
+          return structuredResponse.message || "Não consegui entender sua solicitação.";
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao processar a resposta do modelo:", error);
+      return "Desculpe, ocorreu um erro ao processar a resposta.";
+    }
+  };
+  
+  // Função para verificar se um texto é um JSON válido
+  const isValidJSON = (text: string) => {
+    try {
+      JSON.parse(text);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const switchConversation = (id: string) => {
-    setCurrentConversationId(id);
+  const sendResponse = (response: string) => {
+    const botMessage: UIMessage = {
+      id: `bot-message-${Date.now()}`,
+      role: "assistant",
+      content: response,
+    };
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === currentConversationId
+          ? { ...conv, messages: [...conv.messages, botMessage] }
+          : conv
+      )
+    );
   };
-
-  const currentConversation = conversations.find((c) => c.id === currentConversationId);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
