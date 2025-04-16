@@ -5,26 +5,23 @@
     "nomeEntregador": "João Pinto",
     "veiculo": "CG 125",
     "valor": 35.0,
-    "latitude": -23.55052,
-    "longitude": -46.633308
+    "coordenadas": "23.55052, -46.633308"
   },
   {
     "id": 2,
     "situacao": "Entregue",
-    "nomeEntregador": "Maria kawanara",
+    "nomeEntregador": "Maria Kawanara",
     "veiculo": "CG 150",
     "valor": 50.0,
-    "latitude": -23.55123,
-    "longitude": -46.634567
+    "coordenadas": "23.55123, -46.634567"
   },
   {
     "id": 3,
     "situacao": "Aguardando retirada",
-    "nomeEntregador": "Carlos naresh",
+    "nomeEntregador": "Carlos Naresh",
     "veiculo": "XRE 300",
     "valor": 20.0,
-    "latitude": -23.55234,
-    "longitude": -46.635678
+    "coordenadas": "23.55234, -46.635678"
   },
   {
     "id": 4,
@@ -32,8 +29,7 @@
     "nomeEntregador": "Ana Castela",
     "veiculo": "FAZER 250",
     "valor": 0.0,
-    "latitude": -23.55345,
-    "longitude": -46.636789
+    "coordenadas": "23.55345, -46.636789"
   },
   {
     "id": 5,
@@ -41,8 +37,7 @@
     "nomeEntregador": "Luckhaos",
     "veiculo": "YAMAHA R1",
     "valor": 45.0,
-    "latitude": -23.55456,
-    "longitude": -46.637890
+    "coordenadas": "23.55456, -46.637890"
   },
   {
     "id": 6,
@@ -50,8 +45,7 @@
     "nomeEntregador": "Lucas Silva",
     "veiculo": "CB 500F",
     "valor": 40.0,
-    "latitude": -23.55567,
-    "longitude": -46.638901
+    "coordenadas": "23.55567, -46.638901"
   },
   {
     "id": 7,
@@ -59,8 +53,7 @@
     "nomeEntregador": "Juliana Souza",
     "veiculo": "Ninja 650",
     "valor": 55.0,
-    "latitude": -23.55678,
-    "longitude": -46.639012
+    "coordenadas": "23.55678, -46.639012"
   },
   {
     "id": 8,
@@ -68,8 +61,7 @@
     "nomeEntregador": "Felipe Oliveira",
     "veiculo": "Hornet 600",
     "valor": 30.0,
-    "latitude": -23.55789,
-    "longitude": -46.640123
+    "coordenadas": "23.55789, -46.640123"
   },
   {
     "id": 9,
@@ -77,8 +69,7 @@
     "nomeEntregador": "Rita Almeida",
     "veiculo": "Twister 250",
     "valor": 0.0,
-    "latitude": -23.55890,
-    "longitude": -46.641234
+    "coordenadas": "23.55890, -46.641234"
   },
   {
     "id": 10,
@@ -86,7 +77,6 @@
     "nomeEntregador": "Paulo Pereira",
     "veiculo": "Fazer 250",
     "valor": 38.0,
-    "latitude": -23.55901,
-    "longitude": -46.642345
+    "coordenadas": "23.55901, -46.642345"
   }
 ]
