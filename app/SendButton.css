@@ -1,0 +1,44 @@
+/* Chat.module.css */
+.wave-container-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .wave-text-button {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .wave-text-button span {
+    display: inline-block;
+    font-size: 1rem;
+    animation: wave-button 1s ease-in-out infinite;
+    color: inherit;
+  }
+  
+  .wave-text-button span:nth-child(1) {
+    animation-delay: 0s;
+  }
+  .wave-text-button span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .wave-text-button span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  .wave-text-button span:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  
+  @keyframes wave-button {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }

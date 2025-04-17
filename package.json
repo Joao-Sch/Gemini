@@ -17,6 +17,7 @@
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.96",
     "ai": "^4.1.61",
+    "animate.css": "^4.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

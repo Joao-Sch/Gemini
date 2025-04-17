@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
-import mockData from "@/lib/mockData.json"; // Dados simulados
+import mockData from "@/lib/mockData.json";
 import Image from "next/image";
+import "./SendButton.css";
 
 type UIMessage = {
   id: string;
@@ -22,6 +23,7 @@ export default function Chat() {
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
 
   const createNewConversation = () => {
     const newConv: Conversation = { id: `Conversa ${conversationCounter}`, messages: [] };
@@ -44,6 +46,7 @@ export default function Chat() {
     e.preventDefault();
     if (!currentConversationId || isLoading) return;
 
+    setIsSubmitClicked(true);
     setIsLoading(true);
 
     // Adiciona a mensagem do usuário
@@ -69,12 +72,15 @@ export default function Chat() {
     }
 
     setInput("");
+    setTimeout(() => {
+      setIsSubmitClicked(false);
+    }, 500);
     setIsLoading(false);
   };
 
   const processUserInput = async (userInput: string) => {
     const ai = new GoogleGenAI({
-      apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
+      apiKey: "SUA_API_KEY", // Substitua pela sua chave de API válida
     });
   
     const config = {
@@ -82,6 +88,7 @@ export default function Chat() {
       responseSchema: {
         type: Type.OBJECT,
         properties: {
+          relatedToDelivery: { type: Type.BOOLEAN },
           event: {
             type: Type.OBJECT,
             properties: {
@@ -102,11 +109,10 @@ export default function Chat() {
       systemInstruction: [
         {
           text: `Você é um assistente especializado em entregas. 
-          Quando o usuário falar algo sobre entregas, peça o ID caso ele não tenha fornecido,
-          e tente ajudar com o que ele precisar em sua entrega.
-          Quando receber um ID, o sistema irá fornecer os dados da entrega.
-          Caso não tiver haver com entrega, você pode responder normalmente com base no contexto.
-          Responda de forma clara e amigável.`,
+          Sua tarefa é analisar a mensagem do usuário e determinar se ela está relacionada a entregas.
+          - Se a mensagem estiver relacionada a entregas, extraia o ID da entrega, que é um número inteiro entre 1 e 999999.
+          - Caso a mensagem não esteja relacionada a entregas, responda normalmente com base no contexto.
+          - Responda de forma clara, amigável e útil.`,
         },
       ],
     };
@@ -130,58 +136,50 @@ export default function Chat() {
         contents,
       });
   
-      let accumulatedText = ""; // Variável para acumular as partes do texto
+      let partialMessage = ""; // Variável para armazenar a mensagem parcial
+  
+      // Adiciona uma mensagem vazia ao chat para exibir o streaming
+      const botMessage: UIMessage = {
+        id: `bot-message-${Date.now()}`,
+        role: "assistant",
+        content: "",
+      };
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === currentConversationId
+            ? { ...conv, messages: [...conv.messages, botMessage] }
+            : conv
+        )
+      );
   
       for await (const chunk of response) {
-        // Garantir que chunk.text seja uma string
         const text = chunk.text ?? ""; // Fallback para string vazia se chunk.text for undefined
+        partialMessage += text;
   
-        // Acumular o texto recebido
-        accumulatedText += text;
-  
-        // Logar o conteúdo acumulado para depuração
-        console.log("Texto acumulado:", accumulatedText);
-  
-        // Verificar se o texto acumulado é um JSON válido
-        if (!isValidJSON(accumulatedText)) {
-          console.warn("Texto ainda não é um JSON válido. Aguardando mais partes...");
-          continue; // Esperar por mais partes
-        }
-  
-        // Fazer o parse do JSON completo
-        const structuredResponse = JSON.parse(accumulatedText);
-  
-        if (structuredResponse.event?.data?.value) {
-          const id = parseInt(structuredResponse.event.data.value, 10);
-  
-          // Busca no mockData
-          const delivery = mockData.find((item) => item.id === id);
-  
-          if (delivery) {
-            return `
-              Detalhes da entrega:
-              - Situação: ${delivery.situacao}
-              - Nome do Entregador: ${delivery.nomeEntregador}
-              - Veículo: ${delivery.veiculo}
-              - Valor: R$ ${delivery.valor}
-              - Localização do entregador: ${delivery.coordenadas}
-  
-              Se precisar de mais informações, é só falar comigo! 😊
-            `;
-          } else {
-            return "ID não encontrado. Por favor, verifique o ID.";
-          }
-        } else {
-          return structuredResponse.message || "Não consegui entender sua solicitação.";
-        }
+        // Atualiza a mensagem parcial no chat
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === currentConversationId
+              ? {
+                  ...conv,
+                  messages: conv.messages.map((msg) =>
+                    msg.id === botMessage.id
+                      ? { ...msg, content: partialMessage }
+                      : msg
+                  ),
+                }
+              : conv
+          )
+        );
       }
+  
+      return; // O streaming já atualizou a mensagem no chat
     } catch (error) {
       console.error("Erro ao processar a resposta do modelo:", error);
-      return "Desculpe, ocorreu um erro ao processar a resposta.";
+      sendResponse("Desculpe, ocorreu um erro ao processar a resposta.");
     }
   };
-  
-  // Função para verificar se um texto é um JSON válido
+
   const isValidJSON = (text: string) => {
     try {
       JSON.parse(text);
@@ -209,11 +207,29 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md p-4 overflow-y-auto max-h-screen text-center">
+      <div
+        className={`w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out "translate-x-0" : "-translate-x-full"
+          } sm:translate-x-0 sm:block`}
+        style={{
+          boxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          WebkitBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          MozBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+        }}
+      >
+        <div className="mb-4">
+          <Image
+            src="/fb-og.png"
+            alt="Logo"
+            width={150}
+            height={150}
+            className="mx-auto"
+          />
+        </div>
+
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
         <button
           onClick={createNewConversation}
-          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 mb-4"
+          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
         >
           Nova Conversa
         </button>
@@ -222,11 +238,10 @@ export default function Chat() {
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition ${
-                conv.id === currentConversationId
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
+              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${conv.id === currentConversationId
+                ? "bg-green-500 text-white scale-110"
+                : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+                }`}
             >
               {conv.id}
             </button>
@@ -236,7 +251,14 @@ export default function Chat() {
 
       {/* Chat Area */}
       <div className="flex-grow flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden">
+        <div
+          className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden"
+          style={{
+            boxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            WebkitBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            MozBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+          }}
+        >
           <div className="bg-green-600 text-white p-4 flex justify-between items-center">
             <h1 className="text-xl font-bold">Chatbot I9</h1>
             <Image src="/logo_i9delivery.png" alt="chatbot" width={50} height={50} />
@@ -253,9 +275,8 @@ export default function Chat() {
                   className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      m.role === "user" ? "bg-green-800 text-white" : "bg-gray-200 text-gray-800"
-                    }`}
+                    className={`max-w-[80%] p-3 rounded-lg ${m.role === "user" ? "bg-green-800 text-white" : "bg-gray-200 text-gray-800"
+                      }`}
                   >
                     {m.content.split("\n").map((line, i) => (
                       <span key={i}>
@@ -274,18 +295,31 @@ export default function Chat() {
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Digite o ID da entrega ou pergunte algo..."
-                className="flex-grow bg-gray-300 p-2 border rounded-md focus:outline-none"
+                className="flex-grow bg-gray-300 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
+                  click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-700"
                 disabled={isLoading}
               />
               <button
                 type="submit"
-                className={`px-4 py-2 rounded-md ${
-                  isLoading
-                    ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    : "bg-green-500 text-white hover:bg-green-600"
-                }`}
+                className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
+                  ${isLoading
+                    ? "bg-green-800 scale-105 text-white cursor-not-allowed"
+                    : "hover:bg-green-800 hover:text-white transition-colors duration-600"
+                  }
+                `}
+                disabled={isLoading}
               >
-                Enviar
+                {isSubmitClicked && !isLoading ? (
+                  "Enviado"
+                ) : isLoading ? (
+                  <div className="wave-container-button">
+                    <h1 className="wave-text-button">
+                      <span>. </span><span>. </span><span>. </span><span>.</span>
+                    </h1>
+                  </div>
+                ) : (
+                  "Enviar"
+                )}
               </button>
             </form>
           </div>
