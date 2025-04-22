@@ -78,9 +78,9 @@ export default function Chat() {
     setIsLoading(false);
   };
 
-  const processUserInput = async (userInput: string) => {
+  const processUserInput = async (userInput: string): Promise<string> => {
     const ai = new GoogleGenAI({
-      apiKey: "SUA_API_KEY", // Substitua pela sua chave de API válida
+      apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
     });
   
     const config = {
@@ -110,7 +110,7 @@ export default function Chat() {
         {
           text: `Você é um assistente especializado em entregas. 
           Sua tarefa é analisar a mensagem do usuário e determinar se ela está relacionada a entregas.
-          - Se a mensagem estiver relacionada a entregas, extraia o ID da entrega, que é um número inteiro entre 1 e 999999.
+          - Se a mensagem estiver relacionada a entregas, extraia o ID que é um numero de 1 a 999999,e armazene-o no campo "value".
           - Caso a mensagem não esteja relacionada a entregas, responda normalmente com base no contexto.
           - Responda de forma clara, amigável e útil.`,
         },
@@ -138,49 +138,59 @@ export default function Chat() {
   
       let partialMessage = ""; // Variável para armazenar a mensagem parcial
   
-      // Adiciona uma mensagem vazia ao chat para exibir o streaming
-      const botMessage: UIMessage = {
-        id: `bot-message-${Date.now()}`,
-        role: "assistant",
-        content: "",
-      };
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.id === currentConversationId
-            ? { ...conv, messages: [...conv.messages, botMessage] }
-            : conv
-        )
-      );
-  
       for await (const chunk of response) {
-        const text = chunk.text ?? ""; // Fallback para string vazia se chunk.text for undefined
+        const text = chunk.text ?? "";
         partialMessage += text;
-  
-        // Atualiza a mensagem parcial no chat
-        setConversations((prev) =>
-          prev.map((conv) =>
-            conv.id === currentConversationId
-              ? {
-                  ...conv,
-                  messages: conv.messages.map((msg) =>
-                    msg.id === botMessage.id
-                      ? { ...msg, content: partialMessage }
-                      : msg
-                  ),
-                }
-              : conv
-          )
-        );
       }
   
-      return; // O streaming já atualizou a mensagem no chat
+      if (!isValidJSON(partialMessage)) {
+        console.error("Resposta inválida do modelo:", partialMessage);
+        return "Desculpe, ocorreu um erro ao processar a resposta.";
+      }
+  
+      const structuredResponse = JSON.parse(partialMessage);
+  
+      console.log("Resposta estruturada do modelo:", structuredResponse);
+
+      switch (structuredResponse.relatedToDelivery) {
+        case true:
+          if (structuredResponse.event?.data?.value) {
+            const id = parseInt(structuredResponse.event.data.value, 10);
+            console.log("ID extraído:", id);
+            const delivery = mockData.find((item) => item.id === id);
+            console.log("Resultado da busca no mockData:", delivery);
+  
+            if (delivery) {
+              return `
+                Detalhes da entrega:
+                - Situação: ${delivery.situacao}
+                - Nome do Entregador: ${delivery.nomeEntregador}
+                - Veículo: ${delivery.veiculo}
+                - Valor: R$ ${delivery.valor}
+                - Localização do entregador: ${delivery.coordenadas}
+  
+                Se precisar de mais informações, é só falar comigo! 😊
+              `;
+            } else {
+              return "ID não encontrado. Por favor, verifique o ID.";
+            }
+          } else {
+            return "Por favor, forneça o ID da entrega para que eu possa buscar as informações. 😊";
+          }
+  
+        case false:
+          return structuredResponse.message || "Não consegui entender sua solicitação.";
+  
+        default:
+          return "Desculpe, ocorreu um erro ao processar sua solicitação.";
+      }
     } catch (error) {
       console.error("Erro ao processar a resposta do modelo:", error);
-      sendResponse("Desculpe, ocorreu um erro ao processar a resposta.");
+      return "Desculpe, ocorreu um erro ao processar a resposta.";
     }
   };
-
-  const isValidJSON = (text: string) => {
+   
+  const isValidJSON = (text: string): boolean => {
     try {
       JSON.parse(text);
       return true;
