@@ -1,8 +1,12 @@
 "use client";
 
+/*lembrete de  terminar o CODE: search_driver e usar a função do sendToGemini para enviar a mensagem para o gemini, e depois usar a função processUserInput para processar a resposta do gemini e enviar a resposta para o chat.*/
+
+
+
 import { useState } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
-import mockData from "@/lib/mockData.json";
+import entregas from "@/lib/entregas.json";
 import Image from "next/image";
 import "./SendButton.css";
 
@@ -19,14 +23,19 @@ type Conversation = {
 
 export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null);
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
 
   const createNewConversation = () => {
-    const newConv: Conversation = { id: `Conversa ${conversationCounter}`, messages: [] };
+    const newConv: Conversation = {
+      id: `Conversa ${conversationCounter}`,
+      messages: [],
+    };
     setConversations((prev) => [...prev, newConv]);
     setCurrentConversationId(newConv.id);
     setConversationCounter((c) => c + 1);
@@ -36,7 +45,9 @@ export default function Chat() {
     setCurrentConversationId(id);
   };
 
-  const currentConversation = conversations.find((c) => c.id === currentConversationId);
+  const currentConversation = conversations.find(
+    (c) => c.id === currentConversationId
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -78,29 +89,62 @@ export default function Chat() {
     setIsLoading(false);
   };
 
+  const fetchDeliveryDetails = (deliveryId: number) => {
+    return entregas.find((item) => item.id === deliveryId);
+  };
+
+  const sendToGemini = async (prompt: string): Promise<string> => {
+    try {
+      const ai = new GoogleGenAI({
+        apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
+      });
+
+      const model = "gemini-2.0-flash";
+      const contents = [
+        {
+          role: "user",
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
+        },
+      ];
+
+      const response = await ai.models.generateContentStream({
+        model,
+        contents,
+      });
+
+      let partialMessage = "";
+
+      for await (const chunk of response) {
+        const text = chunk.text ?? "";
+        partialMessage += text;
+      }
+
+      return partialMessage;
+    } catch (error) {
+      console.error("Erro ao enviar mensagem ao Gemini:", error);
+      return "Desculpe, ocorreu um erro ao processar sua solicitação.";
+    }
+  };
+
   const processUserInput = async (userInput: string): Promise<string> => {
     const ai = new GoogleGenAI({
       apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
     });
-  
+
     const config = {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          relatedToDelivery: { type: Type.BOOLEAN },
           event: {
             type: Type.OBJECT,
             properties: {
               code: { type: Type.STRING },
               correlation: { type: Type.STRING },
-              data: {
-                type: Type.OBJECT,
-                properties: {
-                  meta: { type: Type.STRING },
-                  value: { type: Type.STRING },
-                },
-              },
             },
           },
           message: { type: Type.STRING },
@@ -108,15 +152,29 @@ export default function Chat() {
       },
       systemInstruction: [
         {
-          text: `Você é um assistente especializado em entregas. 
-          Sua tarefa é analisar a mensagem do usuário e determinar se ela está relacionada a entregas.
-          - Se a mensagem estiver relacionada a entregas, extraia o ID que é um numero de 1 a 999999,e armazene-o no campo "value".
-          - Caso a mensagem não esteja relacionada a entregas, responda normalmente com base no contexto.
-          - Responda de forma clara, amigável e útil.`,
+          text: `# General
+1 - You are a customer service bot, a point of support when the user needs to consult information at I9 Delivery.
+2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
+3 - Always respond in the same language that the user used.
+4 - Whenever the system passes information to you, it will be within 'data'.
+5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
+
+# Delivery:
+1 - Whenever a user asks about a delivery, request the ID.
+2 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
+
+# Delivery Driver:
+1 - Whenever a user asks about a delivery driver, request their full name.
+2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
+
+# General Response:
+1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
+2 - Use the event code: general_response for such cases.
+3 - Ensure the response is friendly, clear, and concise.`,
         },
       ],
     };
-  
+
     const model = "gemini-2.0-flash";
     const contents = [
       {
@@ -128,68 +186,77 @@ export default function Chat() {
         ],
       },
     ];
-  
+
     try {
       const response = await ai.models.generateContentStream({
         model,
         config,
         contents,
       });
-  
-      let partialMessage = ""; // Variável para armazenar a mensagem parcial
-  
+
+      let partialMessage = "";
+
       for await (const chunk of response) {
         const text = chunk.text ?? "";
         partialMessage += text;
       }
-  
+
       if (!isValidJSON(partialMessage)) {
         console.error("Resposta inválida do modelo:", partialMessage);
         return "Desculpe, ocorreu um erro ao processar a resposta.";
       }
-  
+
       const structuredResponse = JSON.parse(partialMessage);
-  
       console.log("Resposta estruturada do modelo:", structuredResponse);
 
-      switch (structuredResponse.relatedToDelivery) {
-        case true:
-          if (structuredResponse.event?.data?.value) {
-            const id = parseInt(structuredResponse.event.data.value, 10);
-            console.log("ID extraído:", id);
-            const delivery = mockData.find((item) => item.id === id);
-            console.log("Resultado da busca no mockData:", delivery);
-  
-            if (delivery) {
-              return `
-                Detalhes da entrega:
-                - Situação: ${delivery.situacao}
-                - Nome do Entregador: ${delivery.nomeEntregador}
-                - Veículo: ${delivery.veiculo}
-                - Valor: R$ ${delivery.valor}
-                - Localização do entregador: ${delivery.coordenadas}
-  
-                Se precisar de mais informações, é só falar comigo! 😊
-              `;
-            } else {
-              return "ID não encontrado. Por favor, verifique o ID.";
-            }
+      switch (structuredResponse.event.code) {
+        case "search_delivery":
+          const deliveryId = parseInt(structuredResponse.event.correlation, 10);
+          const deliveryDetails = fetchDeliveryDetails(deliveryId);
+          if (deliveryDetails) {
+            const prompt = `
+              O cliente forneceu o ID da entrega: ${deliveryId}.
+              Aqui estão os detalhes da entrega:
+              - Situação: ${deliveryDetails.situacao}
+              - Nome do Entregador: ${deliveryDetails.nomeEntregador}
+              - Veículo: ${deliveryDetails.veiculo}
+              - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
+              - Localização do entregador: ${deliveryDetails.coordenadas}
+
+              Por favor, formate essa resposta de forma amigável e clara para o cliente. 😊
+            `;
+
+            return await sendToGemini(prompt);
           } else {
-            return "Por favor, forneça o ID da entrega para que eu possa buscar as informações. 😊";
+            return "Nenhuma entrega encontrada com o ID fornecido.";
           }
-  
-        case false:
-          return structuredResponse.message || "Não consegui entender sua solicitação.";
-  
+
+        case "search_driver":
+          const driverPrompt = `
+            O cliente solicitou informações sobre o motorista.
+            Aqui estão os detalhes:
+            - Nome do Motorista: ${deliveryDetails ? deliveryDetails.nomeEntregador : "Informação não disponível"}
+
+            Por favor, formate essa resposta de forma amigável e clara para o cliente. 😊
+          `;
+
+          return await sendToGemini(driverPrompt);
+
+        case "general_response":
+          return structuredResponse.message || "Desculpe, não consegui entender sua solicitação.";
+
         default:
-          return "Desculpe, ocorreu um erro ao processar sua solicitação.";
+          return (
+            structuredResponse.message ||
+            "Desculpe, não consegui entender sua solicitação."
+          );
       }
     } catch (error) {
       console.error("Erro ao processar a resposta do modelo:", error);
       return "Desculpe, ocorreu um erro ao processar a resposta.";
     }
   };
-   
+
   const isValidJSON = (text: string): boolean => {
     try {
       JSON.parse(text);
@@ -248,10 +315,11 @@ export default function Chat() {
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${conv.id === currentConversationId
-                ? "bg-green-500 text-white scale-110"
-                : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-                }`}
+              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
+                conv.id === currentConversationId
+                  ? "bg-green-500 text-white scale-110"
+                  : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+              }`}
             >
               {conv.id}
             </button>
@@ -271,10 +339,16 @@ export default function Chat() {
         >
           <div className="bg-green-600 text-white p-4 flex justify-between items-center">
             <h1 className="text-xl font-bold">Chatbot I9</h1>
-            <Image src="/logo_i9delivery.png" alt="chatbot" width={50} height={50} />
+            <Image
+              src="/logo_i9delivery.png"
+              alt="chatbot"
+              width={50}
+              height={50}
+            />
           </div>
           <div className="h-[60vh] overflow-y-auto p-4 space-y-4">
-            {currentConversation && currentConversation.messages.length === 0 ? (
+            {currentConversation &&
+            currentConversation.messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 Envie uma mensagem para começar a conversa
               </div>
@@ -282,11 +356,16 @@ export default function Chat() {
               currentConversation?.messages.map((m) => (
                 <div
                   key={m.id}
-                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${
+                    m.role === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${m.role === "user" ? "bg-green-800 text-white" : "bg-gray-200 text-gray-800"
-                      }`}
+                    className={`max-w-[80%] p-3 rounded-lg ${
+                      m.role === "user"
+                        ? "bg-green-800 text-white"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
                   >
                     {m.content.split("\n").map((line, i) => (
                       <span key={i}>
@@ -312,9 +391,10 @@ export default function Chat() {
               <button
                 type="submit"
                 className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
-                  ${isLoading
-                    ? "bg-green-800 scale-105 text-white cursor-not-allowed"
-                    : "hover:bg-green-800 hover:text-white transition-colors duration-600"
+                  ${
+                    isLoading
+                      ? "bg-green-800 scale-105 text-white cursor-not-allowed"
+                      : "hover:bg-green-800 hover:text-white transition-colors duration-600"
                   }
                 `}
                 disabled={isLoading}
@@ -324,7 +404,10 @@ export default function Chat() {
                 ) : isLoading ? (
                   <div className="wave-container-button">
                     <h1 className="wave-text-button">
-                      <span>. </span><span>. </span><span>. </span><span>.</span>
+                      <span>. </span>
+                      <span>. </span>
+                      <span>. </span>
+                      <span>.</span>
                     </h1>
                   </div>
                 ) : (

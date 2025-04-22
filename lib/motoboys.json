@@ -1,0 +1,112 @@
+[
+    {
+      "id": 1,
+      "nome": "João Pinto",
+      "veiculoRegistrado": "CG 125",
+      "cpf": "123.456.789-00",
+      "telefone": "(11) 91234-5678",
+      "situacao": "Disponível",
+      "avaliacao": 4.5,
+      "entregasRealizadas": 10,
+      "coordenadas": "23.55052, -46.633308"
+    },
+    {
+      "id": 2,
+      "nome": "Maria Kawanara",
+      "veiculoRegistrado": "CG 150",
+      "cpf": "987.654.321-00",
+      "telefone": "(11) 98765-4321",
+      "situacao": "Em entrega",
+      "avaliacao": 4.8,
+      "entregasRealizadas": 15,
+      "coordenadas": "23.55123, -46.634567"
+    },
+    {
+      "id": 3,
+      "nome": "Carlos Naresh",
+      "veiculoRegistrado": "XRE 300",
+      "cpf": "456.789.123-00",
+      "telefone": "(11) 92345-6789",
+      "situacao": "Disponível",
+      "avaliacao": 4.2,
+      "entregasRealizadas": 8,
+      "coordenadas": "23.55234, -46.635678"
+    },
+    {
+      "id": 4,
+      "nome": "Ana Castela",
+      "veiculoRegistrado": "Fazer 250",
+      "cpf": "321.654.987-00",
+      "telefone": "(11) 93456-7890",
+      "situacao": "Em entrega",
+      "avaliacao": 4.7,
+      "entregasRealizadas": 20,
+      "coordenadas": "23.55345, -46.636789"
+    },
+    {
+      "id": 5,
+      "nome": "Luckhaos",
+      "veiculoRegistrado": "CB 500F",
+      "cpf": "654.321.987-00",
+      "telefone": "(11) 94567-8901",
+      "situacao": "Disponível",
+      "avaliacao": 4.6,
+      "entregasRealizadas": 12,
+      "coordenadas": "23.55456, -46.637890"
+    },
+    {
+      "id": 6,
+      "nome": "Lucas Silva",
+      "veiculoRegistrado": "Biz 110i",
+      "cpf": "789.123.456-00",
+      "telefone": "(11) 95678-9012",
+      "situacao": "Disponível",
+      "avaliacao": 4.3,
+      "entregasRealizadas": 5,
+      "coordenadas": "23.55567, -46.638901"
+    },
+    {
+      "id": 7,
+      "nome": "Juliana Souza",
+      "veiculoRegistrado": "PCX 150",
+      "cpf": "159.753.486-00",
+      "telefone": "(11) 96789-0123",
+      "situacao": "Em entrega",
+      "avaliacao": 4.9,
+      "entregasRealizadas": 25,
+      "coordenadas": "23.55678, -46.639012"
+    },
+    {
+      "id": 8,
+      "nome": "Felipe Oliveira",
+      "veiculoRegistrado": "Dafra Citycom 300",
+      "cpf": "258.456.789-00",
+      "telefone": "(11) 97890-1234",
+      "situacao": "Disponível",
+      "avaliacao": 4.4,
+      "entregasRealizadas": 18,
+      "coordenadas": "23.55789, -46.640123"
+    },
+    {
+      "id": 9,
+      "nome": "Rita Almeida",
+      "veiculoRegistrado": "NMax 160",
+      "cpf": "357.159.852-00",
+      "telefone": "(11) 98901-2345",
+      "situacao": "Em entrega",
+      "avaliacao": 4.6,
+      "entregasRealizadas": 22,
+      "coordenadas": "23.55890, -46.641234"
+    },
+    {
+      "id": 10,
+      "nome": "Paulo Pereira",
+      "veiculoRegistrado": "CBR 500R",
+      "cpf": "951.753.852-00",
+      "telefone": "(11) 99012-3456",
+      "situacao": "Disponível",
+      "avaliacao": 4.7,
+      "entregasRealizadas": 30,
+      "coordenadas": "23.55901, -46.642345"
+    }
+  ]
