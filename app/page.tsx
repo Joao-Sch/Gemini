@@ -2,11 +2,10 @@
 
 /*lembrete de  terminar o CODE: search_driver e usar a função do sendToGemini para enviar a mensagem para o gemini, e depois usar a função processUserInput para processar a resposta do gemini e enviar a resposta para o chat.*/
 
-
-
 import { useState } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
+import motoBoys from "@/lib/motoboys.json"
 import Image from "next/image";
 import "./SendButton.css";
 
@@ -93,6 +92,10 @@ export default function Chat() {
     return entregas.find((item) => item.id === deliveryId);
   };
 
+  const fecthDriverDetails = (driverId: number) => {
+    return motoBoys.find((item) => item.id === driverId);
+  }
+
   const sendToGemini = async (prompt: string): Promise<string> => {
     try {
       const ai = new GoogleGenAI({
@@ -160,8 +163,9 @@ export default function Chat() {
 5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
 
 # Delivery:
-1 - Whenever a user asks about a delivery, request the ID.
-2 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
+1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
+2 - Whenever a user asks about a delivery **and provides the delivery ID**, use the event code: search_delivery and include the provided ID in the 'correlation' field.
+3 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
 
 # Delivery Driver:
 1 - Whenever a user asks about a delivery driver, request their full name.
@@ -212,6 +216,14 @@ export default function Chat() {
       switch (structuredResponse.event.code) {
         case "search_delivery":
           const deliveryId = parseInt(structuredResponse.event.correlation, 10);
+
+          if (isNaN(deliveryId)) {
+            return (
+              structuredResponse.message ||
+              "Por favor, informe o ID da entrega."
+            );
+          }
+
           const deliveryDetails = fetchDeliveryDetails(deliveryId);
           if (deliveryDetails) {
             const prompt = `
@@ -223,27 +235,35 @@ export default function Chat() {
               - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
               - Localização do entregador: ${deliveryDetails.coordenadas}
 
-              Por favor, formate essa resposta de forma amigável e clara para o cliente. 😊
-            `;
-
+              Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
             return await sendToGemini(prompt);
           } else {
             return "Nenhuma entrega encontrada com o ID fornecido.";
           }
 
         case "search_driver":
-          const driverPrompt = `
-            O cliente solicitou informações sobre o motorista.
-            Aqui estão os detalhes:
-            - Nome do Motorista: ${deliveryDetails ? deliveryDetails.nomeEntregador : "Informação não disponível"}
+          const driverId = parseInt(structuredResponse.event.correlation, 10);
+          
+          if (isNaN(driverId)) {
+            return (
+              structuredResponse.message ||
+              "Por favor, informe o ID da entrega."
+            );
+          }
 
-            Por favor, formate essa resposta de forma amigável e clara para o cliente. 😊
-          `;
+          const driverDetails = fetchDeliveryDetails(driverId);
 
-          return await sendToGemini(driverPrompt);
+          if (driverDetails) {
+            const prompt = `
+              O cliente forneceu o ID do entregador: ${driverId}.
+              Aqui estão os detalhes do entregador:
+              - Nome do Entregador: ${driverDetails.nomeEntregador}
 
+              Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
+            return await sendToGemini(prompt);
+          }
         case "general_response":
-          return structuredResponse.message || "Desculpe, não consegui entender sua solicitação.";
+          return structuredResponse.message;
 
         default:
           return (
