@@ -42,3 +42,91 @@
       transform: translateY(-3px);
     }
   }
+
+@keyframes slideSideBar {
+  0% { 
+    transform: translateX(-100%);
+  }
+  50% { 
+    transform: translateX(20px);
+  }
+  100% { 
+    transform: translateX(0);
+  }
+}
+
+.sideBar {
+  animation: slideSideBar 0.5s ease-in-out;
+}
+
+@keyframes slideConversation {
+  0% { 
+    transform: translateX(-100%);
+  }
+  50% { 
+    transform: translateX(7px);
+  }
+  100% { 
+    transform: translateX(0);
+  }
+}
+
+.slideConversation {
+  animation: slideConversation 0.3s ease-in-out;
+}
+
+
+@keyframes slideMensasgeUser {
+  0% {
+    transform: translateX(100%);
+  }
+  50% {
+    transform: translateX(-7px);
+  }
+  100% {
+    transform: translateX(-10px);
+  }
+}
+
+.slideMensasgeUser {
+  animation: slideMensasgeUser 0.1s ease-in-out;
+}
+
+@keyframes slideLogo {
+  0% {
+    transform: translateX(100%);
+  }
+  50% {
+    transform: translateX(-7px);
+    transform: scale(1.1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.slideLogo {
+  animation: slideLogo 0.5s ease-in-out;
+}
+
+.conversas {
+  border-bottom: 2px solid #e40000;
+  border-radius: 2.5px;
+}
+
+@keyframes bgChat {
+  0% {
+    background-size: 0;
+  }
+  100% {
+    background-size: 20%;
+  }
+}
+
+.bg-chat-placeholder {
+  background-image: url('/images.png');
+  background-size: 25%;
+  background-position: center; 
+  background-repeat: no-repeat; 
+  animation: bgChat 0.8s ease-in-out;
+}

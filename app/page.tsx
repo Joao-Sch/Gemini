@@ -1,11 +1,9 @@
 "use client";
 
-/*lembrete de  terminar o CODE: search_driver e usar a função do sendToGemini para enviar a mensagem para o gemini, e depois usar a função processUserInput para processar a resposta do gemini e enviar a resposta para o chat.*/
-
 import { useState } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
-import motoBoys from "@/lib/motoboys.json"
+import motoBoys from "@/lib/motoboys.json";
 import Image from "next/image";
 import "./SendButton.css";
 
@@ -23,8 +21,7 @@ type Conversation = {
 export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
-    string | null
-  >(null);
+  string | null>(null);
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +91,7 @@ export default function Chat() {
 
   const fecthDriverDetails = (driverId: number) => {
     return motoBoys.find((item) => item.id === driverId);
-  }
+  };
 
   const sendToGemini = async (prompt: string): Promise<string> => {
     try {
@@ -168,7 +165,7 @@ export default function Chat() {
 3 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
 
 # Delivery Driver:
-1 - Whenever a user asks about a delivery driver, request their full name.
+1 - Whenever a user asks about a delivery driver, request their ID of driver.
 2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
 
 # General Response:
@@ -233,9 +230,16 @@ export default function Chat() {
               - Nome do Entregador: ${deliveryDetails.nomeEntregador}
               - Veículo: ${deliveryDetails.veiculo}
               - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
-              - Localização do entregador: ${deliveryDetails.coordenadas}
+              - Estimativa de Entrega: faça um calculo euclidiano para calcular
+                a distância entre o ponto de origem e o ponto de entrega e forneça
+                a estimativa de entrega em minutos tendo base que a localização do
+                motoboy é ${
+                  deliveryDetails.coordenadas
+                } e localização do cliente
+                é sempre "latitude": -23.55052, "longitude": -46.633308 e apenas diga
+                qual é a estimativa do tempo sem dar detalhes de como fez.
 
-              Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
+              Por favor, gere uma resposta de forma amigável e clara e bonita para o cliente.`;
             return await sendToGemini(prompt);
           } else {
             return "Nenhuma entrega encontrada com o ID fornecido.";
@@ -243,23 +247,24 @@ export default function Chat() {
 
         case "search_driver":
           const driverId = parseInt(structuredResponse.event.correlation, 10);
-          
+
           if (isNaN(driverId)) {
             return (
               structuredResponse.message ||
-              "Por favor, informe o ID da entrega."
+              "Por favor, informe o id do entregador."
             );
           }
 
-          const driverDetails = fetchDeliveryDetails(driverId);
+          const driverDetails = fecthDriverDetails(driverId);
 
           if (driverDetails) {
-            const prompt = `
-              O cliente forneceu o ID do entregador: ${driverId}.
-              Aqui estão os detalhes do entregador:
-              - Nome do Entregador: ${driverDetails.nomeEntregador}
-
-              Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
+            const prompt = `O cliente forneceu o ID do entregador: ${driverId}.
+                            Aqui estão os detalhes do entregador: 
+                            - Nome: ${driverDetails.nome} 
+                            - Telefone: ${driverDetails.telefone} 
+                            - Entregas feitas: ${driverDetails.entregasRealizadas}
+                            - Avaliação: ${driverDetails.avaliacao} 
+                            Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
             return await sendToGemini(prompt);
           }
         case "general_response":
@@ -290,8 +295,10 @@ export default function Chat() {
     const botMessage: UIMessage = {
       id: `bot-message-${Date.now()}`,
       role: "assistant",
-      content: response,
+      content: "",
     };
+
+    // Adiciona a mensagem vazia ao estado
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === currentConversationId
@@ -299,13 +306,40 @@ export default function Chat() {
           : conv
       )
     );
+
+    // Streaming
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < response.length) {
+        const char = response[index];
+        if (char !== undefined) {
+          setConversations((prev) =>
+            prev.map((conv) =>
+              conv.id === currentConversationId
+                ? {
+                    ...conv,
+                    messages: conv.messages.map((msg) =>
+                      msg.id === botMessage.id
+                        ? { ...msg, content: msg.content + char }
+                        : msg
+                    ),
+                  }
+                : conv
+            )
+          );
+        }
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 3.5); //velocidade
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out "translate-x-0" : "-translate-x-full"
+        className={`sideBar w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out "translate-x-0" : "-translate-x-full"
           } sm:translate-x-0 sm:block`}
         style={{
           boxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
@@ -326,7 +360,7 @@ export default function Chat() {
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
         <button
           onClick={createNewConversation}
-          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
+          className=" w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
         >
           Nova Conversa
         </button>
@@ -335,7 +369,7 @@ export default function Chat() {
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
+              className={`slideConversation block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
                 conv.id === currentConversationId
                   ? "bg-green-500 text-white scale-110"
                   : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
@@ -364,12 +398,13 @@ export default function Chat() {
               alt="chatbot"
               width={50}
               height={50}
+              className="slideLogo"
             />
           </div>
-          <div className="h-[60vh] overflow-y-auto p-4 space-y-4">
+          <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
             {currentConversation &&
             currentConversation.messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-gray-500">
+              <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
                 Envie uma mensagem para começar a conversa
               </div>
             ) : (
@@ -383,7 +418,7 @@ export default function Chat() {
                   <div
                     className={`max-w-[80%] p-3 rounded-lg ${
                       m.role === "user"
-                        ? "bg-green-800 text-white"
+                        ? "slideMensasgeUser bg-green-800 text-white"
                         : "bg-gray-200 text-gray-800"
                     }`}
                   >
