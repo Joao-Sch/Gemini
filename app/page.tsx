@@ -6,6 +6,7 @@ import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
 import Image from "next/image";
 import "./SendButton.css";
+import { IoDocumentAttachOutline } from "react-icons/io5";
 
 type UIMessage = {
   id: string;
@@ -18,14 +19,36 @@ type Conversation = {
   messages: UIMessage[];
 };
 
+type Delivery = {
+  nomeResponsavel: string;
+  enderecoDestino: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    cidade: string;
+    cep: string;
+  };
+  enderecoOrigem?: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    cidade: string;
+    cep: string;
+  };
+};
+
 export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
-  string | null>(null);
+    string | null
+  >(null);
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({}); 
+  
 
   const createNewConversation = () => {
     const newConv: Conversation = {
@@ -62,6 +85,7 @@ export default function Chat() {
       role: "user",
       content: input,
     };
+
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === currentConversationId
@@ -83,6 +107,29 @@ export default function Chat() {
       setIsSubmitClicked(false);
     }, 500);
     setIsLoading(false);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageMessage: UIMessage = {
+          id: `image-message-${Date.now()}`,
+          role: "user",
+          content: reader.result as string, // Base64 da imagem
+        };
+
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === currentConversationId
+              ? { ...conv, messages: [...conv.messages, imageMessage] }
+              : conv
+          )
+        );
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const fetchDeliveryDetails = (deliveryId: number) => {
@@ -130,6 +177,64 @@ export default function Chat() {
     }
   };
 
+
+  const finalizeDelivery = () => {
+    if (
+      !deliveryData.nomeResponsavel ||
+      !deliveryData.enderecoDestino ||
+      !deliveryData.enderecoDestino.rua ||
+      !deliveryData.enderecoDestino.numero ||
+      !deliveryData.enderecoDestino.bairro ||
+      !deliveryData.enderecoDestino.cidade ||
+      !deliveryData.enderecoDestino.cep
+    ) {
+      sendResponse(
+        "Por favor, forneça todas as informações necessárias para registrar a entrega."
+      );
+      return;
+    }
+  
+    const newDelivery: Delivery = {
+      nomeResponsavel: deliveryData.nomeResponsavel,
+      enderecoDestino: deliveryData.enderecoDestino,
+      enderecoOrigem: deliveryData.enderecoOrigem || {
+        rua: "Rua cadastrada no sistema",
+        numero: "123",
+        bairro: "Bairro cadastrado",
+        cidade: "Cidade cadastrada",
+        cep: "00000-000",
+      },
+    };
+  
+    setDeliveries((prev) => [...prev, newDelivery]);
+    console.log("Lista de entregas:", deliveries);
+  
+    sendResponse("Entrega registrada com sucesso!");
+    setDeliveryData({});
+  };
+  /*
+    insert_delivery: {
+      nome do responsavel,
+      endereco de destino {
+        rua,
+        numero,
+        bairro,
+        cidade,
+        CEP
+      },
+      endereço de origem {
+        if foi inserido {
+        rua,
+        numero,
+        bairro,
+        cidade,
+        CEP
+        }else nao foi inserido {
+        endereço do responsavel no sistema
+        }
+      },
+  */
+
   const processUserInput = async (userInput: string): Promise<string> => {
     const ai = new GoogleGenAI({
       apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
@@ -168,10 +273,16 @@ export default function Chat() {
 1 - Whenever a user asks about a delivery driver, request their ID of driver.
 2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
 
+# Insert Delivery:
+1 - Whenever the user initiates a delivery, request the following information: responsible person's name, destination address (street, number, neighborhood, city, ZIP code), and origin address (same attributes as the destination). If these details are not provided, use the default addresses registered in the system.
+2 - Whenever you need to insert a delivery, use the event code: insert_delivery.
+
 # General Response:
 1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
 2 - Use the event code: general_response for such cases.
-3 - Ensure the response is friendly, clear, and concise.`,
+3 - Ensure the response is friendly, clear, and concise.
+
+`,
         },
       ],
     };
@@ -270,6 +381,56 @@ export default function Chat() {
         case "general_response":
           return structuredResponse.message;
 
+          case "insert_delivery":
+            if (!deliveryData.nomeResponsavel) {
+              setDeliveryData((prev) => ({ ...prev, nomeResponsavel: userInput }));
+              return "Por favor, informe o endereço de destino (rua, número, bairro, cidade, CEP).";
+            }
+          
+            if (!deliveryData.enderecoDestino) {
+              const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+              if (!rua || !numero || !bairro || !cidade || !cep) {
+                return "Por favor, forneça todos os campos do endereço de destino separados por vírgula.";
+              }
+              setDeliveryData((prev) => ({
+                ...prev,
+                enderecoDestino: {
+                  rua: rua.trim(),
+                  numero: numero.trim(),
+                  bairro: bairro.trim(),
+                  cidade: cidade.trim(),
+                  cep: cep.trim(),
+                },
+              }));
+              return "Agora, informe o endereço de origem (rua, número, bairro, cidade, CEP) ou digite 'usar endereço padrão'.";
+            }
+          
+            if (!deliveryData.enderecoOrigem) {
+              if (userInput.toLowerCase() === "usar endereço padrão") {
+                finalizeDelivery();
+                return "Entrega registrada com sucesso!";
+              }
+          
+              const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+              if (!rua || !numero || !bairro || !cidade || !cep) {
+                return "Por favor, forneça todos os campos do endereço de origem separados por vírgula.";
+              }
+              setDeliveryData((prev) => ({
+                ...prev,
+                enderecoOrigem: {
+                  rua: rua.trim(),
+                  numero: numero.trim(),
+                  bairro: bairro.trim(),
+                  cidade: cidade.trim(),
+                  cep: cep.trim(),
+                },
+              }));
+              finalizeDelivery();
+              return "Entrega registrada com sucesso!";
+            }
+          
+            return "Desculpe, não consegui entender sua solicitação.";
+
         default:
           return (
             structuredResponse.message ||
@@ -332,7 +493,7 @@ export default function Chat() {
       } else {
         clearInterval(interval);
       }
-    }, 3.5); //velocidade
+    }, 3.5);
   };
 
   return (
@@ -418,16 +579,28 @@ export default function Chat() {
                   <div
                     className={`max-w-[80%] p-3 rounded-lg ${
                       m.role === "user"
-                        ? "slideMensasgeUser bg-green-800 text-white"
-                        : "bg-gray-200 text-gray-800"
+                        ? "bg-green-800 text-white"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {m.content.split("\n").map((line, i) => (
-                      <span key={i}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                    {m.content.startsWith("data:image/") ||
+                    /\.(jpeg|jpg|png|gif|bmp)$/i.test(m.content) ? (
+                      <Image
+                        src={m.content}
+                        alt="Imagem enviada"
+                        width={300}
+                        height={300}
+                        className="rounded-md"
+                        unoptimized
+                      />
+                    ) : (
+                      m.content.split("\n").map((line, i) => (
+                        <span key={i}>
+                          {line}
+                          <br />
+                        </span>
+                      ))
+                    )}
                   </div>
                 </div>
               ))
@@ -439,35 +612,37 @@ export default function Chat() {
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Digite o ID da entrega ou pergunte algo..."
-                className="flex-grow bg-gray-300 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
+                className="flex-grow bg-gray-100 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
                   click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-700"
                 disabled={isLoading}
               />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className="bg-gray-100 text-green-600 px-4 align-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600"
+              >
+                <IoDocumentAttachOutline />
+              </label>
               <button
                 type="submit"
-                className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
-                  ${
-                    isLoading
-                      ? "bg-green-800 scale-105 text-white cursor-not-allowed"
-                      : "hover:bg-green-800 hover:text-white transition-colors duration-600"
-                  }
-                `}
+                className={`bg-gray-100 text-green-600 px-4 py-2 rounded-md cursor-pointer border rounded-md${
+                  isLoading
+                    ? "bg-green-800 scale-105 text-white cursor-not-allowed"
+                    : "hover:bg-green-800 hover:text-white transition-colors duration-600"
+                }`}
                 disabled={isLoading}
               >
-                {isSubmitClicked && !isLoading ? (
-                  "Enviado"
-                ) : isLoading ? (
-                  <div className="wave-container-button">
-                    <h1 className="wave-text-button">
-                      <span>. </span>
-                      <span>. </span>
-                      <span>. </span>
-                      <span>.</span>
-                    </h1>
-                  </div>
-                ) : (
-                  "Enviar"
-                )}
+                {isSubmitClicked && !isLoading
+                  ? "Enviado"
+                  : isLoading
+                  ? "Enviando..."
+                  : "Enviar"}
               </button>
             </form>
           </div>
