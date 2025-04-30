@@ -8,6 +8,7 @@ import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 
+//#regions TIPOS
 type UIMessage = {
   id: string;
   role: "system" | "user" | "assistant";
@@ -37,6 +38,8 @@ type Delivery = {
   };
 };
 
+//#endregions
+
 export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
@@ -47,9 +50,14 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
-  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({}); 
-  
+  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
+  //const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
 
+  const ai = new GoogleGenAI({
+    apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
+  });
+
+  //#region Funções de Conversa
   const createNewConversation = () => {
     const newConv: Conversation = {
       id: `Conversa ${conversationCounter}`,
@@ -67,7 +75,9 @@ export default function Chat() {
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId
   );
+  //#endregion
 
+  //#region Funções de Input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
@@ -109,15 +119,19 @@ export default function Chat() {
     setIsLoading(false);
   };
 
+  //#region Função de Upload de Imagem
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
+        const base64Image = reader.result as string;
+
+        // Adiciona a imagem como mensagem do usuário
         const imageMessage: UIMessage = {
           id: `image-message-${Date.now()}`,
           role: "user",
-          content: reader.result as string, // Base64 da imagem
+          content: base64Image,
         };
 
         setConversations((prev) =>
@@ -127,11 +141,17 @@ export default function Chat() {
               : conv
           )
         );
+
+        // Envia a imagem ao Gemini
+        processImageWithGemini(base64Image);
       };
       reader.readAsDataURL(file);
     }
   };
+  //#endregion
+  //#endregion
 
+  //#region Funções de Busca
   const fetchDeliveryDetails = (deliveryId: number) => {
     return entregas.find((item) => item.id === deliveryId);
   };
@@ -139,20 +159,18 @@ export default function Chat() {
   const fecthDriverDetails = (driverId: number) => {
     return motoBoys.find((item) => item.id === driverId);
   };
+  //#endregion
 
-  const sendToGemini = async (prompt: string): Promise<string> => {
+  //#region Funções do Gemini
+  const sendToGemini = async (payload: any): Promise<string> => {
     try {
-      const ai = new GoogleGenAI({
-        apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
-      });
-
       const model = "gemini-2.0-flash";
       const contents = [
         {
           role: "user",
           parts: [
             {
-              text: prompt,
+              text: JSON.stringify(payload),
             },
           ],
         },
@@ -177,7 +195,30 @@ export default function Chat() {
     }
   };
 
+  const processImageWithGemini = async (base64Image: string): Promise<string> => {
+    try {
+      const payload = {
+        event: {
+          code: "process_image",
+        },
+        data: {
+          image: base64Image,
+        },
+      };
+  
+      const response = await sendToGemini(payload);
+      sendResponse(response); // Envia a resposta ao usuário
+      return response; // Retorna a resposta para o `switch`
+    } catch (error) {
+      console.error("Erro ao processar a imagem no Gemini:", error);
+      const errorMessage = "Desculpe, ocorreu um erro ao processar a imagem.";
+      sendResponse(errorMessage);
+      return errorMessage; // Retorna a mensagem de erro
+    }
+  };
+  //#endregion
 
+  //#region Funções de Finalização de Entrega
   const finalizeDelivery = () => {
     if (
       !deliveryData.nomeResponsavel ||
@@ -193,7 +234,7 @@ export default function Chat() {
       );
       return;
     }
-  
+
     const newDelivery: Delivery = {
       nomeResponsavel: deliveryData.nomeResponsavel,
       enderecoDestino: deliveryData.enderecoDestino,
@@ -205,41 +246,138 @@ export default function Chat() {
         cep: "00000-000",
       },
     };
-  
+
     setDeliveries((prev) => [...prev, newDelivery]);
     console.log("Lista de entregas:", deliveries);
-  
+
     sendResponse("Entrega registrada com sucesso!");
     setDeliveryData({});
   };
-  /*
-    insert_delivery: {
-      nome do responsavel,
-      endereco de destino {
-        rua,
-        numero,
-        bairro,
-        cidade,
-        CEP
-      },
-      endereço de origem {
-        if foi inserido {
-        rua,
-        numero,
-        bairro,
-        cidade,
-        CEP
-        }else nao foi inserido {
-        endereço do responsavel no sistema
-        }
-      },
-  */
+  //#endregion
 
+  //#region FUNÇÕES DE ENVIO DE ENVIO
+  //#region Search Delivery
+  const handleSearchDelivery = async (
+    structuredResponse: any
+  ): Promise<string> => {
+    const deliveryId = parseInt(structuredResponse.event.correlation, 10);
+
+    if (isNaN(deliveryId)) {
+      return (
+        structuredResponse.message || "Por favor, informe o ID da entrega."
+      );
+    }
+
+    const deliveryDetails = fetchDeliveryDetails(deliveryId);
+    if (deliveryDetails) {
+      const prompt = `
+      O cliente forneceu o ID da entrega: ${deliveryId}.
+      Aqui estão os detalhes da entrega:
+      - Situação: ${deliveryDetails.situacao}
+      - Nome do Entregador: ${deliveryDetails.nomeEntregador}
+      - Veículo: ${deliveryDetails.veiculo}
+      - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
+      - Estimativa de Entrega: faça um cálculo euclidiano para calcular
+        a distância entre o ponto de origem e o ponto de entrega e forneça
+        a estimativa de entrega em minutos tendo base que a localização do
+        motoboy é ${deliveryDetails.coordenadas} e localização do cliente
+        é sempre "latitude": -23.55052, "longitude": -46.633308 e apenas diga
+        qual é a estimativa do tempo sem dar detalhes de como fez.
+
+      Por favor, gere uma resposta de forma amigável e clara e bonita para o cliente.`;
+      return await sendToGemini(prompt);
+    } else {
+      return "Nenhuma entrega encontrada com o ID fornecido.";
+    }
+  };
+  //#endregion
+  //#region Search Driver
+  const handleSearchDriver = async (
+    structuredResponse: any
+  ): Promise<string> => {
+    const driverId = parseInt(structuredResponse.event.correlation, 10);
+
+    if (isNaN(driverId)) {
+      return (
+        structuredResponse.message || "Por favor, informe o ID do entregador."
+      );
+    }
+
+    const driverDetails = fecthDriverDetails(driverId);
+
+    if (driverDetails) {
+      const prompt = `O cliente forneceu o ID do entregador: ${driverId}.
+                      Aqui estão os detalhes do entregador: 
+                      - Nome: ${driverDetails.nome} 
+                      - Telefone: ${driverDetails.telefone} 
+                      - Entregas feitas: ${driverDetails.entregasRealizadas}
+                      - Avaliação: ${driverDetails.avaliacao} 
+                      Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
+      return await sendToGemini(prompt);
+    } else {
+      return "Nenhum entregador encontrado com o ID fornecido.";
+    }
+  };
+  //#endregion
+  //#endregion
+
+  //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
+  //#region Insert Delivery
+  const handleInsertDelivery = async (userInput: string): Promise<string> => {
+    if (!deliveryData.nomeResponsavel) {
+      setDeliveryData((prev) => ({ ...prev, nomeResponsavel: userInput }));
+      return "Por favor, informe o endereço de destino (rua, número, bairro, cidade, CEP).";
+    }
+
+    if (!deliveryData.enderecoDestino) {
+      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+      if (!rua || !numero || !bairro || !cidade || !cep) {
+        return "Por favor, forneça todos os campos do endereço de destino separados por vírgula.";
+      }
+      setDeliveryData((prev) => ({
+        ...prev,
+        enderecoDestino: {
+          rua: rua.trim(),
+          numero: numero.trim(),
+          bairro: bairro.trim(),
+          cidade: cidade.trim(),
+          cep: cep.trim(),
+        },
+      }));
+      return "Agora, informe o endereço de origem (rua, número, bairro, cidade, CEP) ou digite 'usar endereço padrão'.";
+    }
+
+    if (!deliveryData.enderecoOrigem) {
+      if (userInput.toLowerCase() === "usar endereço padrão") {
+        finalizeDelivery();
+        return "Entrega registrada com sucesso!";
+      }
+
+      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+      if (!rua || !numero || !bairro || !cidade || !cep) {
+        return "Por favor, forneça todos os campos do endereço de origem separados por vírgula.";
+      }
+      setDeliveryData((prev) => ({
+        ...prev,
+        enderecoOrigem: {
+          rua: rua.trim(),
+          numero: numero.trim(),
+          bairro: bairro.trim(),
+          cidade: cidade.trim(),
+          cep: cep.trim(),
+        },
+      }));
+      finalizeDelivery();
+      return "Entrega registrada com sucesso!";
+    }
+
+    return "Desculpe, não consegui entender sua solicitação.";
+  };
+  //#endregion
+  //#endregion
+
+  //#region Funções de Processamento
   const processUserInput = async (userInput: string): Promise<string> => {
-    const ai = new GoogleGenAI({
-      apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
-    });
-
     const config = {
       responseMimeType: "application/json",
       responseSchema: {
@@ -262,7 +400,12 @@ export default function Chat() {
 2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
 3 - Always respond in the same language that the user used.
 4 - Whenever the system passes information to you, it will be within 'data'.
-5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
+
+# Image Processing:
+1 - If the user sends an image, the 'data' field will contain a base64-encoded string of the image.
+2 - Analyze the image and extract relevant information, such as text or visual details.
+3 - Respond with a summary of the image content or any insights derived from it.
+4 - If the image cannot be processed, respond with an appropriate error message.
 
 # Delivery:
 1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
@@ -281,7 +424,6 @@ export default function Chat() {
 1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
 2 - Use the event code: general_response for such cases.
 3 - Ensure the response is friendly, clear, and concise.
-
 `,
         },
       ],
@@ -323,114 +465,17 @@ export default function Chat() {
 
       switch (structuredResponse.event.code) {
         case "search_delivery":
-          const deliveryId = parseInt(structuredResponse.event.correlation, 10);
-
-          if (isNaN(deliveryId)) {
-            return (
-              structuredResponse.message ||
-              "Por favor, informe o ID da entrega."
-            );
-          }
-
-          const deliveryDetails = fetchDeliveryDetails(deliveryId);
-          if (deliveryDetails) {
-            const prompt = `
-              O cliente forneceu o ID da entrega: ${deliveryId}.
-              Aqui estão os detalhes da entrega:
-              - Situação: ${deliveryDetails.situacao}
-              - Nome do Entregador: ${deliveryDetails.nomeEntregador}
-              - Veículo: ${deliveryDetails.veiculo}
-              - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
-              - Estimativa de Entrega: faça um calculo euclidiano para calcular
-                a distância entre o ponto de origem e o ponto de entrega e forneça
-                a estimativa de entrega em minutos tendo base que a localização do
-                motoboy é ${
-                  deliveryDetails.coordenadas
-                } e localização do cliente
-                é sempre "latitude": -23.55052, "longitude": -46.633308 e apenas diga
-                qual é a estimativa do tempo sem dar detalhes de como fez.
-
-              Por favor, gere uma resposta de forma amigável e clara e bonita para o cliente.`;
-            return await sendToGemini(prompt);
-          } else {
-            return "Nenhuma entrega encontrada com o ID fornecido.";
-          }
+          return await handleSearchDelivery(structuredResponse);
 
         case "search_driver":
-          const driverId = parseInt(structuredResponse.event.correlation, 10);
+          return await handleSearchDriver(structuredResponse);
 
-          if (isNaN(driverId)) {
-            return (
-              structuredResponse.message ||
-              "Por favor, informe o id do entregador."
-            );
-          }
+        case "insert_delivery":
+          return await handleInsertDelivery(userInput);
 
-          const driverDetails = fecthDriverDetails(driverId);
-
-          if (driverDetails) {
-            const prompt = `O cliente forneceu o ID do entregador: ${driverId}.
-                            Aqui estão os detalhes do entregador: 
-                            - Nome: ${driverDetails.nome} 
-                            - Telefone: ${driverDetails.telefone} 
-                            - Entregas feitas: ${driverDetails.entregasRealizadas}
-                            - Avaliação: ${driverDetails.avaliacao} 
-                            Por favor, formate essa resposta de forma amigável e clara para o cliente.`;
-            return await sendToGemini(prompt);
-          }
-        case "general_response":
-          return structuredResponse.message;
-
-          case "insert_delivery":
-            if (!deliveryData.nomeResponsavel) {
-              setDeliveryData((prev) => ({ ...prev, nomeResponsavel: userInput }));
-              return "Por favor, informe o endereço de destino (rua, número, bairro, cidade, CEP).";
-            }
-          
-            if (!deliveryData.enderecoDestino) {
-              const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-              if (!rua || !numero || !bairro || !cidade || !cep) {
-                return "Por favor, forneça todos os campos do endereço de destino separados por vírgula.";
-              }
-              setDeliveryData((prev) => ({
-                ...prev,
-                enderecoDestino: {
-                  rua: rua.trim(),
-                  numero: numero.trim(),
-                  bairro: bairro.trim(),
-                  cidade: cidade.trim(),
-                  cep: cep.trim(),
-                },
-              }));
-              return "Agora, informe o endereço de origem (rua, número, bairro, cidade, CEP) ou digite 'usar endereço padrão'.";
-            }
-          
-            if (!deliveryData.enderecoOrigem) {
-              if (userInput.toLowerCase() === "usar endereço padrão") {
-                finalizeDelivery();
-                return "Entrega registrada com sucesso!";
-              }
-          
-              const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-              if (!rua || !numero || !bairro || !cidade || !cep) {
-                return "Por favor, forneça todos os campos do endereço de origem separados por vírgula.";
-              }
-              setDeliveryData((prev) => ({
-                ...prev,
-                enderecoOrigem: {
-                  rua: rua.trim(),
-                  numero: numero.trim(),
-                  bairro: bairro.trim(),
-                  cidade: cidade.trim(),
-                  cep: cep.trim(),
-                },
-              }));
-              finalizeDelivery();
-              return "Entrega registrada com sucesso!";
-            }
-          
-            return "Desculpe, não consegui entender sua solicitação.";
-
+        case "process_image":
+          return await processImageWithGemini(structuredResponse.data.image);
+        
         default:
           return (
             structuredResponse.message ||
@@ -442,7 +487,9 @@ export default function Chat() {
       return "Desculpe, ocorreu um erro ao processar a resposta.";
     }
   };
+  //#endregion
 
+  //#region Função para validar JSON
   const isValidJSON = (text: string): boolean => {
     try {
       JSON.parse(text);
@@ -451,7 +498,9 @@ export default function Chat() {
       return false;
     }
   };
+  //#endregion
 
+  //#region FUNÇÂO QUE MANDA A MENSAGEM DO BOT
   const sendResponse = (response: string) => {
     const botMessage: UIMessage = {
       id: `bot-message-${Date.now()}`,
@@ -467,8 +516,9 @@ export default function Chat() {
           : conv
       )
     );
+    //#endregion
 
-    // Streaming
+    //#region Streaming
     let index = 0;
     const interval = setInterval(() => {
       if (index < response.length) {
@@ -495,6 +545,7 @@ export default function Chat() {
       }
     }, 3.5);
   };
+  //#endregion
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -631,18 +682,29 @@ export default function Chat() {
               </label>
               <button
                 type="submit"
-                className={`bg-gray-100 text-green-600 px-4 py-2 rounded-md cursor-pointer border rounded-md${
-                  isLoading
-                    ? "bg-green-800 scale-105 text-white cursor-not-allowed"
-                    : "hover:bg-green-800 hover:text-white transition-colors duration-600"
-                }`}
+                className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
+                   ${
+                     isLoading
+                       ? "bg-green-800 scale-105 text-white cursor-not-allowed"
+                       : "hover:bg-green-800 hover:text-white transition-colors duration-600"
+                   }
+                 `}
                 disabled={isLoading}
               >
-                {isSubmitClicked && !isLoading
-                  ? "Enviado"
-                  : isLoading
-                  ? "Enviando..."
-                  : "Enviar"}
+                {isSubmitClicked && !isLoading ? (
+                  "Enviado"
+                ) : isLoading ? (
+                  <div className="wave-container-button">
+                    <h1 className="wave-text-button">
+                      <span>. </span>
+                      <span>. </span>
+                      <span>. </span>
+                      <span>.</span>
+                    </h1>
+                  </div>
+                ) : (
+                  "Enviar"
+                )}
               </button>
             </form>
           </div>
