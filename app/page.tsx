@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
@@ -13,6 +13,7 @@ type UIMessage = {
   id: string;
   role: "system" | "user" | "assistant";
   content: string;
+  timestamp?: string;
 };
 
 type Conversation = {
@@ -49,7 +50,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
   const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
   //const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
 
@@ -67,6 +68,12 @@ export default function Chat() {
     setCurrentConversationId(newConv.id);
     setConversationCounter((c) => c + 1);
   };
+
+  useEffect(() => {
+    if (conversations.length === 0) {
+      createNewConversation(); // Cria a conversa inicial
+    }
+  }, []);
 
   const switchConversation = (id: string) => {
     setCurrentConversationId(id);
@@ -89,11 +96,11 @@ export default function Chat() {
     setIsSubmitClicked(true);
     setIsLoading(true);
 
-    // Adiciona a mensagem do usuário
     const userMessage: UIMessage = {
       id: `user-message-${Date.now()}`,
       role: "user",
       content: input,
+      timestamp: new Date().toISOString(), // Adiciona o timestamp
     };
 
     setConversations((prev) =>
@@ -162,6 +169,7 @@ export default function Chat() {
   //#endregion
 
   //#region Funções do Gemini
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sendToGemini = async (payload: any): Promise<string> => {
     try {
       const model = "gemini-2.0-flash";
@@ -195,7 +203,9 @@ export default function Chat() {
     }
   };
 
-  const processImageWithGemini = async (base64Image: string): Promise<string> => {
+  const processImageWithGemini = async (
+    base64Image: string
+  ): Promise<string> => {
     try {
       const payload = {
         event: {
@@ -205,7 +215,7 @@ export default function Chat() {
           image: base64Image,
         },
       };
-  
+
       const response = await sendToGemini(payload);
       sendResponse(response); // Envia a resposta ao usuário
       return response; // Retorna a resposta para o `switch`
@@ -247,17 +257,22 @@ export default function Chat() {
       },
     };
 
-    setDeliveries((prev) => [...prev, newDelivery]);
-    console.log("Lista de entregas:", deliveries);
+    // Adiciona a nova entrega ao array de entregas
+    setDeliveries((prev) => {
+      const updatedDeliveries = [...prev, newDelivery];
+      console.log("Lista de entregas atualizada:", updatedDeliveries); // Exibe o array no console
+      return updatedDeliveries;
+    });
 
     sendResponse("Entrega registrada com sucesso!");
-    setDeliveryData({});
+    setDeliveryData({}); // Limpa os dados temporários
   };
   //#endregion
 
   //#region FUNÇÕES DE ENVIO DE ENVIO
   //#region Search Delivery
   const handleSearchDelivery = async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     structuredResponse: any
   ): Promise<string> => {
     const deliveryId = parseInt(structuredResponse.event.correlation, 10);
@@ -293,6 +308,7 @@ export default function Chat() {
   //#endregion
   //#region Search Driver
   const handleSearchDriver = async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     structuredResponse: any
   ): Promise<string> => {
     const driverId = parseInt(structuredResponse.event.correlation, 10);
@@ -324,6 +340,8 @@ export default function Chat() {
   //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
   //#region Insert Delivery
   const handleInsertDelivery = async (userInput: string): Promise<string> => {
+    console.log("Estado atual de deliveryData:", deliveryData); // Log para depuração
+
     if (!deliveryData.nomeResponsavel) {
       setDeliveryData((prev) => ({ ...prev, nomeResponsavel: userInput }));
       return "Por favor, informe o endereço de destino (rua, número, bairro, cidade, CEP).";
@@ -370,7 +388,7 @@ export default function Chat() {
       finalizeDelivery();
       return "Entrega registrada com sucesso!";
     }
-
+    console.log("deliveryData antes de processar:", deliveryData);
     return "Desculpe, não consegui entender sua solicitação.";
   };
   //#endregion
@@ -471,11 +489,14 @@ export default function Chat() {
           return await handleSearchDriver(structuredResponse);
 
         case "insert_delivery":
+          if (!deliveryData.nomeResponsavel) {
+            return "Por favor, informe o nome do responsável pela entrega.";
+          }
           return await handleInsertDelivery(userInput);
 
         case "process_image":
           return await processImageWithGemini(structuredResponse.data.image);
-        
+
         default:
           return (
             structuredResponse.message ||
@@ -506,9 +527,9 @@ export default function Chat() {
       id: `bot-message-${Date.now()}`,
       role: "assistant",
       content: "",
+      timestamp: new Date().toISOString(), // Adiciona o timestamp
     };
 
-    // Adiciona a mensagem vazia ao estado
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === currentConversationId
@@ -516,9 +537,7 @@ export default function Chat() {
           : conv
       )
     );
-    //#endregion
 
-    //#region Streaming
     let index = 0;
     const interval = setInterval(() => {
       if (index < response.length) {
@@ -651,6 +670,14 @@ export default function Chat() {
                           <br />
                         </span>
                       ))
+                    )}
+                    {m.timestamp && (
+                      <span className="text-xs text-gray-400 block mt-1">
+                        {new Date(m.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
                     )}
                   </div>
                 </div>
