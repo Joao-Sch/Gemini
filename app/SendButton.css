@@ -123,6 +123,22 @@
   }
 }
 
+@keyframes imgUser {
+  0% {
+    filter: blur(6px);
+    /*filter: hue-rotate(170deg);*/
+  }
+  100% {
+    filter: blur(0);
+    /*filter: hue-rotate(0deg);*/
+  }
+}
+
+.imgUser {
+  animation: imgUser 1s ease-in-out;
+}
+
+
 .bg-chat-placeholder {
   background-image: url('/images.png');
   background-size: 25%;
