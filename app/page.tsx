@@ -42,6 +42,7 @@ type Delivery = {
 //#endregions
 
 export default function Chat() {
+  //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
@@ -54,9 +55,11 @@ export default function Chat() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
   const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
   //const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  //#endregion
 
   const ai = new GoogleGenAI({
-    apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ", // Lembre-se de proteger sua chave de API
+    apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
   });
 
   //#region Funções de Conversa
@@ -93,41 +96,71 @@ export default function Chat() {
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Verifica se o campo de entrada está vazio
-    if (!input.trim()) {
-      console.warn("Mensagem vazia não pode ser enviada.");
-      return; // Impede o envio da mensagem
-    }
-
     if (!currentConversationId || isLoading) return;
 
     setIsSubmitClicked(true);
     setIsLoading(true);
 
-    const userMessage: UIMessage = {
-      id: `user-message-${Date.now()}`,
-      role: "user",
-      content: input,
-      timestamp: new Date().toISOString(), // Adiciona o timestamp
-    };
+    // Verifica se há imagens carregadas
+    if (uploadedImages.length > 0) {
+      const combinedContent = [
+        ...uploadedImages.map((image) => `![image](${image})`), // Formata as imagens
+        input.trim() ? input : "", // Adiciona o texto, se houver
+      ]
+        .filter(Boolean) // Remove valores vazios
+        .join("\n"); // Junta tudo com quebras de linha
 
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === currentConversationId
-          ? { ...conv, messages: [...conv.messages, userMessage] }
-          : conv
-      )
-    );
+      const imageMessage: UIMessage = {
+        id: `image-message-${Date.now()}`,
+        role: "user",
+        content: combinedContent, // Inclui imagens e texto
+        timestamp: new Date().toISOString(),
+      };
 
-    try {
-      const response = await processUserInput(input);
-      sendResponse(response);
-    } catch (error) {
-      console.error("Erro ao processar a mensagem:", error);
-      sendResponse("Desculpe, ocorreu um erro inesperado.");
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === currentConversationId
+            ? { ...conv, messages: [...conv.messages, imageMessage] }
+            : conv
+        )
+      );
+
+      setUploadedImages([]); // Limpa as imagens carregadas
+      setInput(""); // Limpa o campo de texto
+    } else {
+      // Verifica se o campo de entrada está vazio
+      if (!input.trim()) {
+        console.warn("Mensagem vazia não pode ser enviada.");
+        setIsLoading(false);
+        return;
+      }
+
+      const userMessage: UIMessage = {
+        id: `user-message-${Date.now()}`,
+        role: "user",
+        content: input,
+        timestamp: new Date().toISOString(),
+      };
+
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === currentConversationId
+            ? { ...conv, messages: [...conv.messages, userMessage] }
+            : conv
+        )
+      );
+
+      try {
+        const response = await processUserInput(input);
+        sendResponse(response);
+      } catch (error) {
+        console.error("Erro ao processar a mensagem:", error);
+        sendResponse("Desculpe, ocorreu um erro inesperado.");
+      }
+
+      setInput(""); // Limpa o campo de texto
     }
 
-    setInput("");
     setTimeout(() => {
       setIsSubmitClicked(false);
     }, 500);
@@ -136,44 +169,40 @@ export default function Chat() {
 
   //#region Função de Upload de Imagem
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Image = reader.result as string;
-
-        // Adiciona a imagem como mensagem do usuário
-        const imageMessage: UIMessage = {
-          id: `image-message-${Date.now()}`,
-          role: "user",
-          content: base64Image, // A imagem será renderizada no chat
-          timestamp: new Date().toISOString(),
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Image = reader.result as string;
+          setUploadedImages((prev) => [...prev, base64Image]);
         };
-
-        setConversations((prev) =>
-          prev.map((conv) =>
-            conv.id === currentConversationId
-              ? { ...conv, messages: [...conv.messages, imageMessage] }
-              : conv
-          )
-        );
-
-        // Envia o payload ao Gemini
-        const payload = {
-          event: {
-            code: "process_image", // Pode ser usado ou não, dependendo da lógica do Gemini
-          },
-          data: {
-            image: base64Image, // Contém o prefixo data:image/...;base64,
-            mimeType: file.type, // Adiciona o mimeType do arquivo
-          },
-        };
-
-        sendToGemini(payload);
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Garante que o formato seja data:image/...
+      });
     }
   };
+
+  // Função para enviar as imagens armazenadas no estado
+  /*const sendImagesToChat = () => {
+    if (!currentConversationId || uploadedImages.length === 0) return;
+
+    const imageMessage: UIMessage = {
+      id: `image-message-${Date.now()}`,
+      role: "user",
+      content: uploadedImages.join("|"), // Use "|" como delimitador para evitar conflitos
+      timestamp: new Date().toISOString(),
+    };
+
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === currentConversationId
+          ? { ...conv, messages: [...conv.messages, imageMessage] }
+          : conv
+      )
+    );
+
+    setUploadedImages([]); // Limpa o estado de imagens após o envio
+  };*/
   //#endregion
   //#endregion
 
@@ -188,51 +217,37 @@ export default function Chat() {
   //#endregion
 
   //#region Funções do Gemini
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sendToGemini = async (payload: any): Promise<string> => {
+  const sendToGemini = async (payload: { text?: string; image?: string }) => {
     try {
-      const model = "gemini-2.0-flash"; // ou outro modelo que suporte multimodalidade
-      let contents: any[] = [];
+      const model = "gemini-2.0-flash"; // Certifique-se de que o modelo suporta multimodalidade
 
-      // Verifica se o payload contém uma imagem e seu mimeType
-      if (payload?.data?.image && payload?.data?.mimeType) {
-        // Se o payload contiver uma imagem, estruturamos o conteúdo para incluir a imagem
-        const base64Data = payload.data.image.includes(',')
-          ? payload.data.image.split(',')[1] // Remove o prefixo data:image/...;base64,
-          : payload.data.image; // Caso já seja apenas o dado base64
-
-        contents = [
-          {
-            role: "user",
-            parts: [
-              {
-                inlineData: { // Estrutura correta para dados de imagem
-                  mimeType: payload.data.mimeType,
-                  data: base64Data,
-                },
-              },
-              { text: "Descreva detalhadamente o que você vê nesta imagem. Se houver texto, transcreva-o. Se houver objetos, liste-os e descreva a cena de forma geral." }, // Prompt para descrever a imagem
-            ],
-          },
-        ];
-      } else {
-        // Se não for uma imagem, envia o texto normalmente
-        // (usado por handleSearchDelivery, handleSearchDriver)
-        contents = [
-          {
-            role: "user",
-            parts: [
-              {
-                // Se payload for uma string (prompt), usa diretamente, senão stringify
-                text: typeof payload === 'string' ? payload : JSON.stringify(payload),
-              },
-            ],
-          },
-        ];
-      }
+      const contents = [
+        {
+          role: "user",
+          parts: [
+            ...(payload.image
+              ? [
+                  {
+                    inlineData: {
+                      mimeType: "image/png", // Ajuste o tipo MIME conforme necessário
+                      data: payload.image.split(",")[1], // Remove o prefixo "data:image/...;base64,"
+                    },
+                  },
+                ]
+              : []),
+            ...(payload.text
+              ? [
+                  {
+                    text: payload.text,
+                  },
+                ]
+              : []),
+          ],
+        },
+      ];
 
       const response = await ai.models.generateContentStream({
-        model, // Certifique-se que este modelo suporta multimodalidade (imagem e texto)
+        model,
         contents,
       });
 
@@ -247,12 +262,12 @@ export default function Chat() {
       return partialMessage;
     } catch (error) {
       console.error("Erro ao enviar mensagem ao Gemini:", error);
-      const errorMessage = "Desculpe, ocorreu um erro ao interagir com a IA. Tente novamente.";
+      const errorMessage =
+        "Desculpe, ocorreu um erro ao interagir com a IA. Tente novamente.";
       sendResponse(errorMessage); // Envia a mensagem de erro para o chat
       return errorMessage;
     }
   };
-
   //#endregion
 
   //#region Funções de Finalização de Entrega
@@ -441,16 +456,26 @@ export default function Chat() {
       systemInstruction: [
         {
           text: `# General
-    1 - You are a customer service bot, a point of support when the user needs to consult information at I9 Delivery.
-    2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
-    3 - Always respond in the same language that the user used.
-    4 - Whenever the system passes information to you, it will be within 'data'.
+1 - You are a customer service bot, a point of support when the user needs to consult information at I9 Delivery.
+2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
+3 - Always respond in the same language that the user used.
+4 - Whenever the system passes information to you, it will be within 'data'.
+5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
     
-    # Image Processing:
+   ${
+     /*#Image Processing:
 1 - If the user sends an image, the 'data' field will contain a base64-encoded string of the image and its mimeType.
 2 - The image will be handled by a separate function ('sendToGemini' with image payload). This 'processUserInput' function should NOT try to re-process the image if it's already being handled.
-3 - If 'processUserInput' receives a text input that seems to refer to an image already sent, it should respond generally or ask for clarification, as the image processing is handled elsewhere.
-    
+3 - If 'processUserInput' receives a text input that seems to refer to an image already sent, it should respond generally or ask for clarification, as the image processing is handled elsewhere.*/ ""
+   }
+
+# Image Processing
+1 - If the user sends an image, analyze it and include relevant details in your response.
+2 - If the image contains text, transcribe it and include it in your response.
+3 - If the image contains objects or scenes, describe them and relate them to the user's message.
+4 - If both text and an image are provided, combine the information from both to generate a contextual response.
+5 - If the image is irrelevant or cannot be processed, respond based on the text only.
+
     # Delivery:
     1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
     2 - Whenever a user asks about a delivery **and provides the delivery ID**, use the event code: search_delivery and include the provided ID in the 'correlation' field.
@@ -500,18 +525,25 @@ export default function Chat() {
       }
 
       if (!isValidJSON(partialMessage)) {
-        console.warn("Resposta do modelo não é JSON válido, tratando como texto:", partialMessage);
+        console.warn(
+          "Resposta do modelo não é JSON válido, tratando como texto:",
+          partialMessage
+        );
         // Se não for JSON, pode ser uma resposta direta do modelo sem a estrutura esperada.
         // Ou pode ser um erro na instrução do sistema.
         // Por enquanto, vamos retornar a mensagem parcial como está.
         // Em um cenário ideal, você pode querer um fallback mais robusto aqui.
-        return partialMessage || "Desculpe, não consegui processar sua solicitação neste momento.";
+        return (
+          partialMessage ||
+          "Desculpe, não consegui processar sua solicitação neste momento."
+        );
       }
 
       const structuredResponse = JSON.parse(partialMessage);
       console.log("Resposta estruturada do modelo:", structuredResponse);
 
-      switch (structuredResponse.event?.code) { // Adicionado '?' para segurança
+      switch (structuredResponse.event?.code) {
+        // Adicionado '?' para segurança
         case "search_delivery":
           return await handleSearchDelivery(structuredResponse);
 
@@ -523,10 +555,13 @@ export default function Chat() {
             // A lógica de pedir o nome do responsável já está no systemInstruction.
             // O Gemini deve retornar uma mensagem pedindo o nome.
             // Se o código é 'insert_delivery' e não temos nome, o Gemini deve ter enviado a mensagem.
-            return structuredResponse.message || "Por favor, informe o nome do responsável pela entrega.";
+            return (
+              structuredResponse.message ||
+              "Por favor, informe o nome do responsável pela entrega."
+            );
           }
           return await handleInsertDelivery(userInput); // userInput aqui pode ser o endereço, etc.
-        
+
         case "general_response":
         default:
           return (
@@ -685,23 +720,39 @@ export default function Chat() {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {m.role === "user" && m.content.startsWith("data:image/") ? (
-                      <Image
-                        src={m.content}
-                        alt="Imagem enviada pelo usuário"
-                        width={300}
-                        height={300}
-                        className="imgUser rounded-md"
-                        unoptimized // Necessário para imagens base64
-                      />
-                    ) : (
-                      m.content.split("\n").map((line, i) => (
-                        <span key={i}>
-                          {line}
-                          <br />
-                        </span>
-                      ))
-                    )}
+                    {m.role === "user" && m.content.includes("data:image/")
+                      ? m.content.split("\n").map((part, i) => {
+                          // Verifica se o conteúdo é uma imagem no formato Markdown
+                          const imageMatch = part.match(
+                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
+                          );
+                          if (imageMatch) {
+                            return (
+                              <Image
+                                key={i}
+                                src={imageMatch[1]} // Extrai o base64 da imagem
+                                alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                width={200}
+                                height={200}
+                                className="imgUser rounded-md mb-4 mr-2"
+                                unoptimized // Necessário para imagens base64
+                              />
+                            );
+                          }
+
+                          // Caso contrário, renderiza como texto
+                          return (
+                            <p key={i} className="text-sm text-white">
+                              {part}
+                            </p>
+                          );
+                        })
+                      : m.content.split("\n").map((line, i) => (
+                          <span key={i}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                     {m.timestamp && (
                       <span className="text-xs text-gray-400 block mt-1">
                         {new Date(m.timestamp).toLocaleTimeString([], {
@@ -716,11 +767,40 @@ export default function Chat() {
             )}
           </div>
           <div className="border-t p-4">
+            {/* Pré-visualização das imagens carregadas */}
+            {uploadedImages.length > 0 && (
+              <div className="flex space-x-2 mb-4 overflow-x-auto">
+                {uploadedImages.map((image, index) => (
+                  <div key={index} className="relative">
+                    <Image
+                      src={image}
+                      alt={`Imagem carregada ${index + 1}`}
+                      width={50}
+                      height={50}
+                      className="rounded-md border border-gray-300"
+                      unoptimized
+                    />
+                    <button
+                      onClick={() =>
+                        setUploadedImages((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      }
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Formulário de entrada */}
             <form onSubmit={handleFormSubmit} className="flex w-full space-x-2">
               <input
                 value={input}
                 onChange={handleInputChange}
-                placeholder="Digite o ID da entrega ou pergunte algo..."
+                placeholder="Digite sua mensagem..."
                 className="flex-grow bg-gray-100 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
                   click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-700"
                 disabled={isLoading}
@@ -728,6 +808,7 @@ export default function Chat() {
               <input
                 type="file"
                 accept="image/*"
+                multiple // Permite selecionar múltiplas imagens
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"
@@ -735,7 +816,9 @@ export default function Chat() {
               />
               <label
                 htmlFor="file-upload"
-                className={`bg-gray-100 text-green-600 px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600 flex ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`bg-gray-100 text-green-600 px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600 flex ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 <IoDocumentAttachOutline size={20} />
               </label>
