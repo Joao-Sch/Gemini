@@ -8,7 +8,7 @@ import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 
-//#regions TIPOS
+//#region TIPOS
 type UIMessage = {
   id: string;
   role: "system" | "user" | "assistant";
@@ -39,9 +39,10 @@ type Delivery = {
   };
 };
 
-//#endregions
+//#endregion
 
 export default function Chat() {
+  //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
@@ -50,9 +51,12 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
   const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
   //const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  //#endregion
 
   const ai = new GoogleGenAI({
     apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
@@ -96,11 +100,58 @@ export default function Chat() {
     setIsSubmitClicked(true);
     setIsLoading(true);
 
+    // Se houver imagens, envie apenas a primeira imagem para o Gemini
+    if (uploadedImages.length > 0) {
+      // Adiciona todas as imagens e o texto ao chat do usuário
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === currentConversationId
+            ? {
+                ...conv,
+                messages: [
+                  ...conv.messages,
+                  {
+                    id: `user-message-${Date.now()}-${Math.random()}`,
+                    role: "user",
+                    content:
+                      uploadedImages
+                        .map((img) => `![image](${img})`)
+                        .join("\n") +
+                      (input.trim() ? `\n${input.trim()}` : ""),
+                    timestamp: new Date().toISOString(),
+                  },
+                ],
+              }
+            : conv
+        )
+      );
+
+      // Envia apenas a primeira imagem para o Gemini
+      const response = await sendToGemini({
+        text: input.trim() || undefined,
+        image: uploadedImages[0],
+      });
+
+      sendResponse(response);
+
+      setUploadedImages([]);
+      setInput("");
+      setTimeout(() => setIsSubmitClicked(false), 500);
+      setIsLoading(false);
+      return;
+    }
+
+    // Caso contrário, fluxo normal de texto
+    if (!input.trim()) {
+      setIsLoading(false);
+      return;
+    }
+
     const userMessage: UIMessage = {
-      id: `user-message-${Date.now()}`,
+      id: `user-message-${Date.now()}-${Math.random()}`,
       role: "user",
       content: input,
-      timestamp: new Date().toISOString(), // Adiciona o timestamp
+      timestamp: new Date().toISOString(),
     };
 
     setConversations((prev) =>
@@ -120,41 +171,46 @@ export default function Chat() {
     }
 
     setInput("");
-    setTimeout(() => {
-      setIsSubmitClicked(false);
-    }, 500);
+    setTimeout(() => setIsSubmitClicked(false), 500);
     setIsLoading(false);
   };
 
   //#region Função de Upload de Imagem
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Image = reader.result as string;
-
-        // Adiciona a imagem como mensagem do usuário
-        const imageMessage: UIMessage = {
-          id: `image-message-${Date.now()}`,
-          role: "user",
-          content: base64Image,
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Image = reader.result as string;
+          setUploadedImages((prev) => [...prev, base64Image]);
         };
-
-        setConversations((prev) =>
-          prev.map((conv) =>
-            conv.id === currentConversationId
-              ? { ...conv, messages: [...conv.messages, imageMessage] }
-              : conv
-          )
-        );
-
-        // Envia a imagem ao Gemini
-        processImageWithGemini(base64Image);
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Garante que o formato seja data:image/...
+      });
     }
   };
+
+  // Função para enviar as imagens armazenadas no estado
+  /*const sendImagesToChat = () => {
+    if (!currentConversationId || uploadedImages.length === 0) return;
+
+    const imageMessage: UIMessage = {
+      id: `image-message-${Date.now()}`,
+      role: "user",
+      content: uploadedImages.join("|"), // Use "|" como delimitador para evitar conflitos
+      timestamp: new Date().toISOString(),
+    };
+
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === currentConversationId
+          ? { ...conv, messages: [...conv.messages, imageMessage] }
+          : conv
+      )
+    );
+
+    setUploadedImages([]); // Limpa o estado de imagens após o envio
+  };*/
   //#endregion
   //#endregion
 
@@ -169,63 +225,52 @@ export default function Chat() {
   //#endregion
 
   //#region Funções do Gemini
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sendToGemini = async (payload: any): Promise<string> => {
+  const sendToGemini = async (payload: { text?: string; image?: string }) => {
     try {
-      console.log("Payload enviado para o Gemini:", payload); // Log para depuração
-  
       const model = "gemini-2.0-flash";
       const contents = [
         {
           role: "user",
           parts: [
-            {
-              text: JSON.stringify(payload),
-            },
+            ...(payload.image
+              ? [
+                  {
+                    inlineData: {
+                      mimeType: "image/png",
+                      data: payload.image.split(",")[1],
+                    },
+                  },
+                ]
+              : []),
+            ...(payload.text
+              ? [
+                  {
+                    text: payload.text,
+                  },
+                ]
+              : []),
           ],
         },
       ];
-  
+
       const response = await ai.models.generateContentStream({
         model,
         contents,
       });
-  
+
       let partialMessage = "";
-  
+
       for await (const chunk of response) {
         const text = chunk.text ?? "";
         partialMessage += text;
       }
-  
+
       return partialMessage;
     } catch (error) {
       console.error("Erro ao enviar mensagem ao Gemini:", error);
-      return "Desculpe, ocorreu um erro ao processar sua solicitação.";
-    }
-  };
-
-  const processImageWithGemini = async (
-    base64Image: string
-  ): Promise<string> => {
-    try {
-      const payload = {
-        event: {
-          code: "process_image",
-        },
-        data: {
-          image: base64Image,
-        },
-      };
-
-      const response = await sendToGemini(payload);
-      sendResponse(response); // Envia a resposta ao usuário
-      return response; // Retorna a resposta para o `switch`
-    } catch (error) {
-      console.error("Erro ao processar a imagem no Gemini:", error);
-      const errorMessage = "Desculpe, ocorreu um erro ao processar a imagem.";
-      sendResponse(errorMessage);
-      return errorMessage; // Retorna a mensagem de erro
+      const errorMessage =
+        "Desculpe, ocorreu um erro ao interagir com a IA. Tente novamente.";
+      return errorMessage;
     }
   };
   //#endregion
@@ -273,33 +318,36 @@ export default function Chat() {
 
   //#region FUNÇÕES DE ENVIO DE ENVIO
   //#region Search Delivery
-  const handleSearchDelivery = async (structuredResponse: any): Promise<string> => {
+  const handleSearchDelivery = async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    structuredResponse: any
+  ): Promise<string> => {
     const deliveryId = parseInt(structuredResponse.event.correlation, 10);
-  
+
     if (isNaN(deliveryId)) {
       return (
         structuredResponse.message || "Por favor, informe o ID da entrega."
       );
     }
-  
+
     const deliveryDetails = fetchDeliveryDetails(deliveryId);
     if (deliveryDetails) {
       const prompt = `
-      O cliente forneceu o ID da entrega: ${deliveryId}.
-      Aqui estão os detalhes da entrega:
-      - Situação: ${deliveryDetails.situacao}
-      - Nome do Entregador: ${deliveryDetails.nomeEntregador}
-      - Veículo: ${deliveryDetails.veiculo}
-      - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
-      - Estimativa de Entrega: faça um cálculo euclidiano para calcular
-        a distância entre o ponto de origem e o ponto de entrega e forneça
-        a estimativa de entrega em minutos tendo base que a localização do
-        motoboy é ${deliveryDetails.coordenadas} e localização do cliente
-        é sempre "latitude": -23.55052, "longitude": -46.633308 e apenas diga
-        qual é a estimativa do tempo sem dar detalhes de como fez.
-  
-      Por favor, gere uma resposta de forma amigável e clara e bonita para o cliente.`;
-      return await sendToGemini(prompt);
+    O cliente forneceu o ID da entrega: ${deliveryId}.
+    Aqui estão os detalhes da entrega:
+    - Situação: ${deliveryDetails.situacao}
+    - Nome do Entregador: ${deliveryDetails.nomeEntregador}
+    - Veículo: ${deliveryDetails.veiculo}
+    - Valor: R$ ${deliveryDetails.valor.toFixed(2)}
+    - Estimativa de Entrega: faça um cálculo euclidiano para calcular
+      a distância entre o ponto de origem e o ponto de entrega e forneça
+      a estimativa de entrega em minutos tendo base que a localização do
+      motoboy é ${deliveryDetails.coordenadas} e localização do cliente
+      é sempre "latitude": -23.55052, "longitude": -46.633308 e apenas diga
+      qual é a estimativa do tempo sem dar detalhes de como fez.
+
+    Por favor, gere uma resposta de forma amigável e clara e bonita para o cliente.`;
+      return await sendToGemini({ text: prompt });
     } else {
       return "Nenhuma entrega encontrada com o ID fornecido.";
     }
@@ -417,31 +465,40 @@ export default function Chat() {
 2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
 3 - Always respond in the same language that the user used.
 4 - Whenever the system passes information to you, it will be within 'data'.
+5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
+    
+   ${
+     /*#Image Processing:
+1 - If the user sends an image, the 'data' field will contain a base64-encoded string of the image and its mimeType.
+2 - The image will be handled by a separate function ('sendToGemini' with image payload). This 'processUserInput' function should NOT try to re-process the image if it's already being handled.
+3 - If 'processUserInput' receives a text input that seems to refer to an image already sent, it should respond generally or ask for clarification, as the image processing is handled elsewhere.*/ ""
+   }
 
-# Image Processing:
-1 - If the user sends an image, the 'data' field will contain a base64-encoded string of the image.
-2 - Analyze the image and extract relevant information, such as text or visual details.
-3 - Respond with a summary of the image content or any insights derived from it.
-4 - If the image cannot be processed, respond with an appropriate error message.
+# Image Processing
+1 - If the user sends an image, analyze it and include relevant details in your response.
+2 - If the image contains text, transcribe it and include it in your response.
+3 - If the image contains objects or scenes, describe them and relate them to the user's message.
+4 - If both text and an image are provided, combine the information from both to generate a contextual response.
+5 - If the image is irrelevant or cannot be processed, respond based on the text only.
 
-# Delivery:
-1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
-2 - Whenever a user asks about a delivery **and provides the delivery ID**, use the event code: search_delivery and include the provided ID in the 'correlation' field.
-3 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
-
-# Delivery Driver:
-1 - Whenever a user asks about a delivery driver, request their ID of driver.
-2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
-
-# Insert Delivery:
-1 - Whenever the user initiates a delivery, request the following information: responsible person's name, destination address (street, number, neighborhood, city, ZIP code), and origin address (same attributes as the destination). If these details are not provided, use the default addresses registered in the system.
-2 - Whenever you need to insert a delivery, use the event code: insert_delivery.
-
-# General Response:
-1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
-2 - Use the event code: general_response for such cases.
-3 - Ensure the response is friendly, clear, and concise.
-`,
+    # Delivery:
+    1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
+    2 - Whenever a user asks about a delivery **and provides the delivery ID**, use the event code: search_delivery and include the provided ID in the 'correlation' field.
+    3 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
+    
+    # Delivery Driver:
+    1 - Whenever a user asks about a delivery driver, request their ID of driver.
+    2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
+    
+    # Insert Delivery:
+    1 - Whenever the user initiates a delivery, request the following information: responsible person's name, destination address (street, number, neighborhood, city, ZIP code), and origin address (same attributes as the destination). If these details are not provided, use the default addresses registered in the system.
+    2 - Whenever you need to insert a delivery, use the event code: insert_delivery.
+    
+    # General Response:
+    1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
+    2 - Use the event code: general_response for such cases.
+    3 - Ensure the response is friendly, clear, and concise.
+    `,
         },
       ],
     };
@@ -473,15 +530,25 @@ export default function Chat() {
       }
 
       if (!isValidJSON(partialMessage)) {
-        console.error("Resposta inválida do modelo:", partialMessage);
-        return "Desculpe, ocorreu um erro ao processar a resposta.";
+        console.warn(
+          "Resposta do modelo não é JSON válido, tratando como texto:",
+          partialMessage
+        );
+        // Se não for JSON, pode ser uma resposta direta do modelo sem a estrutura esperada.
+        // Ou pode ser um erro na instrução do sistema.
+        // Por enquanto, vamos retornar a mensagem parcial como está.
+        // Em um cenário ideal, você pode querer um fallback mais robusto aqui.
+        return (
+          partialMessage ||
+          "Desculpe, não consegui processar sua solicitação neste momento."
+        );
       }
 
       const structuredResponse = JSON.parse(partialMessage);
       console.log("Resposta estruturada do modelo:", structuredResponse);
-      console.log("Resposta estruturada do modelo:", structuredResponse);
 
-      switch (structuredResponse.event.code) {
+      switch (structuredResponse.event?.code) {
+        // Adicionado '?' para segurança
         case "search_delivery":
           return await handleSearchDelivery(structuredResponse);
 
@@ -490,13 +557,17 @@ export default function Chat() {
 
         case "insert_delivery":
           if (!deliveryData.nomeResponsavel) {
-            return "Por favor, informe o nome do responsável pela entrega.";
+            // A lógica de pedir o nome do responsável já está no systemInstruction.
+            // O Gemini deve retornar uma mensagem pedindo o nome.
+            // Se o código é 'insert_delivery' e não temos nome, o Gemini deve ter enviado a mensagem.
+            return (
+              structuredResponse.message ||
+              "Por favor, informe o nome do responsável pela entrega."
+            );
           }
-          return await handleInsertDelivery(userInput);
+          return await handleInsertDelivery(userInput); // userInput aqui pode ser o endereço, etc.
 
-        case "process_image":
-          return await processImageWithGemini(structuredResponse.data.image);
-
+        case "general_response":
         default:
           return (
             structuredResponse.message ||
@@ -512,6 +583,7 @@ export default function Chat() {
 
   //#region Função para validar JSON
   const isValidJSON = (text: string): boolean => {
+    if (!text || text.trim() === "") return false;
     try {
       JSON.parse(text);
       return true;
@@ -523,13 +595,16 @@ export default function Chat() {
 
   //#region FUNÇÂO QUE MANDA A MENSAGEM DO BOT
   const sendResponse = (response: string) => {
+    if (!currentConversationId) return;
+
     const botMessage: UIMessage = {
-      id: `bot-message-${Date.now()}`,
+      id: `bot-message-${Date.now()}-${Math.random()}`,
       role: "assistant",
-      content: "",
-      timestamp: new Date().toISOString(), // Adiciona o timestamp
+      content: "", // Começa vazio para o efeito de digitação
+      timestamp: new Date().toISOString(),
     };
 
+    // Adiciona a mensagem do bot (vazia inicialmente)
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === currentConversationId
@@ -538,31 +613,28 @@ export default function Chat() {
       )
     );
 
+    // Efeito de digitação
     let index = 0;
     const interval = setInterval(() => {
       if (index < response.length) {
-        const char = response[index];
-        if (char !== undefined) {
-          setConversations((prev) =>
-            prev.map((conv) =>
-              conv.id === currentConversationId
-                ? {
-                    ...conv,
-                    messages: conv.messages.map((msg) =>
-                      msg.id === botMessage.id
-                        ? { ...msg, content: msg.content + char }
-                        : msg
-                    ),
-                  }
-                : conv
-            )
-          );
-        }
+        setConversations((prev) =>
+          prev.map((conv) => {
+            if (conv.id === currentConversationId) {
+              const updatedMessages = conv.messages.map((msg) =>
+                msg.id === botMessage.id
+                  ? { ...msg, content: response.substring(0, index + 1) }
+                  : msg
+              );
+              return { ...conv, messages: updatedMessages };
+            }
+            return conv;
+          })
+        );
         index++;
       } else {
         clearInterval(interval);
       }
-    }, 3.5);
+    }, 20); // Ajuste a velocidade da "digitação" aqui (em ms)
   };
   //#endregion
 
@@ -630,7 +702,6 @@ export default function Chat() {
               width={50}
               height={50}
               className="slideLogo"
-              priority
             />
           </div>
           <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
@@ -654,25 +725,39 @@ export default function Chat() {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {m.content.startsWith("data:image/") ||
-                    /\.(jpeg|jpg|png|gif|bmp)$/i.test(m.content) ? (
-                      <Image
-                        src={m.content}
-                        alt="Imagem enviada"
-                        width={300}
-                        height={300}
-                        className="rounded-md"
-                        unoptimized
-                        priority
-                      />
-                    ) : (
-                      m.content.split("\n").map((line, i) => (
-                        <span key={i}>
-                          {line}
-                          <br />
-                        </span>
-                      ))
-                    )}
+                    {m.role === "user" && m.content.includes("data:image/")
+                      ? m.content.split("\n").map((part, i) => {
+                          // Verifica se o conteúdo é uma imagem no formato Markdown
+                          const imageMatch = part.match(
+                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
+                          );
+                          if (imageMatch) {
+                            return (
+                              <Image
+                                key={i}
+                                src={imageMatch[1]} // Extrai o base64 da imagem
+                                alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                width={200}
+                                height={200}
+                                className="imgUser rounded-md mb-4 mr-2"
+                                unoptimized // Necessário para imagens base64
+                              />
+                            );
+                          }
+
+                          // Caso contrário, renderiza como texto
+                          return (
+                            <p key={i} className="text-sm text-white">
+                              {part}
+                            </p>
+                          );
+                        })
+                      : m.content.split("\n").map((line, i) => (
+                          <span key={i}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                     {m.timestamp && (
                       <span className="text-xs text-gray-400 block mt-1">
                         {new Date(m.timestamp).toLocaleTimeString([], {
@@ -687,11 +772,40 @@ export default function Chat() {
             )}
           </div>
           <div className="border-t p-4">
+            {/* Pré-visualização das imagens carregadas */}
+            {uploadedImages.length > 0 && (
+              <div className="flex space-x-2 mb-4 overflow-x-auto">
+                {uploadedImages.map((image, index) => (
+                  <div key={index} className="relative">
+                    <Image
+                      src={image}
+                      alt={`Imagem carregada ${index + 1}`}
+                      width={50}
+                      height={50}
+                      className="rounded-md border border-gray-300"
+                      unoptimized
+                    />
+                    <button
+                      onClick={() =>
+                        setUploadedImages((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      }
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Formulário de entrada */}
             <form onSubmit={handleFormSubmit} className="flex w-full space-x-2">
               <input
                 value={input}
                 onChange={handleInputChange}
-                placeholder="Digite o ID da entrega ou pergunte algo..."
+                placeholder="Digite sua mensagem..."
                 className="flex-grow bg-gray-100 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
                   click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-700"
                 disabled={isLoading}
@@ -699,19 +813,23 @@ export default function Chat() {
               <input
                 type="file"
                 accept="image/*"
+                multiple // Permite selecionar múltiplas imagens
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"
+                disabled={isLoading}
               />
               <label
                 htmlFor="file-upload"
-                className="bg-gray-100 text-green-600 px-4 align-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600"
+                className={`bg-gray-100 text-green-600 px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600 flex ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                <IoDocumentAttachOutline />
+                <IoDocumentAttachOutline size={20} />
               </label>
               <button
                 type="submit"
-                className={`bg-gray-300 text-green-600 px-4 py-2 rounded-md cursor-pointer
+                className={`bg-gray-100 border text-green-600 px-4 py-2 rounded-md cursor-pointer
                    ${
                      isLoading
                        ? "bg-green-800 scale-105 text-white cursor-not-allowed"
