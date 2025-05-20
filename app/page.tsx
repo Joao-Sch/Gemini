@@ -8,7 +8,6 @@ import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 
-import Accordion from "@/app/myComponents/Accordion";
 
 //#region TIPOS
 type UIMessage = {
@@ -55,22 +54,9 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
-  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [formData, setFormData] = useState({
-    nomeResponsavel: "",
-    destinoRua: "",
-    destinoNumero: "",
-    destinoBairro: "",
-    destinoCidade: "",
-    destinoCep: "",
-    origemRua: "",
-    origemNumero: "",
-    origemBairro: "",
-    origemCidade: "",
-    origemCep: "",
-  });
-  const [accordionForceClose, setAccordionForceClose] = useState(false);
+  const [pendingDelivery, setPendingDelivery] = useState<any>(null);
+
   //#endregion
 
   const ai = new GoogleGenAI({
@@ -108,69 +94,6 @@ export default function Chat() {
     setInput(e.target.value);
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleAddDelivery = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newDelivery: Delivery = {
-      nomeResponsavel: formData.nomeResponsavel,
-      enderecoDestino: {
-        rua: formData.destinoRua,
-        numero: formData.destinoNumero,
-        bairro: formData.destinoBairro,
-        cidade: formData.destinoCidade,
-        cep: formData.destinoCep,
-      },
-      enderecoOrigem: {
-        rua: formData.origemRua,
-        numero: formData.origemNumero,
-        bairro: formData.origemBairro,
-        cidade: formData.origemCidade,
-        cep: formData.origemCep,
-      },
-    };
-    setDeliveries((prev) => {
-      const updated = [...prev, newDelivery];
-      console.log("Entregas atualizadas:", updated);
-      return updated;
-    });
-    setFormData({
-      nomeResponsavel: "",
-      destinoRua: "",
-      destinoNumero: "",
-      destinoBairro: "",
-      destinoCidade: "",
-      destinoCep: "",
-      origemRua: "",
-      origemNumero: "",
-      origemBairro: "",
-      origemCidade: "",
-      origemCep: "",
-    });
-
-    setAccordionForceClose(true);
-
-    setTimeout(() => {
-      sendResponse("Entrega adicionada com sucesso!");
-      // Remove o formulário do chat após a animação
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.id === currentConversationId
-            ? {
-                ...conv,
-                messages: conv.messages.filter(
-                  (msg) => msg.type !== "delivery-form"
-                ),
-              }
-            : conv
-        )
-      );
-      setAccordionForceClose(false);
-    }, 400);
-  };
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!currentConversationId || isLoading) return;
@@ -178,7 +101,6 @@ export default function Chat() {
     setIsSubmitClicked(true);
     setIsLoading(true);
 
-    // Adicione um comando especial no handleFormSubmit
     if (input.trim().toLowerCase() === "/listar-entregas") {
       sendResponse(
         deliveries.length === 0
@@ -200,9 +122,7 @@ export default function Chat() {
       return;
     }
 
-    // Se houver imagens, envie apenas a primeira imagem para o Gemini
     if (uploadedImages.length > 0) {
-      // Adiciona todas as imagens e o texto ao chat do usuário
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === currentConversationId
@@ -225,7 +145,6 @@ export default function Chat() {
         )
       );
 
-      // Envia apenas a primeira imagem para o Gemini
       const response = await sendToGemini({
         text: input.trim() || undefined,
         image: uploadedImages[0],
@@ -296,7 +215,7 @@ export default function Chat() {
 
   //#region Funções de Busca
   const fetchDeliveryDetails = (deliveryId: number) => {
-    return entregas.find((item) => item.id === deliveryId);
+    return entregas[1497102];
   };
 
   const fecthDriverDetails = (driverId: number) => {
@@ -355,60 +274,6 @@ export default function Chat() {
   };
   //#endregion
 
-  //#region Funções de Finalização de Entrega
-  const finalizeDelivery = () => {
-    if (
-      !deliveryData.nomeResponsavel ||
-      !deliveryData.enderecoDestino ||
-      !deliveryData.enderecoDestino.rua ||
-      !deliveryData.enderecoDestino.numero ||
-      !deliveryData.enderecoDestino.bairro ||
-      !deliveryData.enderecoDestino.cidade ||
-      !deliveryData.enderecoDestino.cep
-    ) {
-      sendResponse(
-        "Please provide all the necessary information to register the delivery."
-      );
-      return;
-    }
-
-    const newDelivery: Delivery = {
-      nomeResponsavel: deliveryData.nomeResponsavel,
-      enderecoDestino: deliveryData.enderecoDestino,
-      enderecoOrigem: deliveryData.enderecoOrigem || {
-        rua: "Default street",
-        numero: "123",
-        bairro: "Default neighborhood",
-        cidade: "Default city",
-        cep: "00000-000",
-      },
-    };
-
-    // Adiciona a nova entrega ao array de entregas
-    setDeliveries((prev) => {
-      const updatedDeliveries = [...prev, newDelivery];
-      console.log("Updated delivery list:", updatedDeliveries);
-      return updatedDeliveries;
-    });
-
-    sendResponse("Delivery registered successfully!");
-    sendResponse(
-      deliveries.length === 0
-        ? "No deliveries registered."
-        : [...deliveries, newDelivery] // Inclui a nova entrega na resposta
-            .map(
-              (d, i) =>
-                `Delivery ${i + 1}: ${d.nomeResponsavel}, Destination: ${
-                  d.enderecoDestino?.rua
-                }, ${d.enderecoDestino?.numero}, ${
-                  d.enderecoDestino?.bairro
-                }, ${d.enderecoDestino?.cidade}, ${d.enderecoDestino?.cep}`
-            )
-            .join("\n")
-    );
-    setDeliveryData({});
-  };
-  //#endregion
 
   //#region FUNÇÕES DE ENVIO DE ENVIO
   //#region Search Delivery
@@ -475,57 +340,78 @@ export default function Chat() {
 
   //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
   //#region Insert Delivery
-  const handleInsertDelivery = async (userInput: string): Promise<string> => {
-    // 1. Nome do responsável
-    if (!deliveryData.nomeResponsavel) {
-      setDeliveryData((prev) => ({ ...prev, nomeResponsavel: userInput }));
-      return "Please enter the destination address in the format: street, number, neighborhood, city, ZIP code.";
+  const handleInsertDelivery = (deliveryJson: string | object) => {
+    let deliveryData;
+    try {
+      if (typeof deliveryJson === "object" && deliveryJson !== null) {
+        deliveryData = deliveryJson;
+      } else if (typeof deliveryJson === "string") {
+        const jsonMatch = deliveryJson.match(/\{[\s\S]*?\}/);
+        if (jsonMatch) {
+          deliveryData = JSON.parse(jsonMatch[0]);
+        }
+      }
+    } catch (e) {
+      return "Desculpe, não consegui entender o endereço. Por favor, tente novamente.";
     }
 
-    // 2. Endereço de destino
-    if (!deliveryData.enderecoDestino) {
-      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-      if (!rua || !numero || !bairro || !cidade || !cep) {
-        return "Please provide all destination address fields separated by commas.";
-      }
-      setDeliveryData((prev) => ({
+    if (!deliveryData || typeof deliveryData !== "object") {
+      // Só retorna erro se realmente tentou processar um JSON
+      return "";
+    }
+
+    // Normaliza os campos para aceitar tanto PT quanto EN
+    const rua = deliveryData.rua || deliveryData.street;
+    const numero = deliveryData.numero || deliveryData.number;
+    const bairro = deliveryData.bairro || deliveryData.neighborhood;
+    const cidade = deliveryData.cidade || deliveryData.city || "";
+    const cep = deliveryData.cep || deliveryData.zip || "";
+    const responsavel = deliveryData.responsavel || deliveryData.responsible;
+
+    // Se só veio o endereço, guarda e espera o responsável
+    if (rua && numero && bairro && !responsavel) {
+      setPendingDelivery({ rua, numero, bairro, cidade, cep });
+      return "";
+    }
+
+    // Se temos endereço pendente e agora veio o responsável
+    if (pendingDelivery && responsavel) {
+      setDeliveries((prev) => [
         ...prev,
-        enderecoDestino: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          cep: cep.trim(),
+        {
+          nomeResponsavel: responsavel,
+          enderecoDestino: {
+            rua: pendingDelivery.rua,
+            numero: pendingDelivery.numero,
+            bairro: pendingDelivery.bairro,
+            cidade: pendingDelivery.cidade,
+            cep: pendingDelivery.cep,
+          },
         },
-      }));
-      return "Now, enter the origin address (street, number, neighborhood, city, ZIP code) or type 'use default address'.";
+      ]);
+      setPendingDelivery(null);
+      return "Entrega registrada com sucesso! ✅";
     }
 
-    // 3. Endereço de origem
-    if (!deliveryData.enderecoOrigem) {
-      if (userInput.toLowerCase() === "use default address") {
-        finalizeDelivery();
-        return "Delivery registered successfully!";
-      }
-      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-      if (!rua || !numero || !bairro || !cidade || !cep) {
-        return "Please provide all origin address fields separated by commas, or type 'use default address'.";
-      }
-      setDeliveryData((prev) => ({
+    // Caso venha tudo junto (endereço + responsável)
+    if (rua && numero && bairro && responsavel) {
+      setDeliveries((prev) => [
         ...prev,
-        enderecoOrigem: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          cep: cep.trim(),
+        {
+          nomeResponsavel: responsavel,
+          enderecoDestino: {
+            rua,
+            numero,
+            bairro,
+            cidade,
+            cep,
+          },
         },
-      }));
-      finalizeDelivery();
-      return "Delivery registered successfully!";
+      ]);
+      return "Entrega registrada com sucesso! ✅";
     }
 
-    return "Sorry, I couldn't understand your request.";
+    return "";
   };
   //#endregion
   //#endregion
@@ -552,7 +438,7 @@ export default function Chat() {
           text: `# General
 1 - You are a customer service bot, a point of support when the user needs to consult information at I9 Delivery.
 2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
-3 - Always respond in Portuguese.
+3 - Always respond in the same language as the user's message.
 4 - Whenever the system passes information to you, it will be within 'data'.
 5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
 
@@ -573,13 +459,30 @@ export default function Chat() {
 2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
 
 # Insert Delivery:
-1 - When the user asks to add or insert a delivery, first ask for the responsible person's name.
-2 - After receiving the name, ask for the destination address in the format: street, number, neighborhood, city, ZIP code.
-3 - After receiving the destination address, ask for the origin address (same format as the destination) or allow the user to type "use default address".
-4 - Always validate that the user has provided all required fields before confirming the delivery.
-5 - Only confirm the delivery registration when all information is complete and the user confirms.
-6 - If the user provides all information in a single message, extract the data and confirm the registration.
-7 - Always respond in English.
+1. When the user wants to add a delivery, first ask: "What is the delivery address?".
+2. When the user provides the address, extract and return the following fields as JSON:
+   - street
+   - number
+   - neighborhood
+   - city (if present)
+   - zip (if present)
+   Example:
+   {
+     "street": "R. São João",
+     "number": "397",
+     "neighborhood": "Vila Sao Francisco",
+     "city": "",
+     "zip": ""
+   }
+3. After receiving the address, ask: "Who is the person responsible for the delivery?".
+4. When the user provides the name, return it as JSON:
+   Example:
+   {
+     "responsible": "João"
+   }
+5. When all information is collected, confirm the registration and add the delivery to the list.
+6. Always validate that all required fields are present before confirming the registration.
+7. Only confirm the registration when all information is complete.
 
 # General Response:
 1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
@@ -638,27 +541,10 @@ export default function Chat() {
           return await handleSearchDriver(structuredResponse);
 
         case "insert_delivery":
-          // Adiciona uma mensagem especial do tipo formulário
-          setConversations((prev) =>
-            prev.map((conv) =>
-              conv.id === currentConversationId
-                ? {
-                    ...conv,
-                    messages: [
-                      ...conv.messages,
-                      {
-                        id: `form-message-${Date.now()}-${Math.random()}`,
-                        role: "assistant",
-                        content: "", // Não precisa de texto
-                        timestamp: new Date().toISOString(),
-                        type: "delivery-form",
-                      },
-                    ],
-                  }
-                : conv
-            )
-          );
-          return ""; // Não retorna texto, pois o formulário será renderizado
+          // Só envia resposta se houver mensagem
+          const msg = handleInsertDelivery(structuredResponse.message);
+          if (msg) return msg;
+          return "";
         case "general_response":
         default:
           return (
@@ -817,171 +703,8 @@ export default function Chat() {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {m.type === "delivery-form" ? (
-                      <form
-                        onSubmit={handleAddDelivery}
-                        className="bg-white p-4 rounded-lg shadow mb-4 space-y-2"
-                      >
-                        <h3 className="font-bold mb-2">Nova Entrega</h3>
-
-                        {/* Accordion Destino */}
-                        <Accordion
-                          title="Endereço de Destino"
-                          defaultOpen={true}
-                          forceClose={accordionForceClose}
-                        >
-                          <input
-                            name="destinoRua"
-                            value={formData.destinoRua}
-                            onChange={handleFormChange}
-                            placeholder="Rua de destino"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="destinoNumero"
-                            type="number"
-                            value={formData.destinoNumero}
-                            onChange={handleFormChange}
-                            placeholder="Número de destino"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="destinoBairro"
-                            value={formData.destinoBairro}
-                            onChange={handleFormChange}
-                            placeholder="Bairro de destino"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="destinoCidade"
-                            value={formData.destinoCidade}
-                            onChange={handleFormChange}
-                            placeholder="Cidade de destino"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="destinoCep"
-                            type="text"
-                            value={formData.destinoCep}
-                            onChange={(e) => {
-                              // Máscara simples para CEP: 00000-000
-                              let v = e.target.value.replace(/\D/g, "");
-                              if (v.length > 5)
-                                v = v.slice(0, 5) + "-" + v.slice(5, 8);
-                              setFormData({ ...formData, destinoCep: v });
-                            }}
-                            placeholder="00000-000"
-                            pattern="\d{5}-\d{3}"
-                            maxLength={9}
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                        </Accordion>
-
-                        {/* Accordion Origem */}
-                        <Accordion
-                          title="Endereço de Origem"
-                          defaultOpen={false}
-                          forceClose={accordionForceClose}
-                        >
-                          <input
-                            name="origemRua"
-                            value={formData.origemRua}
-                            onChange={handleFormChange}
-                            placeholder="Rua de origem"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="origemNumero"
-                            type="number"
-                            value={formData.origemNumero}
-                            onChange={handleFormChange}
-                            placeholder="Número de origem"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="origemBairro"
-                            value={formData.origemBairro}
-                            onChange={handleFormChange}
-                            placeholder="Bairro de origem"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="origemCidade"
-                            value={formData.origemCidade}
-                            onChange={handleFormChange}
-                            placeholder="Cidade de origem"
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                          <input
-                            name="origemCep"
-                            type="text"
-                            value={formData.origemCep}
-                            onChange={(e) => {
-                              let v = e.target.value.replace(/\D/g, "");
-                              if (v.length > 5)
-                                v = v.slice(0, 5) + "-" + v.slice(5, 8);
-                              setFormData({ ...formData, origemCep: v });
-                            }}
-                            placeholder="00000-000"
-                            pattern="\d{5}-\d{3}"
-                            maxLength={9}
-                            className="w-full p-2 border rounded mb-2"
-                            required
-                          />
-                        </Accordion>
-
-                        {/* Nome do responsável */}
-                        <input
-                          name="nomeResponsavel"
-                          value={formData.nomeResponsavel}
-                          onChange={handleFormChange}
-                          placeholder="Nome do responsável"
-                          className="w-full p-2 border rounded mb-2"
-                          required
-                        />
-
-                        <div className="flex gap-2">
-                          <button
-                            type="submit"
-                            className="bg-green-600 text-white px-4 py-2 rounded"
-                          >
-                            Adicionar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setConversations((prev) =>
-                                prev.map((conv) =>
-                                  conv.id === currentConversationId
-                                    ? {
-                                        ...conv,
-                                        messages: conv.messages.filter(
-                                          (msg) => msg.type !== "delivery-form"
-                                        ),
-                                      }
-                                    : conv
-                                )
-                              );
-                            }}
-                            className="bg-gray-400 text-white px-4 py-2 rounded"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </form>
-                    ) : m.role === "user" &&
-                      m.content.includes("data:image/") ? (
+                    {m.role === "user" && m.content.includes("data:image/") ? (
                       m.content.split("\n").map((part, i) => {
-                        // Verifica se o conteúdo é uma imagem no formato Markdown
                         const imageMatch = part.match(
                           /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
                         );
@@ -989,17 +712,15 @@ export default function Chat() {
                           return (
                             <Image
                               key={i}
-                              src={imageMatch[1]} // Extrai o base64 da imagem
+                              src={imageMatch[1]}
                               alt={`Imagem enviada pelo usuário ${i + 1}`}
                               width={200}
                               height={200}
                               className="imgUser rounded-md mb-4 mr-2"
-                              unoptimized // Necessário para imagens base64
+                              unoptimized
                             />
                           );
                         }
-
-                        // Caso contrário, renderiza como texto
                         return (
                           <p key={i} className="text-sm text-white">
                             {part}
@@ -1028,7 +749,7 @@ export default function Chat() {
             )}
           </div>
           <div className="border-t p-4">
-            {/* Pré-visualização das imagens carregadas */}
+            {/* Pré-visualização */}
             {uploadedImages.length > 0 && (
               <div className="flex space-x-2 mb-4 overflow-x-auto">
                 {uploadedImages.map((image, index) => (
@@ -1056,7 +777,7 @@ export default function Chat() {
               </div>
             )}
 
-            {/* Formulário de entrada */}
+            {/* Formulário */}
             <form onSubmit={handleFormSubmit} className="flex w-full space-x-2">
               <input
                 value={input}
@@ -1069,7 +790,7 @@ export default function Chat() {
               <input
                 type="file"
                 accept="image/*"
-                multiple // Permite selecionar múltiplas imagens
+                multiple
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"

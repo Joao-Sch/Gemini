@@ -1,82 +1,3959 @@
-[
-  {
-    "id": 1,
-    "situacao": "Em trânsito",
-    "nomeEntregador": "João Pinto",
-    "veiculo": "CG 125",
-    "valor": 35.0,
-    "coordenadas": "23.55052, -46.633308"
+{
+  "1497102": {
+    "addresses": [
+      {
+        "city": "Campinas",
+        "complement": "",
+        "goal": "",
+        "lat": -22.8643995,
+        "lng": -47.0536126,
+        "neighborhood": "Parque Taquaral",
+        "number": "1965",
+        "position": 0,
+        "responsible": "SWIFT -  ALTO TAQUARAL - 5141",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Padre Almeida Garret"
+      },
+      {
+        "city": "Campinas",
+        "complement": "Lt 10 quadra A",
+        "goal": "",
+        "lat": -22.7422592,
+        "lng": -47.0606963,
+        "neighborhood": "Loteamento Chácaras Vale das Garças",
+        "number": "0",
+        "position": 1,
+        "responsible": "Lhais Chagas da Silva - Receb: Ch morada da luz - SWIFT-1533534710908-01",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Rua Amélia Rodrigues de Figueiredo"
+      }
+    ],
+    "date": "2025-05-20T15:58:17",
+    "deliveryTime": 42,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.8935941744295,
+        "lng": -47.0613650576014
+      },
+      "id": 11311,
+      "image": "p-11311.jpg",
+      "name": "Marcelo Alessandro Nardi",
+      "phone": "(19) 98370-8052",
+      "vehicle": {
+        "color": "branca",
+        "id": 6509,
+        "model": "honda fan",
+        "plate": "gfh-3d64"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 21.741,
+      "way": 21.741
+    },
+    "domain": {
+      "merchantId": 19931,
+      "name": "lets"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T15:58:17",
+        "description": "Entrega solicitada via: Integração lets"
+      },
+      "-OQj7JSP7jukJwtxwDct": {
+        "authorId": 11311,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -22.893594174429,
+          "lng": -47.061365057601
+        },
+        "date": "2025-05-20T16:17:36",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQj7Jje8as3Dw84xf4k": {
+        "authorId": 11311,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -22.893594174429463,
+          "lng": -47.061365057601435
+        },
+        "date": "2025-05-20T16:17:38",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497102,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 55,
+    "priority": 3,
+    "requester": {
+      "city": "São Paulo",
+      "id": 19931,
+      "image": "p-199312.jpg",
+      "name": "Lets Delivery",
+      "phone": "",
+      "region": 1
+    },
+    "route": "nupjC`de~GVc@NOm@m@OSCQAg@QUICmACmLJyON@|CM~@Sl@Q\\YZkNxJ}AhAsIdGm@`@u@l@a@XaA^iF|@mEn@{HjAcANaAVqB~@eAf@uKjFeAd@w@ZuAXwANkBHuEb@yHd@wFf@}@JqB^cAVuFvAa@@OAm@KUKmA{@aEsDiCgC_DwCm@c@?SIk@Q[QO[K[?YDWJONMPGTAV@\\HX@b@Ed@q@nBi@hAKNm@f@E@IJCLBL@B@LAXy@nBi@fAYb@{@z@wDpDc@N_@HCAG?SDMPI~@KP_@^}A|Ak@f@uDjD[X]R_@Jc@Ba@?YI}@Y[[S]Oa@Yu@MISCOFg@d@cEzDyCpCi@Va@LMHqDdDWWWG[FQVG^DVHNBBi@l@_CxBkEbEe@^s@d@[NkBr@I_@QSUMYCYBWLIJKVCJ?NBZDVIH_@Lq@Z{FdB{CbAuFfBq@LUD_@B_@E]Ki@Um@k@IUeBdB{BvBqDpDaB`BK@UGECG_A]aFWmDCs@Vi@HGHKJ[A_@Ea@QYYQ[EEGCIImA_@eFIe@]kAk@cAy@_Ag@a@YO}@[g@K{@GeZo@mFOmCIyFIg@AANMnAy@zIQx@CBAF?BQDyDl@gDd@y@N[?uAROB[Fu@RcInCcVzHca@}k@oEmGq@aAiDeFkFeImIlHgB~AMVKVCd@FrBDdA@LCPMRWHyJ|A{Ex@cOvC{Dj@yDj@sCh@qCf@uJhBcHnAeAPOWcA_BsCoE_CsDsE}GuC{EgAaBgJcNcFmHaFoHQDuFhIiLrP_DnEoRtXoCjDSTiAnA{Df@oAVODkJfGgFvDaBrAcE~CiDxCoFlEs@b@Yu@w@gBqBwEm@{@YUYMUCi@Es@HgBXk@FM@MEoBsAi@]e@Ou@Aa@D_@Hk@RI?c@OgAaAa@W}@Yi@Ee@Fm@Za@XqBdBm@d@QFS?MCSKYOKMEKWkAQm@C]@ORoA?S]]ESAe@@INQh@UzBu@LK@EAIM_@g@oAYm@IIKAK@gDbAIBKNATHl@CDa@Ru@VUDGBM]Yy@y@mB_@aAEY@Ot@aA`H}KjCeElBcDfBqC~EaInBeDL[Pq@@mAAmBByA@MFMPKRCtFPfLTvAHr@Nr@b@",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 41.2,
+    "type": "fast",
+    "vehicleType": 1
   },
-  {
-    "id": 2,
-    "situacao": "Entregue",
-    "nomeEntregador": "Maria Kawanara",
-    "veiculo": "CG 150",
-    "valor": 50.0,
-    "coordenadas": "23.55123, -46.634567"
+  "1497114": {
+    "addresses": [
+      {
+        "city": "PATOS DE MINAS",
+        "goal": "21255726858R",
+        "lat": -18.5716451,
+        "lng": -46.5094283,
+        "neighborhood": "CAIÇARAS",
+        "number": "930",
+        "occurrence": {
+          "-OQjAlV0y1TgNicL4K0b": {
+            "authorID": 21225,
+            "authorType": "driver",
+            "coordinates": {
+              "lat": -18.5711487,
+              "lng": -46.5113515
+            },
+            "date": "2025-05-20T16:32:42",
+            "description": "Evento no ponto 0: pedido já recolhido por outro entregador ",
+            "event": "others",
+            "occurrenceId": 12848
+          }
+        },
+        "position": 0,
+        "responsible": "DROGASIL - PATOS DE MINAS 4",
+        "state": "MG",
+        "status": 4,
+        "street": "RUA JOSÉ AUGUSTO DE QUEIROZ",
+        "zipCode": "38702152"
+      },
+      {
+        "city": "Patos de Minas",
+        "complement": "430",
+        "goal": "21255726858R",
+        "lat": -18.5879543,
+        "lng": -46.51978620000001,
+        "neighborhood": "Sobradinho",
+        "number": "430",
+        "occurrence": {
+          "-OQjAoZIisQUy6TH0y-0": {
+            "authorID": 21225,
+            "authorType": "driver",
+            "coordinates": {
+              "lat": -18.5711236,
+              "lng": -46.5113487
+            },
+            "date": "2025-05-20T16:32:55",
+            "description": "Evento no ponto 1: pedido já recolhido por outro entregador ",
+            "event": "others",
+            "occurrenceId": 12849
+          }
+        },
+        "position": 1,
+        "responsible": "RENES SILVESTRE DE MAGALHAES",
+        "state": "MG",
+        "status": 4,
+        "street": "Avenida Padre Almir Neves de Medeiros",
+        "zipCode": "38701118"
+      }
+    ],
+    "date": "2025-05-20T16:11:26",
+    "deliveryTime": 7,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -18.5768497,
+        "lng": -46.5156719
+      },
+      "id": 21225,
+      "image": "p-21225.jpg",
+      "name": "Alysson Henrique de Araújo ",
+      "phone": "(34) 98839-7356",
+      "vehicle": {
+        "color": "Vermelha ",
+        "id": 12111,
+        "model": "Honda/CG 125 Fan Ks",
+        "plate": "pwl-4f39"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.663,
+      "way": 2.663
+    },
+    "domain": {
+      "merchantId": "4316",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T16:11:27",
+        "description": "Entrega solicitada via: Integração rd"
+      },
+      "-OQj6Bnp77dOs03mlAjF": {
+        "authorId": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5774996,
+          "lng": -46.5150256
+        },
+        "date": "2025-05-20T16:12:43",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQj97BRnz7rxmNWqDM6": {
+        "authorId": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711655,
+          "lng": -46.5113898
+        },
+        "date": "2025-05-20T16:25:31",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQj97bVIbDRKKfhYu0k": {
+        "authorId": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711655,
+          "lng": -46.5113898
+        },
+        "date": "2025-05-20T16:25:33",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjAlTvct88-yCZpIWT": {
+        "authorID": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711487,
+          "lng": -46.5113515
+        },
+        "date": "2025-05-20T16:32:42",
+        "description": "Evento no ponto 0: pedido já recolhido por outro entregador ",
+        "event": "others",
+        "occurrenceId": 12848
+      },
+      "-OQjAoYGj_z6wX0TnqBV": {
+        "authorID": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711236,
+          "lng": -46.5113487
+        },
+        "date": "2025-05-20T16:32:55",
+        "description": "Evento no ponto 1: pedido já recolhido por outro entregador ",
+        "event": "others",
+        "occurrenceId": 12849
+      }
+    },
+    "id": 1497114,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 7.47,
+    "priority": 3,
+    "requester": {
+      "city": "Patos de Minas",
+      "id": 21205,
+      "image": "logoi9.png",
+      "name": "Drogasil Caiçaras - Patos de Minas - JAVA 4316",
+      "phone": "",
+      "region": 1
+    },
+    "route": "xgjpB|zzzGEhIhC@|C?tH?pB?RHXn@hA~D|BtHjA|DZlAhArD@NCHQFg@NBFJJhBbAn@\\d@\\b@l@Tr@y@Z@b@lCn@rBb@bBb@bAAzCr@fCXnC@rC@ZC|Ai@rAe@ZO|@SD@f@f@tBxBvArAl@RRBr@KbCk@^E`@FTHhAz@@B",
+    "situation": {
+      "date": "2025-05-20 16:32:55",
+      "description": "Revisão pendente",
+      "type": 11
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
   },
-  {
-    "id": 3,
-    "situacao": "Aguardando retirada",
-    "nomeEntregador": "Carlos Naresh",
-    "veiculo": "XRE 300",
-    "valor": 20.0,
-    "coordenadas": "23.55234, -46.635678"
+  "1497151": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2636384,
+        "lng": -47.2810423,
+        "neighborhood": "São Luiz",
+        "number": "1199",
+        "occurrence": {
+          "-OQjLuWXCHcOgwqVhhXB": {
+            "authorID": 22099,
+            "authorType": "driver",
+            "coordinates": {
+              "lat": -23.2625511,
+              "lng": -47.2803667
+            },
+            "date": "2025-05-20T17:21:23",
+            "description": "Evento no ponto 0: Entregador desistiu da entrega, entrega reiniciada",
+            "event": "giveup_delivery",
+            "occurrenceId": 12860
+          },
+          "-OQjVGfelHP2vrc5rrIt": {
+            "authorID": 5870,
+            "authorType": "driver",
+            "coordinates": {
+              "lat": -23.2663175,
+              "lng": -47.3220097
+            },
+            "date": "2025-05-20T18:02:17",
+            "description": "Evento no ponto 0: entrega feita app voltou ",
+            "event": "rote_conclude",
+            "occurrenceId": 12864
+          }
+        },
+        "position": 0,
+        "responsible": "Yatai - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 4,
+        "street": "Avenida Doutor Ermelindo Maffei"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "",
+        "lat": -23.2666637,
+        "lng": -47.3159837,
+        "neighborhood": "Parque do Varvito",
+        "number": "36",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Alameda Basalto"
+      }
+    ],
+    "date": "2025-05-20T16:32:33",
+    "deliveryTime": 13.233333333333333,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2663092,
+        "lng": -47.3220129
+      },
+      "id": 5870,
+      "image": "p-5870.jpg",
+      "name": "Alessandro de Moura Cassimiro",
+      "phone": "(11) 93004-2946",
+      "vehicle": {
+        "color": "PRETA",
+        "id": 3802,
+        "model": "CG 125 titan",
+        "plate": "DKJ -1877"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 5.204,
+      "way": 5.204
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T16:32:33",
+        "description": "Entrega solicitada por Yatai - Itu"
+      },
+      "-OQjAu5YXptkwgEAsOIM": {
+        "authorId": 22099,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2611772,
+          "lng": -47.2950804
+        },
+        "date": "2025-05-20T16:33:17",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjLuVW5ZEcMg0-j4Ym": {
+        "authorID": 22099,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2625511,
+          "lng": -47.2803667
+        },
+        "date": "2025-05-20T17:21:23",
+        "description": "Evento no ponto 0: Entregador desistiu da entrega, entrega reiniciada",
+        "event": "giveup_delivery",
+        "occurrenceId": 12860
+      },
+      "-OQjM5mKEGwhcO1J1OsZ": {
+        "date": "2025-05-20T17:22:13",
+        "description": "Entregador Modificado 5870 (feito por Thiago Augusto Moreira de Arruda)"
+      },
+      "-OQjNzM42AQYtJObEAci": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2867127,
+          "lng": -47.2615226
+        },
+        "date": "2025-05-20T17:30:27",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjQcHHuxVuVGz9ORph": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2640769,
+          "lng": -47.2792408
+        },
+        "date": "2025-05-20T17:41:59",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjQcodHYpnmqWZQdkN": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2640769,
+          "lng": -47.2792408
+        },
+        "date": "2025-05-20T17:42:01",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjQdIUScV_yRN8jyoU": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2640769,
+          "lng": -47.2792408
+        },
+        "date": "2025-05-20T17:42:03",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjVGeeYgIEujTLnV5e": {
+        "authorID": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2663175,
+          "lng": -47.3220097
+        },
+        "date": "2025-05-20T18:02:17",
+        "description": "Evento no ponto 0: entrega feita app voltou ",
+        "event": "rote_conclude",
+        "occurrenceId": 12864
+      }
+    },
+    "id": 1497151,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "14.32",
+    "priority": 3,
+    "requester": {
+      "city": "Itu",
+      "id": 1063,
+      "image": "p-1063.png",
+      "name": "Yatai - Itu",
+      "phone": "(11) 4022-1725",
+      "region": 1
+    },
+    "route": "vt~lCnqq_Hp@f@l@b@TLVPPY`@q@N]ZIVEXDNARY\\TWZGLI\\Mp@Q|@cCrEk@|@Yb@QR]RE?E?IBSJILG\\BTQz@oAlCm@bA[~@K\\eA|Bs@|AGTG|@D`A\\jFRrDTlCL|@r@`Ed@vADTu@~@cA|AYl@}AdD_@|@aC|F[v@g@t@qAnBoEzGgEfGqDjFOXEAK?M?YJOLKPERAVBRHR?XQp@cCbIi@fBOd@ARBh@P^JV^b@h@f@b@Xh@Td@H~@H|ABJNHN@PARSf@Uj@[lAkAvGO`AJl@JTLXTh@NT@XxAn@~@\\dAj@lA\\b@LpBp@|Af@pDnAvDfA?\\BbBCnGfDfAzItCv@TXLj@BVxBf@ITBNF?D?DBHFJJFL@VGHMHCROJGh@_@pAzC",
+    "situation": {
+      "date": "2025-05-20 18:02:17",
+      "description": "Revisão pendente",
+      "type": 11
+    },
+    "transfer": "9.97",
+    "type": "fast",
+    "vehicleType": "1"
   },
-  {
-    "id": 4,
-    "situacao": "Cancelada",
-    "nomeEntregador": "Ana Castela",
-    "veiculo": "FAZER 250",
-    "valor": 0.0,
-    "coordenadas": "23.55345, -46.636789"
+  "1497158": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2696641,
+        "lng": -47.2926604,
+        "neighborhood": "Vila Nova",
+        "number": "216",
+        "position": 0,
+        "responsible": "Vital Flora Personalizada - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Capitão Sílvio Fleming"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "PAGO",
+        "lat": -23.3061585,
+        "lng": -47.3240151,
+        "neighborhood": "COND CHAPADA",
+        "number": "91",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "ELIANA ALVES DE MOURA",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Alameda Coraacy"
+      }
+    ],
+    "date": "2025-05-20T16:36:30",
+    "deliveryTime": 17.383333333333333,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2663092,
+        "lng": -47.3220129
+      },
+      "id": 5870,
+      "image": "p-5870.jpg",
+      "name": "Alessandro de Moura Cassimiro",
+      "phone": "(11) 93004-2946",
+      "vehicle": {
+        "color": "branca ",
+        "id": 5287,
+        "model": "cg160",
+        "plate": "ezu-5j08"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 9.151,
+      "way": 9.151
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T16:36:30",
+        "description": "Entrega solicitada por Vital Flora Personalizada - Itu"
+      },
+      "-OQjC-vvqEJV4i4Jkrm9": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2835601,
+          "lng": -47.2727917
+        },
+        "date": "2025-05-20T16:38:07",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjFnTOpkEZWs9KPY65": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2774895,
+          "lng": -47.2848668
+        },
+        "date": "2025-05-20T16:54:41",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjLiqs8FigJbAeqL1t": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2697303,
+          "lng": -47.2926544
+        },
+        "date": "2025-05-20T17:20:35",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjLjJ7nh-lOr8Yy6kY": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2697918,
+          "lng": -47.2926466
+        },
+        "date": "2025-05-20T17:20:37",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjLjhErlO3aaAYEIvf": {
+        "authorId": 5870,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2697918,
+          "lng": -47.2926466
+        },
+        "date": "2025-05-20T17:20:39",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      }
+    },
+    "id": 1497158,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "20.66",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 15858,
+      "image": "p-15858.png",
+      "name": "Vital Flora Personalizada - Itu",
+      "phone": "(11) 4024-1444",
+      "region": 1
+    },
+    "route": "jz_mCbzs_HrEdF|@dAzAuAxDwD`E_EfAmAf@]~FmAtCi@fDo@p@K`C_@zBB|IQ`@?hA@`AHr@R`DbAvBt@rGdCtC~@f@L|@Jv@JfAR|A`@bCz@~@n@r@j@TV`@p@~BfEbCtE|J~Qd@x@lAbCv@`C`@~@f@r@b@^`Af@\\Ll@J`BBbBDvEHzFTrAFnAHjANv@LvAx@t@p@hAvAnAjA\\VdBz@z@Rl@D|FQlI_@z@?hCDdDTt@JdCd@`Er@lBH~A?P?VFXPZn@PRNFR@d@Kj@K~BC`AMh@Bn@Rt@b@PPVZJLZt@`@vBd@vChA|Ef@`An@fAd@lALx@Ad@Q`@YX]TkAt@YXU^qCtF_@n@u@`Bk@p@oDpDk@r@wB`EQv@Er@InBAbCDrBBf@JlAv@`F\\nBH`ACxAAjAH\\PXNXJdABl@C|@A`AVjBNt@Jd@r@pBt@xAl@~@tDvFpAnB?TGd@Mh@_@d@c@ZSNsA^{Af@mBf@WBAACCGEIAIBCBA@y@]yAm@e@WISUMS?MCaBq@a@OUCeAAw@?]BGEQ?o@Ly@^iAXo@@KCO?EWCc@H[xBgGh@qAbAkAFG@KAKEIIEI?G@_@Gg@U",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "14.41",
+    "type": "fast",
+    "vehicleType": "1"
   },
-  {
-    "id": 5,
-    "situacao": "Em trânsito",
-    "nomeEntregador": "Luckhaos",
-    "veiculo": "YAMAHA R1",
-    "valor": 45.0,
-    "coordenadas": "23.55456, -46.637890"
+  "1497179": {
+    "addresses": [
+      {
+        "city": "ITATIBA",
+        "complement": "",
+        "goal": "250520745375",
+        "lat": -23.0100995,
+        "lng": -46.8278426,
+        "neighborhood": "JD TEREZA",
+        "number": "S/N",
+        "position": 0,
+        "responsible": "DROGASIL - ITATIBA 2",
+        "state": "SP",
+        "street": "AVENIDA DA SAUDADE",
+        "zipCode": "13253000"
+      },
+      {
+        "city": "Itatiba",
+        "goal": "250520745375",
+        "lat": -22.9995448,
+        "lng": -46.8189258,
+        "neighborhood": "Loteamento Rei de Ouro",
+        "number": "40",
+        "position": 1,
+        "responsible": "AIRTON BRANDEMBURGO",
+        "state": "SP",
+        "street": "Rua Caetano Fumachi",
+        "zipCode": "13253550"
+      }
+    ],
+    "date": "2025-05-21T08:00:00",
+    "deliveryTime": 4,
+    "distance": {
+      "back": 0,
+      "total": 1.829,
+      "way": 1.829
+    },
+    "domain": {
+      "merchantId": "3249",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T16:57:03",
+        "description": "Entrega agendada via: Integração rd"
+      }
+    ],
+    "id": 1497179,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.97,
+    "priority": 3,
+    "requester": {
+      "city": "Itatiba",
+      "id": 18262,
+      "image": "p-18262.png",
+      "name": "Drogasil JD Tereza - Itatiba - JAVA 3249",
+      "phone": "",
+      "region": 1
+    },
+    "route": "bdmkC~`y|GPw@Dw@CkAEk@@e@@OA[[cAkDgKwAoEgA{Da@mBOaAQ{Ag@oCSa@MO]]YAI@IHKPOGMEMEE?cAl@c@EkAIU@U@}C_@mDUiBSgIm@_EU}CUcA?oA@",
+    "situation": {
+      "description": "Entrega agendada.",
+      "type": 7
+    },
+    "transfer": 6,
+    "type": "nextday",
+    "vehicleType": 1
   },
-  {
-    "id": 6,
-    "situacao": "Em trânsito",
-    "nomeEntregador": "Lucas Silva",
-    "veiculo": "CB 500F",
-    "valor": 40.0,
-    "coordenadas": "23.55567, -46.638901"
+  "1497186": {
+    "addresses": [
+      {
+        "city": "ITATIBA",
+        "complement": "",
+        "goal": "250520617810",
+        "lat": -23.0049928,
+        "lng": -46.8407846,
+        "neighborhood": "CENTRO",
+        "number": "344",
+        "position": 0,
+        "responsible": "DROGASIL - ITATIBA",
+        "state": "SP",
+        "street": "RUA FRANCISCO GLICERIO",
+        "zipCode": "13250330"
+      },
+      {
+        "city": "Itatiba",
+        "complement": "Pode ser entregue no n¿ 180",
+        "goal": "250520617810",
+        "lat": -22.9985521,
+        "lng": -46.8378591,
+        "neighborhood": "Vila Santa Cruz",
+        "number": "176",
+        "position": 1,
+        "responsible": "VILMA MONTICO",
+        "state": "SP",
+        "street": "Rua Doutor Armando Rodrigues",
+        "zipCode": "13251454"
+      }
+    ],
+    "date": "2025-05-21T08:00:00",
+    "deliveryTime": 5,
+    "distance": {
+      "back": 0,
+      "total": 1.235,
+      "way": 1.235
+    },
+    "domain": {
+      "merchantId": "1289",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:04:40",
+        "description": "Entrega agendada via: Integração rd"
+      }
+    ],
+    "id": 1497186,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.97,
+    "priority": 3,
+    "requester": {
+      "city": "Itatiba",
+      "id": 17888,
+      "image": "logoi9.png",
+      "name": "Drogasil - Itatiba - JAVA 1289",
+      "phone": "",
+      "region": 2
+    },
+    "route": "ddlkCzq{|Gw@bDYpAWnAuBm@{Bm@[Ka@N_A\\iB`@iAVS@O]@?@ABA@GEKAAAAIsAQ}@M_@KOOMa@Q_A[WgASy@iCeBwBaBIGZi@P]_@Q_@Qk@WGJOZcAu@QS?Qt@mA",
+    "situation": {
+      "description": "Entrega agendada.",
+      "type": 7
+    },
+    "transfer": 6,
+    "type": "nextday",
+    "vehicleType": 1
   },
-  {
-    "id": 7,
-    "situacao": "Entregue",
-    "nomeEntregador": "Juliana Souza",
-    "veiculo": "Ninja 650",
-    "valor": 55.0,
-    "coordenadas": "23.55678, -46.639012"
+  "1497187": {
+    "addresses": [
+      {
+        "city": "Itapetininga",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.5872168,
+        "lng": -48.0436788,
+        "neighborhood": "Centro",
+        "number": "362",
+        "position": 0,
+        "responsible": "Drogasil Virgílio de Rezende - Itapetininga - JAVA 1310",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Doutor Virgílio de Rezende"
+      },
+      {
+        "city": "Itapetininga",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5796522,
+        "lng": -48.0179404,
+        "neighborhood": "Jardim Yara",
+        "number": "53",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Outros",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Pedro Valério de Oliveira"
+      },
+      {
+        "city": "Itapetininga",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.5872168,
+        "lng": -48.0436788,
+        "neighborhood": "Centro",
+        "number": "362",
+        "occurrence": {
+          "-OQjSWqgQhaGpsP-Zflv": {
+            "authorID": 22346,
+            "authorType": "driver",
+            "coordinates": {
+              "lat": -23.5873706,
+              "lng": -48.0437628
+            },
+            "date": "2025-05-20T17:50:17",
+            "description": "Evento no ponto 2: já fiz a devolução ",
+            "event": "return_confirmation",
+            "occurrenceId": 12863
+          }
+        },
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Drogasil Virgílio de Rezende - Itapetininga - JAVA 1310",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 4,
+        "street": "Rua Doutor Virgílio de Rezende"
+      }
+    ],
+    "checkCode": "C0127",
+    "date": "2025-05-20T17:05:52",
+    "deliveryTime": 27.25,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.58479395,
+        "lng": -48.03320708
+      },
+      "id": 22346,
+      "image": "p-22346.jpg",
+      "name": "Fernando Rodrigues ",
+      "phone": "(15) 99609-2601",
+      "vehicle": {
+        "color": "vermelho ",
+        "id": 12682,
+        "model": "factor ",
+        "plate": "fbk-6718"
+      }
+    },
+    "distance": {
+      "back": 2.961,
+      "total": 5.935,
+      "way": 2.9739999999999998
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:05:52",
+        "description": "Entrega solicitada por Kauã Silva Bastos"
+      },
+      "-OQjIPxe3Gvn4puLPIXj": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5889795,
+          "lng": -48.0476094
+        },
+        "date": "2025-05-20T17:06:06",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjIQBAEuKBbI0aRrHq": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5889795,
+          "lng": -48.0476094
+        },
+        "date": "2025-05-20T17:06:08",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjJOmyFKlDNN2DKtZi": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5873313,
+          "lng": -48.0437085
+        },
+        "date": "2025-05-20T17:10:25",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjJrOWawFEDVdwOJy2": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5873535,
+          "lng": -48.0437003
+        },
+        "date": "2025-05-20T17:12:26",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjJrdQZZY1Kld8Ewd-": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5873535,
+          "lng": -48.0437003
+        },
+        "date": "2025-05-20T17:12:27",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjNc06ibCHJhZK0JEh": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.57978834,
+          "lng": -48.0177778
+        },
+        "date": "2025-05-20T17:28:51",
+        "description": "Aguardando no ponto 1",
+        "event": "arrivedAtDelivery"
+      },
+      "-OQjNk8qMdY9vx46xvBM": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5796558,
+          "lng": -48.0179347
+        },
+        "date": "2025-05-20T17:29:25",
+        "description": "Entregue no ponto 1",
+        "event": "delivered"
+      },
+      "-OQjNkQYrU4nfyk7N_DO": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5796558,
+          "lng": -48.0179347
+        },
+        "date": "2025-05-20T17:29:26",
+        "description": "Em direção ao ponto de origem (retorno)",
+        "event": "returningPointOrigin"
+      },
+      "-OQjSQHXkjjV4NMQYPFM": {
+        "authorId": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5873462,
+          "lng": -48.043714
+        },
+        "date": "2025-05-20T17:49:50",
+        "description": "Aguardando no ponto de origem (retorno)",
+        "event": "arrivedAtCollectionReturn"
+      },
+      "-OQjSWpk2edovK983vE7": {
+        "authorID": 22346,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5873706,
+          "lng": -48.0437628
+        },
+        "date": "2025-05-20T17:50:17",
+        "description": "Evento no ponto 2: já fiz a devolução ",
+        "event": "return_confirmation",
+        "occurrenceId": 12863
+      }
+    },
+    "id": 1497187,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "9.9",
+    "priority": 3,
+    "requester": {
+      "city": "Itapetininga",
+      "id": 12105,
+      "image": "p-12105.png",
+      "name": "Drogasil Virgílio de Rezende - Itapetininga - JAVA 1310",
+      "phone": "(15) 3271-1607",
+      "region": 13
+    },
+    "route": "b{}nC~ofdHc@mDi@eCgAiImAaJyAiKcAmHqAuI]kC[oCiAiH]oB[mBq@qFUkASm@sCwFuAqC[m@YB[BKw@Kw@c@y@CUa@s@y@uA}AsC]w@GSY_@eA}A_@w@_AiBsAkCgBmDSa@tByA|@i@rA{@cAoBj@Wk@VbAnBxBnEVl@AFw@h@_@ZMPGJcAp@aAr@FJb@~@~@hB^v@dA|AX^FR\\v@t@tA`BrC`@r@BTb@x@Jv@Jv@ZCXCZl@tApC~@dBrApCRl@TjAp@pFd@rCjAjHPfAZnC\\jCt@xEt@lFpAjJvAhKlAhJ`@pCh@dCb@lD",
+    "situation": {
+      "date": "2025-05-20 17:50:17",
+      "description": "Revisão pendente",
+      "type": 11
+    },
+    "transfer": "7.13",
+    "type": "fast",
+    "vehicleType": "1"
   },
-  {
-    "id": 8,
-    "situacao": "Aguardando retirada",
-    "nomeEntregador": "Felipe Oliveira",
-    "veiculo": "Hornet 600",
-    "valor": 30.0,
-    "coordenadas": "23.55789, -46.640123"
+  "1497196": {
+    "addresses": [
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2050148,
+        "lng": -47.2920428,
+        "neighborhood": "Vila Nova",
+        "number": "321",
+        "position": 0,
+        "responsible": "Drogasil Vila Nova - Salto - JAVA 5060",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua 9 de Julho"
+      },
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "",
+        "lat": -23.2201515,
+        "lng": -47.2725977,
+        "neighborhood": "Jardim Santa Cruz",
+        "number": "1412",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Felipe Camarão"
+      },
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.2050148,
+        "lng": -47.2920428,
+        "neighborhood": "Vila Nova",
+        "number": "321",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Drogasil Vila Nova - Salto - JAVA 5060",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 2,
+        "street": "Rua 9 de Julho"
+      }
+    ],
+    "checkCode": "02189",
+    "date": "2025-05-20T17:15:08",
+    "deliveryTime": 26.083333333333332,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2051675,
+        "lng": -47.2920869
+      },
+      "id": 8627,
+      "image": "p-8627.jpg",
+      "name": "Fernando Mantovani Junior",
+      "phone": "(11) 99646-0764",
+      "vehicle": {
+        "color": "preta",
+        "id": 5344,
+        "model": "fan 160",
+        "plate": "gbp-3c69"
+      }
+    },
+    "distance": {
+      "back": 4.061,
+      "total": 7.25,
+      "way": 3.189
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:15:08",
+        "description": "Entrega solicitada por Vinicius Gomes Siqueira Fermino"
+      },
+      "-OQjMjpOFaxecD8qXjCx": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2057178,
+          "lng": -47.2583868
+        },
+        "date": "2025-05-20T17:25:00",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjMk65iQRdorE7yMvv": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2057178,
+          "lng": -47.2583868
+        },
+        "date": "2025-05-20T17:25:02",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjRNTL7zgTTGYyxbVK": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2051401,
+          "lng": -47.2920335
+        },
+        "date": "2025-05-20T17:45:16",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjRXz0cvFJQ0XGgQGk": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2051452,
+          "lng": -47.2921348
+        },
+        "date": "2025-05-20T17:45:59",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjRYIqbZjVZk4F0O9D": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2051452,
+          "lng": -47.2921348
+        },
+        "date": "2025-05-20T17:46:01",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjTd6Edcyh5Z9aO33a": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2201796,
+          "lng": -47.2724982
+        },
+        "date": "2025-05-20T17:55:09",
+        "description": "Aguardando no ponto 1",
+        "event": "arrivedAtDelivery"
+      },
+      "-OQjTkRqeX5QgiEzbEGO": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2201542,
+          "lng": -47.2726012
+        },
+        "date": "2025-05-20T17:55:39",
+        "description": "Entregue no ponto 1",
+        "event": "delivered"
+      },
+      "-OQjTkvNhMoaei2_LD2N": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2201542,
+          "lng": -47.2726012
+        },
+        "date": "2025-05-20T17:55:41",
+        "description": "Em direção ao ponto de origem (retorno)",
+        "event": "returningPointOrigin"
+      },
+      "-OQjW3yeu0NuuvlIlTPL": {
+        "authorId": 8627,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2051675,
+          "lng": -47.2920869
+        },
+        "date": "2025-05-20T18:05:47",
+        "description": "Aguardando no ponto de origem (retorno)",
+        "event": "arrivedAtCollectionReturn"
+      }
+    },
+    "id": 1497196,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "11.4",
+    "priority": 3,
+    "requester": {
+      "city": "Salto",
+      "id": 12108,
+      "image": "p-12108.png",
+      "name": "Drogasil Vila Nova - Salto - JAVA 5060",
+      "phone": "(11) 4029-0984",
+      "region": 2
+    },
+    "route": "hfslCfvs_HbBcD|DwHj@cA}CwByEkDeAs@v@w@l@m@dCaClYqXH?HCFGBIAKnBoBzAqAnAcAx@w@pCoChIaITMJCXAJ?BDFBPAFCJUDi@CgHGsF@q@nHGnCCxAKl@QNOpA}@nFeCFPd@g@x@kAz@mACKHSIRBJ{@lAy@jAe@f@GQoFdCqA|@ONm@PyAJoCBoCBsBBBnDB`EAf@EjCEbEi@ABgBDM@W@OCSCSGMKCI?IJIRA|@BZFfE?lAGnC?~B@xDEnEExCGxBGh@A@KR?P@DWv@S^yArBqAzAs@p@y@p@u@t@y@p@yE`E_BjBgBfBOVCN@`AVlBFxACd@G`AI`@c@x@eDaCoHkFsCuB}CwBeBoAm@c@i@fAeAtB{AnC}A`DS`@fAv@vCpBdBhA",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "8.22",
+    "type": "fast",
+    "vehicleType": "1"
   },
-  {
-    "id": 9,
-    "situacao": "Cancelada",
-    "nomeEntregador": "Rita Almeida",
-    "veiculo": "Twister 250",
-    "valor": 0.0,
-    "coordenadas": "23.55890, -46.641234"
+  "1497200": {
+    "addresses": [
+      {
+        "city": "ITUPEVA",
+        "complement": "",
+        "goal": "250520737968",
+        "lat": -23.1559839,
+        "lng": -47.05641,
+        "neighborhood": "JARDIM SAO VICENTE",
+        "number": "458",
+        "position": 0,
+        "responsible": "DROGASIL - ITUPEVA",
+        "state": "SP",
+        "street": "AVENIDA BRASIL",
+        "zipCode": "13295000"
+      },
+      {
+        "city": "Itupeva",
+        "complement": "Sala 4",
+        "goal": "250520737968",
+        "lat": -23.1568862,
+        "lng": -47.0558685,
+        "neighborhood": "Centro",
+        "number": "567",
+        "position": 1,
+        "responsible": "ANA SILVAA",
+        "state": "SP",
+        "street": "Avenida Brasil",
+        "zipCode": "13295152"
+      }
+    ],
+    "date": "2025-05-20T17:18:11",
+    "deliveryTime": 0,
+    "distance": {
+      "back": 0,
+      "total": 0.115,
+      "way": 0.115
+    },
+    "domain": {
+      "merchantId": "1488",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:18:11",
+        "description": "Entrega solicitada via: Integração rd"
+      }
+    ],
+    "id": 1497200,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.47,
+    "priority": 3,
+    "requester": {
+      "city": "Itupeva",
+      "id": 18649,
+      "image": "logoi9.png",
+      "name": "Drogasil Centro - Itupeva",
+      "phone": "",
+      "region": 1
+    },
+    "route": "zsilCpue~GpAu@z@c@f@Q",
+    "situation": {
+      "description": "Buscando entregador.",
+      "type": 0
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
   },
-  {
-    "id": 10,
-    "situacao": "Em trânsito",
-    "nomeEntregador": "Paulo Pereira",
-    "veiculo": "Fazer 250",
-    "valor": 38.0,
-    "coordenadas": "23.55901, -46.642345"
+  "1497201": {
+    "addresses": [
+      {
+        "city": "CAMPINAS",
+        "complement": "",
+        "goal": "250520977768",
+        "lat": -22.9002037,
+        "lng": -47.01480979999999,
+        "neighborhood": "B PALMEIRAS",
+        "number": "26",
+        "position": 0,
+        "responsible": "DROGASIL - CP JD PALMEIRAS 1",
+        "state": "SP",
+        "status": 1,
+        "street": "RUA ERNESTO ZIGGIATTI",
+        "zipCode": "13101538"
+      },
+      {
+        "city": "Campinas",
+        "complement": "Esquina",
+        "goal": "250520977768",
+        "lat": -22.8960297,
+        "lng": -47.0121209,
+        "neighborhood": "Bairro das Palmeiras",
+        "number": "396",
+        "position": 1,
+        "responsible": "ELIANE ANDRADE MARTINS",
+        "state": "SP",
+        "street": "Avenida Abram Steinberg",
+        "zipCode": "13092597"
+      }
+    ],
+    "date": "2025-05-20T17:19:13",
+    "deliveryTime": 5,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.8876736,
+        "lng": -47.0545475
+      },
+      "id": 22470,
+      "image": "p-22470.jpg",
+      "name": "Murilo tartarotti torralbo ",
+      "phone": "(19) 98771-6226",
+      "vehicle": {
+        "color": "branco ",
+        "id": 12756,
+        "model": "cargo ",
+        "plate": "gbx-0330"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.292,
+      "way": 1.292
+    },
+    "domain": {
+      "merchantId": "3156",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:19:14",
+        "description": "Entrega solicitada via: Integração rd"
+      },
+      "-OQjVW0Ws3Nql6TUQIqO": {
+        "authorId": 22470,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -22.8892028,
+          "lng": -47.0579245
+        },
+        "date": "2025-05-20T18:03:19",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjVWM1BK9BqyuUmPZO": {
+        "authorId": 22470,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -22.8892028,
+          "lng": -47.0579245
+        },
+        "date": "2025-05-20T18:03:21",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497201,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.97,
+    "priority": 3,
+    "requester": {
+      "city": "Campinas",
+      "id": 18790,
+      "image": "p-18790.png",
+      "name": "Drogasil JD Palmeiras - Campinas",
+      "phone": "",
+      "region": 5
+    },
+    "route": "fuwjCpq}}GqCbEIE]ASDKFKBGD?RCRMT_@f@y@t@YXIHUJgJgEyBeAc@GqAEAAAACAAi@?u@j@AlA@pBBBILQLUD[?QK{BE[y@h@]N[DAg@`@sGFgA",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497207": {
+    "addresses": [
+      {
+        "city": "ITU",
+        "complement": "",
+        "goal": "250520658753",
+        "lat": -23.2544963,
+        "lng": -47.3073418,
+        "neighborhood": "VILA SAO FRANCISCO",
+        "number": "07",
+        "position": 0,
+        "responsible": "RAIA - ITU PRACA PADRE BENTO",
+        "state": "SP",
+        "street": "PADRE BENTO",
+        "zipCode": "13313009"
+      },
+      {
+        "city": "Itu",
+        "goal": "250520658753",
+        "lat": -23.2632929,
+        "lng": -47.32028469999999,
+        "neighborhood": "Portal da Vila Rica",
+        "number": "405",
+        "position": 1,
+        "responsible": "JOSE JOAO GOUVEIA DA SILVA",
+        "state": "SP",
+        "street": "Rua Olga Esther Mazzucco de Hollanda",
+        "zipCode": "13311670"
+      }
+    ],
+    "date": "2025-05-21T08:00:00",
+    "deliveryTime": 9,
+    "distance": {
+      "back": 0,
+      "total": 2.657,
+      "way": 2.657
+    },
+    "domain": {
+      "merchantId": "1646",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:31:07",
+        "description": "Entrega agendada via: Integração rd"
+      }
+    ],
+    "id": 1497207,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 7.47,
+    "priority": 3,
+    "requester": {
+      "city": "Itu",
+      "id": 9901,
+      "image": "p-9901.png",
+      "name": "Droga Raia Padre Bento - Itu - JAVA 1646",
+      "phone": "(11) 4022-1860",
+      "region": 1
+    },
+    "route": "r{|lCzuv_HPLRZVN\\h@k@ZrA|AzBnCb@AZBfBZRD`BJxAn@~@\\dAj@lA\\b@LpBp@|Af@pDnAvDfA?\\BbBCnGfDfAzItCv@TXLj@BVxBf@ITBNF?D?DCxAOr@TD?H@lCJlAPjBLxAH`FA`CKjEgBn@?ACCCAEAA@Aq@@aAK_@K_@e@c@wAs@sAW_Ah@}@f@",
+    "situation": {
+      "description": "Entrega agendada.",
+      "type": 7
+    },
+    "transfer": 6,
+    "type": "nextday",
+    "vehicleType": 1
+  },
+  "1497208": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2775927,
+        "lng": -47.2905635,
+        "neighborhood": "Vila Nova",
+        "number": "500",
+        "position": 0,
+        "responsible": "Casa De Bolo Vila Nova - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Avenida Prudente de Moraes"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "",
+        "lat": -23.2580537,
+        "lng": -47.3044214,
+        "neighborhood": "Centro",
+        "number": "102",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "street": "Rua Floriano Peixoto"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.2775927,
+        "lng": -47.2905635,
+        "neighborhood": "Vila Nova",
+        "number": "500",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Casa De Bolo Vila Nova - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Avenida Prudente de Moraes"
+      }
+    ],
+    "checkCode": "A3223",
+    "date": "2025-05-20T17:33:40",
+    "deliveryTime": 28.566666666666666,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2624423,
+        "lng": -47.2996593
+      },
+      "id": 1147,
+      "image": "p-1147.jpg",
+      "name": "Gabriel Ferreira 1147",
+      "phone": "(11) 99552-5113",
+      "vehicle": {
+        "color": "vermelha ",
+        "id": 679,
+        "model": "cg 125 es",
+        "plate": "dar-9747"
+      }
+    },
+    "distance": {
+      "back": 3.587,
+      "total": 6.532,
+      "way": 2.945
+    },
+    "hasReturn": true,
+    "historic": [
+      {
+        "date": "2025-05-20T17:33:40",
+        "description": "Entrega solicitada por Casa De Bolo Vila Nova - Itu"
+      }
+    ],
+    "id": 1497208,
+    "insuranceID": "9d49b48d-814f-4066-a841-ad3efbfe34e2",
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "10.5",
+    "priority": 3,
+    "requester": {
+      "city": "Itu",
+      "id": 5279,
+      "image": "p-5279.png",
+      "name": "Casa De Bolo Vila Nova - Itu",
+      "phone": "(11) 2715-6027",
+      "region": 1
+    },
+    "route": "|kamC~ls_HqB`@\\zA\\|AcB`@sARaCd@s@PcBl@yBvAmFjDsD~BeAp@a@\\iBbBsChCs@h@_@d@i@rB]nAYn@[^yBfB_FrDmCnB}EhDyEnD_J~GoBxAq@_AYa@_C_DiB_CwCxCwG~GkF`GmAtA_@l@rBBLB^\\TN\\DlFDt@DbAVtC~@dAR~ADh@ATE~Ak@f@]`@c@hBcCP]DYFABG\\w@FYWa@_@m@w@q@gBgBq@_AYa@Yc@rAmApBkBdB_B~B{B|DqDbBaBtE{Dp@m@r@u@jBiBxGiGp@o@Z[z@lAx@lALQj@i@lC_ClAgA`A_AnA{@f@]jG}D~CsBfBkA~Ag@rA[nB]lB_@p@OOm@]}AMm@xAYVG",
+    "situation": {
+      "description": "Entregador definido.",
+      "type": 1
+    },
+    "transfer": "7.3",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497209": {
+    "addresses": [
+      {
+        "city": "ITAPETININGA",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5853574,
+        "lng": -48.0477637,
+        "neighborhood": "CENTRO",
+        "number": "576",
+        "position": 0,
+        "responsible": "DROGAL - ITAPETININGA,SP - 243",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "RUA PADRE ALBUQUERQUE"
+      },
+      {
+        "city": "ITAPETININGA",
+        "complement": "LOTE K17",
+        "goal": "",
+        "lat": -23.561595,
+        "lng": -48.0184456,
+        "neighborhood": "RESIDENCIAL LAGO DOS IPES",
+        "number": "134",
+        "position": 1,
+        "responsible": "DANIELA NUNES - DROGAL-1533564060763-01",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "RUA JORGINA GALVAO CARRASCAL"
+      }
+    ],
+    "date": "2025-05-20T17:35:23",
+    "deliveryTime": 11,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5915282,
+        "lng": -48.0611125
+      },
+      "id": 20652,
+      "image": "p-20652.jpg",
+      "name": "Thaisa Beatriz Nogueira Franco ",
+      "phone": "(15) 99708-6561",
+      "vehicle": {
+        "color": "preto ",
+        "id": 11835,
+        "model": "Fan 160",
+        "plate": "fgx-2c25"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 4.72,
+      "way": 4.72
+    },
+    "domain": {
+      "merchantId": 19931,
+      "name": "lets"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:35:23",
+        "description": "Entrega solicitada via: Integração lets"
+      },
+      "-OQjPDDUJT40Zz2tmEH8": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.58603696,
+          "lng": -48.05747249
+        },
+        "date": "2025-05-20T17:35:49",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjPDV8DRtiBe_O0-DJ": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.58603696,
+          "lng": -48.05747249
+        },
+        "date": "2025-05-20T17:35:51",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497209,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 13,
+    "priority": 3,
+    "requester": {
+      "city": "São Paulo",
+      "id": 19931,
+      "image": "p-199312.jpg",
+      "name": "Lets Delivery",
+      "phone": "",
+      "region": 1
+    },
+    "route": "no}nCnigdHoC_Bo@a@_BeAkAq@{@s@KGc@yCc@yD]yBgBqNaBoKwAmJu@oFgBqM]cC[yBoB\\_Cd@wBf@}A^iCqDaEqG_AoAiDcFq@_AqByCcAcB}AwBwCkEmDaFo@{@aBeBsDuEyDaFuDiFaC{D_@e@GBMPCH]^u@d@oC`Ba@Hi@HWSo@sAMGOCS@_@Ls@XCAICQ?IDOg@i@gA{A{AeAcAWm@SwAOS[AaA]WOKSSQ_@O_@OqBu@m@lBr@X",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 9.38,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497211": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "complement": "Restaurante",
+        "goal": "Buscar mercadoria",
+        "lat": -23.271639,
+        "lng": -47.2844701,
+        "neighborhood": "São Luiz",
+        "number": "430",
+        "position": 0,
+        "responsible": "Spanizzi Ristorante - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Avenida Agenor Correa Leite de Campos"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "",
+        "lat": -23.2446991,
+        "lng": -47.3104906,
+        "neighborhood": "portal 1",
+        "number": "120",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "status": 3,
+        "street": "Alameda das Cerejeiras"
+      },
+      {
+        "city": "Itu",
+        "complement": "Restaurante",
+        "goal": "Retorno",
+        "lat": -23.271639,
+        "lng": -47.2844701,
+        "neighborhood": "São Luiz",
+        "number": "430",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Spanizzi Ristorante - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Agenor Correa Leite de Campos"
+      }
+    ],
+    "checkCode": "D7900",
+    "date": "2025-05-20T17:40:50",
+    "deliveryTime": 38.666666666666664,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2447858,
+        "lng": -47.3096756
+      },
+      "id": 21661,
+      "image": "p-21661.jpg",
+      "name": "Bruno Antônio Abegao ",
+      "phone": "(11) 99802-7563",
+      "vehicle": {
+        "color": "azul",
+        "id": 12345,
+        "model": "Titan 160",
+        "plate": "SSW-8D77"
+      }
+    },
+    "distance": {
+      "back": 4.859,
+      "total": 11.662,
+      "way": 6.803000000000001
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:40:50",
+        "description": "Entrega solicitada por Spanizzi Ristorante - Itu"
+      },
+      "-OQjQUgk6sGBTUUt2nRV": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2788166,
+          "lng": -47.2854062
+        },
+        "date": "2025-05-20T17:41:23",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjQV-ChvO3a6Vmd-_i": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2788166,
+          "lng": -47.2854062
+        },
+        "date": "2025-05-20T17:41:25",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjREWBa2Ec47AVlfuv": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2713828,
+          "lng": -47.2848633
+        },
+        "date": "2025-05-20T17:44:40",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjRbvi4bLK1vrzwXR4": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2713242,
+          "lng": -47.2847441
+        },
+        "date": "2025-05-20T17:46:20",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjRcDEAGqUDam_QJTg": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2713242,
+          "lng": -47.2847441
+        },
+        "date": "2025-05-20T17:46:21",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjVyCR1zd8tspcSD4t": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2448084,
+          "lng": -47.3096877
+        },
+        "date": "2025-05-20T18:05:19",
+        "description": "Aguardando no ponto 1",
+        "event": "arrivedAtDelivery"
+      },
+      "-OQjVyisq5TNczUxNTjl": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2448084,
+          "lng": -47.3096877
+        },
+        "date": "2025-05-20T18:05:22",
+        "description": "Entregue no ponto 1",
+        "event": "delivered"
+      },
+      "-OQjVyz8fbtHK_-UapOY": {
+        "authorId": 21661,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2448084,
+          "lng": -47.3096877
+        },
+        "date": "2025-05-20T18:05:23",
+        "description": "Em direção ao ponto de origem (retorno)",
+        "event": "returningPointOrigin"
+      }
+    },
+    "id": 1497211,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "18.75",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 2891,
+      "image": "p-2891.png",
+      "name": "Spanizzi Ristorante - Itu",
+      "phone": "(11) 4024-0770",
+      "region": 1
+    },
+    "route": "vf`mC|fr_Hh@pDFp@VxBNvBPnAV|CCBAJy@TeCRu@BAEEEGESAOJGP@NHNFDJr@NhFDNLRxAhB}AzAcB~AqChCq@n@SWsByByB_CcFfGiEvEwJnKkCvCmBpBuA`ByClDiCtCaAbAoFfGkHvHaEnEsC~COQWSQIQ?k@?Oj@_@dAYb@URUFoBX{B`@{Df@{IpAaG|@wEn@qD^kCV}HdA{DTqD?qFKi@Cu@[m@MeASI\\[~AA?AAAAEAIF]SOGs@IoAImA?a@?OECCACAIBKLOjDRdDNnBJvABxADrEJnA?~AAlEWd@GxC_@LJJHLFLBV?VnDG@KHILAN@PFLJHLBF?B?Hh@^xCDj@AZEf@Md@O^MTm@f@YL[Je@H_ANcAN}Ch@m@Hy@Gq@ELyAMxAp@Dx@Fl@I`HiAd@IZKXMl@g@LUN_@Le@Dg@@[Ek@_@yCIi@BAFAJIFM@OCQGMKGMCG?C?MkBIcALEJGJOTe@zKsApKyA|LgB`G_Af@UP?THXN^b@h@f@bAcAbEiEfJoJbIaI`DcD|@cAnGeHrIoJfEsEvEgFjBkBbBoBV[tBeC{@_A}@_AdBoBHIDM?I[_@Q[M_@c@aCMiAWgBS{@Qa@_@o@Z]jCgCrFoFd@a@PGFBF@PCLKDUESd@q@nAmAjAcARKB@HBDNDZ",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "13.08",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497213": {
+    "addresses": [
+      {
+        "city": "ITAPETININGA",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5916291,
+        "lng": -48.0612347,
+        "neighborhood": "VILA RIO BRANCO",
+        "number": "332",
+        "position": 0,
+        "responsible": "DROGAL - ITAPETININGA,SP - 217",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 2,
+        "street": "AV. PADRE ANTONIO BRUNETTI"
+      },
+      {
+        "city": "ITAPETININGA",
+        "complement": "CASA DE FUNDOS",
+        "goal": "",
+        "lat": -23.5883949,
+        "lng": -48.0776669,
+        "neighborhood": "VILA PALMEIRA",
+        "number": "116a",
+        "position": 1,
+        "responsible": "JANAINA CRISTINA VENANCIO  TEODORO - DROGAL-1533574060972-01",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "RUA FERNANDO VIEIRA DE ALMEIDA"
+      }
+    ],
+    "date": "2025-05-20T17:42:15",
+    "deliveryTime": 5,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5915282,
+        "lng": -48.0611125
+      },
+      "id": 20652,
+      "image": "p-20652.jpg",
+      "name": "Thaisa Beatriz Nogueira Franco ",
+      "phone": "(15) 99708-6561",
+      "vehicle": {
+        "color": "preto ",
+        "id": 11835,
+        "model": "Fan 160",
+        "plate": "fgx-2c25"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.267,
+      "way": 2.267
+    },
+    "domain": {
+      "merchantId": 19931,
+      "name": "lets"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:42:15",
+        "description": "Entrega solicitada via: Integração lets"
+      },
+      "-OQjS5LsfIYzFQ2s-ZMh": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5927568,
+          "lng": -48.0592585
+        },
+        "date": "2025-05-20T17:48:23",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjS5bh0GLaLuu5trXP": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5927568,
+          "lng": -48.0592585
+        },
+        "date": "2025-05-20T17:48:25",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjV9QAH8lKIO2-p2rb": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5916164,
+          "lng": -48.0611863
+        },
+        "date": "2025-05-20T18:01:47",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      }
+    },
+    "id": 1497213,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 10,
+    "priority": 3,
+    "requester": {
+      "city": "São Paulo",
+      "id": 19931,
+      "image": "p-199312.jpg",
+      "name": "Lets Delivery",
+      "phone": "",
+      "region": 1
+    },
+    "route": "tv~nCt}idHk@jHq@tJ}@nL]hGy@dGy@bGaBtJiCrO{@zDSt@EXoAbDcBdEQ|@Ir@?x@Lr@f@bCPcAz@yEVkAZgC",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 7.2,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497215": {
+    "addresses": [
+      {
+        "city": "LEME",
+        "complement": "",
+        "goal": "250520439160",
+        "lat": -22.1845168,
+        "lng": -47.3863821,
+        "neighborhood": "CENTRO",
+        "number": "381",
+        "position": 0,
+        "responsible": "RAIA - LEME",
+        "state": "SP",
+        "street": "29 DE AGOSTO",
+        "zipCode": "13610210"
+      },
+      {
+        "city": "Leme",
+        "complement": "Bloco 01  Apto 201",
+        "goal": "250520439160",
+        "lat": -22.2046126,
+        "lng": -47.3906639,
+        "neighborhood": "Jardim do Sol",
+        "number": "232",
+        "position": 1,
+        "responsible": "PAULO RICARDO RIBEIRO",
+        "state": "SP",
+        "street": "Rua Maria Fercem",
+        "zipCode": "13610827"
+      }
+    ],
+    "date": "2025-05-21T08:00:00",
+    "deliveryTime": 7,
+    "distance": {
+      "back": 0,
+      "total": 2.935,
+      "way": 2.935
+    },
+    "domain": {
+      "merchantId": "242",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:42:56",
+        "description": "Entrega agendada via: Integração rd"
+      }
+    ],
+    "id": 1497215,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 7.47,
+    "priority": 3,
+    "requester": {
+      "city": "Leme",
+      "id": 22348,
+      "image": "p-22348.png",
+      "name": "Droga Raia - Agosto - Leme - JAVA 242",
+      "phone": "",
+      "region": 1
+    },
+    "route": "f|kfCzcf`H{@mBkAuCIWnAo@pAq@|GuDRR~BtB`E~CbCjA`ErCjDvC|AlA|BfB|@p@ZNPBtFFtBZ|BHz@DlANlARzBTzCl@zF`AtCl@zCj@`C`@bCn@jGlAnCl@DFNFFAHGBQAGLoBDo@@Yr@J|@J|ANtAN_@`@m@r@p@f@",
+    "situation": {
+      "description": "Entrega agendada.",
+      "type": 7
+    },
+    "transfer": 6,
+    "type": "nextday",
+    "vehicleType": 1
+  },
+  "1497216": {
+    "addresses": [
+      {
+        "city": "ITAPETININGA",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5797152,
+        "lng": -48.03108,
+        "neighborhood": "VILA LEONOR",
+        "number": "1001",
+        "position": 0,
+        "responsible": "DROGAL - ITAPETININGA,SP - 262",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "RUA JOSE DE ALMEIDA CARVALHO"
+      },
+      {
+        "city": "ITAPETININGA",
+        "complement": "PERTO POSTO DE SAUDE",
+        "goal": "",
+        "lat": -23.5776364,
+        "lng": -48.0061621,
+        "neighborhood": "LOTEAMENTO GRAMADO II",
+        "number": "40",
+        "position": 1,
+        "responsible": "TIAGO COSTA - DROGAL-1533574061078-01",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "RUA ONDINA SANTIAGO DE PONTES"
+      }
+    ],
+    "date": "2025-05-20T17:46:17",
+    "deliveryTime": 7,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5915282,
+        "lng": -48.0611125
+      },
+      "id": 20652,
+      "image": "p-20652.jpg",
+      "name": "Thaisa Beatriz Nogueira Franco ",
+      "phone": "(15) 99708-6561",
+      "vehicle": {
+        "color": "preto ",
+        "id": 11835,
+        "model": "Fan 160",
+        "plate": "fgx-2c25"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.934,
+      "way": 2.934
+    },
+    "domain": {
+      "merchantId": 19931,
+      "name": "lets"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:46:17",
+        "description": "Entrega solicitada via: Integração lets"
+      },
+      "-OQjSBrRTd3NFq-O8Lru": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5926268,
+          "lng": -48.0594624
+        },
+        "date": "2025-05-20T17:48:50",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjSC8d0jwNQksbiAdY": {
+        "authorId": 20652,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5926268,
+          "lng": -48.0594624
+        },
+        "date": "2025-05-20T17:48:52",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497216,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 10,
+    "priority": 3,
+    "requester": {
+      "city": "São Paulo",
+      "id": 19931,
+      "image": "p-199312.jpg",
+      "name": "Lets Delivery",
+      "phone": "",
+      "region": 1
+    },
+    "route": "fl|nCfaddHYoBOcANE\\Oq@sBkDeKaFoNQk@iAsCWo@}@uA_EyEeBiBa@k@_@e@m@kAQa@k@sAe@_BIUZgANc@ZaAHSLKnA[dAyA`B{BhDgEZi@Pi@ZmANmAj@eFTiDJ{ANuAZqBLkACg@E_C]_FY_EY}DYgCp@c@vA}Ae@g@",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 7.2,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497217": {
+    "addresses": [
+      {
+        "city": "Cerquilho",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.1651688,
+        "lng": -47.743523,
+        "neighborhood": "Centro",
+        "number": "163",
+        "position": 0,
+        "responsible": "Farma Ponte Centro - Cerquilho",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Praça Presidente Kennedy"
+      },
+      {
+        "city": "Cerquilho",
+        "complement": "",
+        "goal": "",
+        "lat": -23.1605863,
+        "lng": -47.7283135,
+        "neighborhood": "São Luiz",
+        "number": "41",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "LUCAS",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Atalíbio Pires"
+      },
+      {
+        "city": "Cerquilho",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.1651688,
+        "lng": -47.743523,
+        "neighborhood": "Centro",
+        "number": "163",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Farma Ponte Centro - Cerquilho",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Praça Presidente Kennedy"
+      }
+    ],
+    "checkCode": "E7C22",
+    "date": "2025-05-20T17:46:23",
+    "deliveryTime": 24,
+    "distance": {
+      "back": 2.184,
+      "total": 5.098,
+      "way": 2.9139999999999997
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:46:23",
+        "description": "Entrega solicitada por Farma Ponte Centro - Cerquilho"
+      },
+      "-OQjRepFWLFKYdY_Qf75": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16600018,
+          "lng": -47.74244572
+        },
+        "date": "2025-05-20T17:46:31",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjRf5jYKiqtaJOZH_n": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16600018,
+          "lng": -47.74244572
+        },
+        "date": "2025-05-20T17:46:33",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjRo32zRHtnKo8swMd": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16597417,
+          "lng": -47.74235001
+        },
+        "date": "2025-05-20T17:47:09",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjSc8NLeoolrDTOmQZ": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16518485,
+          "lng": -47.7435336
+        },
+        "date": "2025-05-20T17:50:43",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjScRpepsy_c4Vnna7": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16518485,
+          "lng": -47.7435336
+        },
+        "date": "2025-05-20T17:50:44",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjUUD6GDrD93-8l1FB": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16056423,
+          "lng": -47.72831594
+        },
+        "date": "2025-05-20T17:58:50",
+        "description": "Aguardando no ponto 1",
+        "event": "arrivedAtDelivery"
+      },
+      "-OQjU_-dmSWIernNSKYZ": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16056304,
+          "lng": -47.72832465
+        },
+        "date": "2025-05-20T17:59:14",
+        "description": "Entregue no ponto 1",
+        "event": "delivered"
+      },
+      "-OQjU_HXty9fbd3L2d1a": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.16056304,
+          "lng": -47.72832465
+        },
+        "date": "2025-05-20T17:59:15",
+        "description": "Em direção ao ponto de origem (retorno)",
+        "event": "returningPointOrigin"
+      },
+      "-OQjVLnOC53M4FwEZ6CZ": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.1634971,
+          "lng": -47.73945686
+        },
+        "date": "2025-05-20T18:02:37",
+        "description": "Houve um ocorrido com 17812",
+        "event": ""
+      },
+      "-OQjVLw9HCWK8nH_T1CF": {
+        "authorId": 17812,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.1634971,
+          "lng": -47.73945686
+        },
+        "date": "2025-05-20T18:02:37",
+        "description": "Houve um ocorrido com 17812",
+        "event": ""
+      }
+    },
+    "id": 1497217,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "9",
+    "priority": 1,
+    "requester": {
+      "city": "Cerquilho",
+      "id": 15424,
+      "image": "p-15424.jpg",
+      "name": "Farma Ponte Centro - Cerquilho",
+      "phone": "(15) 3284-5314",
+      "region": 13
+    },
+    "route": "hmklC~{kbHiBjBwAlAo@^CfBWlIcBMgDYqBYMC[UQKEGEEIg@CUCe@L{@RoC?u@Cu@@?@?DADG?IAGGECAA?KsBEyCDe@^gFLqBHoAh@qHVB|BNB?@Sj@kJZ_EuASGCIIIMEWk@}@i@w@sCiDs@y@u@kA_CyEMUs@{@oAyAIUEy@?wA?{E?qE@u@pC?pC?QzCIhBCp@pADjEZpIl@]rFs@tLi@tJ}@lMWhElCPUzDi@|G?LBDBF|BTxBX?H@L@R_AxAT\\RQXXh@f@hBlBBBANSR",
+    "situation": {
+      "description": "ACIDENTE NA ENTREGA",
+      "type": 9
+    },
+    "transfer": "6.7",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497218": {
+    "addresses": [
+      {
+        "city": "ITUPEVA",
+        "complement": "",
+        "goal": "250520697149",
+        "lat": -23.1559552,
+        "lng": -47.05667529999999,
+        "neighborhood": "JARDIM SAO VICENTE",
+        "number": "458",
+        "position": 0,
+        "responsible": "DROGASIL - ITUPEVA",
+        "state": "SP",
+        "street": "AVENIDA BRASIL",
+        "zipCode": "13295000"
+      },
+      {
+        "city": "Itupeva",
+        "goal": "250520697149",
+        "lat": -23.13552,
+        "lng": -47.0758994,
+        "neighborhood": "Rio das Pedras",
+        "number": "151",
+        "position": 1,
+        "responsible": "GUACIRA PEREIRA DE OLIVEIRA",
+        "state": "SP",
+        "street": "Rua Braz Sanches",
+        "zipCode": "13299139"
+      }
+    ],
+    "date": "2025-05-20T17:49:11",
+    "deliveryTime": 12,
+    "distance": {
+      "back": 0,
+      "total": 5.745,
+      "way": 5.745
+    },
+    "domain": {
+      "merchantId": "1488",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:49:12",
+        "description": "Entrega solicitada via: Integração rd"
+      }
+    ],
+    "id": 1497218,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 10.97,
+    "priority": 3,
+    "requester": {
+      "city": "Itupeva",
+      "id": 18649,
+      "image": "logoi9.png",
+      "name": "Drogasil Centro - Itupeva",
+      "phone": "",
+      "region": 1
+    },
+    "route": "vsilCfwe~Gp@|@JNoApAORUf@IT_A`Fi@pEg@xDId@Ev@GXOJEFDFRJdFxEb@h@d@v@b@z@n@hA^j@^`@RXXtAZbATd@Zl@^bANj@HRn@`AZr@`@fAd@jBL~@?XKp@Op@Uj@YTKFUHUF{@Ju@@SAaEq@e@Go@Bw@Pu@`@s@n@{CnDsBlCSf@Mb@K|@Ep@O^MJWLiAHwANgANg@Nu@f@eAdAcCnDg@~@yAzHeA|FMd@_@dAe@x@q@z@[Zg@\\_Af@iAb@q@\\?AACGEGAGBEF?D?@o@BeCZgC`@e@NkA`@gAf@eAn@sA~@}@v@m@n@w@~@i@x@sAdCm@`Au@v@m@d@eBx@YF{@b@aDdBmEnB}CdAS?ACACECEAC@A?IOMq@Ww@e@u@q@w@e@e@W_@KSKc@OiAE_AQ_A[}@]{@g@{@k@u@_@]KIQEe@Gc@A_ABToAfAcFp@qDhAkFl@kCLi@_EgAUIWG",
+    "situation": {
+      "description": "Buscando entregador.",
+      "type": 0
+    },
+    "transfer": 7.9,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497220": {
+    "addresses": [
+      {
+        "city": "Indaiatuba",
+        "complement": "",
+        "lat": -23.0826664,
+        "lng": -47.2048165,
+        "neighborhood": "Cidade Nova",
+        "number": "1015",
+        "position": 0,
+        "retDescription": "",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Presidente Kennedy",
+        "zipCode": "13.334-170"
+      },
+      {
+        "city": "Indaiatuba",
+        "complement": "Casa",
+        "goal": "Ifood (9567)",
+        "lat": -23.1240634,
+        "lng": -47.2465908,
+        "neighborhood": "Jardim Morada do Sol",
+        "number": "1380",
+        "position": 1,
+        "responsible": "Marcus Vinícius Santos",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "R. João Narezzi"
+      }
+    ],
+    "date": "2025-05-20T17:50:21",
+    "deliveryTime": 19,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.0988242,
+        "lng": -47.2228428
+      },
+      "id": 12878,
+      "image": "p-2022-10-14 20:10:02.jpg",
+      "name": "Matheus Fernandes Alves",
+      "phone": "(19) 96544-216",
+      "vehicle": {
+        "color": "preta",
+        "id": 7365,
+        "model": "Honda/Cg 150 ks",
+        "plate": "DPQ-6701"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 9.048,
+      "way": 9.048
+    },
+    "domain": {
+      "merchantId": "97021786-148e-4011-b44b-99fbce16ce8a",
+      "name": "ifood"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:50:21",
+        "description": "Entrega solicitada via: Integração ifood"
+      },
+      "-OQjUEe6il00wWe6od7S": {
+        "authorId": 12878,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.0986224,
+          "lng": -47.2228389
+        },
+        "date": "2025-05-20T17:57:46",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjUF07sBrtN1k3FBK0": {
+        "authorId": 12878,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.0986224,
+          "lng": -47.2228389
+        },
+        "date": "2025-05-20T17:57:48",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497220,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 22.75,
+    "priority": 3,
+    "requester": {
+      "city": "Indaiatuba",
+      "id": 6369,
+      "image": "p-6369.png",
+      "name": "Amo Pastel Kennedy - Indaiatuba",
+      "phone": "(19) 3816-6191",
+      "region": 3
+    },
+    "route": "ti{kCbub_HcBrEmAdDwAlD{BfG}@~BSp@y@xE[nBe@x@aAdAWR{@^k@J{@D{@?eABWA@TAjAERSb@[^}@rA[b@[l@O`@U`AMv@Gt@E|@@v@p@tHLr@Vv@b@f@^XZNPNP?r@Pb@^NXzCfHX`AFr@BtBBfAHv@ThA\\~@h@z@TTbAlAXf@Xd@PRpAlBv@v@\\XdAj@n@Tb@NtB^PAt@AX?P?H?zEeAnE{@zAG`A?hADzAJfBXdCn@x@Vn@VdBz@t@f@h@j@nBxAzA|@|@h@ZPxEbCfHtBhCl@bAPhAPdAJzAHtBB`DApAk@l@Qz@MnAElAD|@Fz@T`A\\|@r@p@VdB]d@Cl@?dALfBr@TLXF^DT?v@MfAa@f@g@ROl@Wf@Id@AVDRJjBXxAZ`Cf@bCr@fAb@~@\\N?TFfEvAdDjAfEtAPNPFVNDF~@R`Bh@hCv@~Ab@dC~@zDx@`D`@`AHHNRJn@Pb@JRDtA`@pBXsAbIF@PJt@PrB^|E~@lIfBpGnAhDn@jFlAfFlAt@P[lBeBjKoAfIoC~OsAjHId@~AZ^HFg@Hm@",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 15.88,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497222": {
+    "addresses": [
+      {
+        "city": "FRANCO DA ROCHA",
+        "complement": "",
+        "goal": "250520897526",
+        "lat": -23.3281833,
+        "lng": -46.7277424,
+        "neighborhood": "C FAZ BELEM",
+        "number": "260",
+        "position": 0,
+        "responsible": "DROGASIL - FRANCO DA ROCHA 2",
+        "state": "SP",
+        "street": "Rua Basilio Fazzi",
+        "zipCode": "07802190"
+      },
+      {
+        "city": "Franco da Rocha",
+        "complement": "BLOCO 1 APTO 1208",
+        "goal": "250520897526",
+        "lat": -23.3170361,
+        "lng": -46.6989477,
+        "neighborhood": "Chacaras Sao Jose",
+        "number": "186",
+        "position": 1,
+        "responsible": "MÁBILA DE OLIVEIRA",
+        "state": "SP",
+        "street": "Estrada do Alto",
+        "zipCode": "07863290"
+      }
+    ],
+    "date": "2025-05-21T08:00:00",
+    "deliveryTime": 14,
+    "distance": {
+      "back": 0,
+      "total": 5.695,
+      "way": 5.695
+    },
+    "domain": {
+      "merchantId": "3946",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": [
+      {
+        "date": "2025-05-20T17:52:38",
+        "description": "Entrega agendada via: Integração rd"
+      }
+    ],
+    "id": 1497222,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 10.97,
+    "priority": 3,
+    "requester": {
+      "city": "Franco da Rocha",
+      "id": 18625,
+      "image": "p-18625.png",
+      "name": "Drogasil Faz. Belém - Franco da Rocha - JAVA 3946",
+      "phone": "",
+      "region": 1
+    },
+    "route": "bhkmCjoe|GmEcDIWCSBuAEe@Qc@e@e@s@gAmA_@cAQsCw@iJeBgG}@mAWoACsBCC@_@Wc@UeB_Aw@]qAc@uAWcCy@{Ak@OOc@i@w@m@kCoAg@KcDWgE_@iBOa@GEMc@W_@Mk@AOBq@Y}@m@qByAo@i@kAw@SMIII[A[@]Fs@nAP~ALn@DxADTANMFa@Bc@DKLGZGv@Nj@Jx@D^JX^Vf@f@v@NLLFOmAKkBAkAFgAJcACu@Em@YaB[kAEYCG@k@PSBUAOXMVOjB_AtHwDjB_At@[TGdA]nBwEVm@\\gANi@Ry@Na@z@yBb@}@dAcC`@gAv@}Am@c@g@WqAq@oA_@cASy@Ua@USSIKK]C_@Hm@V_AL_ADmAAq@Ik@e@cAc@}@UkAO}AKu@Uo@@e@EiC?iAFg@XiA^gAp@aCP}@d@{Cj@sDD]CGKGoASWEo@Kk@IWCKn@GZG`@YpB",
+    "situation": {
+      "description": "Entrega agendada.",
+      "type": 7
+    },
+    "transfer": 7.9,
+    "type": "nextday",
+    "vehicleType": 1
+  },
+  "1497223": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2775927,
+        "lng": -47.2905635,
+        "neighborhood": "Vila Nova",
+        "number": "500",
+        "position": 0,
+        "responsible": "Casa De Bolo Vila Nova - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Avenida Prudente de Moraes"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "",
+        "lat": -23.2855666,
+        "lng": -47.2750291,
+        "neighborhood": "Nucleo Habitacional Sao Judas Tadeu",
+        "number": "207",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "",
+        "retDescription": "",
+        "returnTypeTxt": "Dinheiro",
+        "state": "SP",
+        "status": 3,
+        "street": "Rua Osvaldo del Campo"
+      },
+      {
+        "city": "Itu",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.2775927,
+        "lng": -47.2905635,
+        "neighborhood": "Vila Nova",
+        "number": "500",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Casa De Bolo Vila Nova - Itu",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Prudente de Moraes"
+      }
+    ],
+    "checkCode": "69C83",
+    "date": "2025-05-20T17:53:19",
+    "deliveryTime": 22,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2831686857818,
+        "lng": -47.2780428271298
+      },
+      "id": 21825,
+      "image": "p-21825.jpg",
+      "name": "João Roberto Machado Gonçalves Da Cruz ",
+      "phone": "(11) 96994-0713",
+      "vehicle": {
+        "color": "Branco",
+        "id": 12430,
+        "model": "Yamaha Fazer 150 UBS",
+        "plate": "CRF-7199"
+      }
+    },
+    "distance": {
+      "back": 2.288,
+      "total": 4.63,
+      "way": 2.342
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:53:19",
+        "description": "Entrega solicitada por Casa De Bolo Vila Nova - Itu"
+      },
+      "-OQjTJRcEDBR1_40pUPJ": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2762892,
+          "lng": -47.2912761
+        },
+        "date": "2025-05-20T17:53:43",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjTJhvwMPwWukPrgJH": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2762892,
+          "lng": -47.2912761
+        },
+        "date": "2025-05-20T17:53:45",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjU6LrER8Spy2SpQfF": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2775181,
+          "lng": -47.2903768
+        },
+        "date": "2025-05-20T17:57:13",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjU6l7QCKK2yDRQ3pU": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2775181,
+          "lng": -47.2903768
+        },
+        "date": "2025-05-20T17:57:14",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjU70WYz2kRwVN3cQ5": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2775181,
+          "lng": -47.2903768
+        },
+        "date": "2025-05-20T17:57:15",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      },
+      "-OQjVaUlKxmr7l0F2a4w": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2856893,
+          "lng": -47.275019
+        },
+        "date": "2025-05-20T18:03:42",
+        "description": "Aguardando no ponto 1",
+        "event": "arrivedAtDelivery"
+      },
+      "-OQjVkHjVuI9a-xI-5RW": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2856539,
+          "lng": -47.2750316
+        },
+        "date": "2025-05-20T18:04:22",
+        "description": "Entregue no ponto 1",
+        "event": "delivered"
+      },
+      "-OQjVkaTX9J5Fe5u4l5t": {
+        "authorId": 21825,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2856539,
+          "lng": -47.2750316
+        },
+        "date": "2025-05-20T18:04:24",
+        "description": "Em direção ao ponto de origem (retorno)",
+        "event": "returningPointOrigin"
+      }
+    },
+    "id": 1497223,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "10.5",
+    "priority": 3,
+    "requester": {
+      "city": "Itu",
+      "id": 5279,
+      "image": "p-5279.png",
+      "name": "Casa De Bolo Vila Nova - Itu",
+      "phone": "(11) 2715-6027",
+      "region": 1
+    },
+    "route": "|kamC~ls_H~@QCSES~A?`BGBYA]KGiB_@O]G[x@cCdCgBfAyATa@f@eAB?B?D?FAJGFSAQAEACRmA@WXiBXiBb@uCj@kD?i@xB]nAY@@D@FAHG@AH@V?LAJMBGMYi@cBUeBWgBm@uFC]Aa@@S^{@N[lGqFpBeBnAoAXeCRuAPeBRwA~Bf@|@RV@D?r@y@FM?KCGMI[IZHLHBF?JGLs@x@E?WA}@S_Cg@SvAe@zDYdCoAnAqBdByGzFaAv@UDYMG?S@EFINDh@HPZ^NJb@f@NTJf@z@|IVzAIHA?G?IDCD?BKJ[Z_@FyB\\?h@k@jD}@~FYhBMTY`AI?SDKP?J?BwAh@w@b@yGdF`@zCNnAXbBBR_AP",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "7.3",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497225": {
+    "addresses": [
+      {
+        "city": "PATOS DE MINAS",
+        "goal": "250520592146",
+        "lat": -18.5716451,
+        "lng": -46.5094283,
+        "neighborhood": "CAIÇARAS",
+        "number": "930",
+        "position": 0,
+        "responsible": "DROGASIL - PATOS DE MINAS 4",
+        "state": "MG",
+        "status": 3,
+        "street": "RUA JOSÉ AUGUSTO DE QUEIROZ",
+        "zipCode": "38702152"
+      },
+      {
+        "city": "Patos de Minas",
+        "complement": "Casa",
+        "goal": "250520592146",
+        "lat": -18.5737159,
+        "lng": -46.5070921,
+        "neighborhood": "Abner Afonso",
+        "number": "92",
+        "position": 1,
+        "responsible": "ALINE PIRES RIBEIRO",
+        "state": "MG",
+        "status": 1,
+        "street": "Rua P4A",
+        "zipCode": "38702112"
+      }
+    ],
+    "date": "2025-05-20T17:54:08",
+    "deliveryTime": 2,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -18.5724033333333,
+        "lng": -46.5063733333333
+      },
+      "id": 22172,
+      "image": "p-22172.jpg",
+      "name": "Anderson Corrêa Martins ",
+      "phone": "(34) 99842-0406",
+      "vehicle": {
+        "color": "vermelha ",
+        "id": 12623,
+        "model": "Yamaha",
+        "plate": "GZU-9J76"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.008,
+      "way": 1.008
+    },
+    "domain": {
+      "merchantId": "4316",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:54:09",
+        "description": "Entrega solicitada via: Integração rd"
+      },
+      "-OQjTUZonDOcKDrqKPer": {
+        "authorId": 22172,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5780375,
+          "lng": -46.5177086
+        },
+        "date": "2025-05-20T17:54:29",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjTUx2dYk56qqw6kDg": {
+        "authorId": 22172,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5780375,
+          "lng": -46.5177086
+        },
+        "date": "2025-05-20T17:54:31",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjUPHf5bhTZ-lm3cew": {
+        "authorId": 22172,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.571,
+          "lng": -46.51142166666667
+        },
+        "date": "2025-05-20T17:58:30",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjUT0HVRBkgt0gzziD": {
+        "authorId": 22172,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711937,
+          "lng": -46.5113256
+        },
+        "date": "2025-05-20T17:58:45",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjUTPlaquJN_5yrjV6": {
+        "authorId": 22172,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5711937,
+          "lng": -46.5113256
+        },
+        "date": "2025-05-20T17:58:47",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      }
+    },
+    "id": 1497225,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.97,
+    "priority": 3,
+    "requester": {
+      "city": "Patos de Minas",
+      "id": 21205,
+      "image": "logoi9.png",
+      "name": "Drogasil Caiçaras - Patos de Minas - JAVA 4316",
+      "phone": "",
+      "region": 1
+    },
+    "route": "xgjpB|zzzGEhIhC@D?BqE@iECoADaFAaC?_Cn@?xA?vABj@B?vB?n@",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497226": {
+    "addresses": [
+      {
+        "city": "PATOS DE MINAS",
+        "complement": "",
+        "goal": "250520658589",
+        "lat": -18.5774851,
+        "lng": -46.5149114,
+        "neighborhood": "CENTRO",
+        "number": "479",
+        "position": 0,
+        "responsible": "DROGASIL - PATOS DE MINAS 3",
+        "state": "MG",
+        "status": 1,
+        "street": "RUA MAJOR GOTE",
+        "zipCode": "38700107"
+      },
+      {
+        "city": "Patos de Minas",
+        "complement": "Ao 201",
+        "goal": "250520658589",
+        "lat": -18.5749194,
+        "lng": -46.5168965,
+        "neighborhood": "Caicaras",
+        "number": "90",
+        "position": 1,
+        "responsible": "MURILO HENRIQUE GODINHO ROQUE",
+        "state": "MG",
+        "street": "Rua dos Benvindos",
+        "zipCode": "38702174"
+      }
+    ],
+    "date": "2025-05-20T17:54:31",
+    "deliveryTime": 2,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -18.585586,
+        "lng": -46.514015
+      },
+      "id": 21570,
+      "image": "p-21570.jpg",
+      "name": "Adevanildo Aparecido Jorge ",
+      "phone": "(34) 98878-7636",
+      "vehicle": {
+        "color": "prata",
+        "id": 12294,
+        "model": "Titan 160",
+        "plate": "SW2-E15"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 0.573,
+      "way": 0.573
+    },
+    "domain": {
+      "merchantId": "3035",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:54:31",
+        "description": "Entrega solicitada via: Integração rd"
+      },
+      "-OQjTaOo2Ou7kTpybHY5": {
+        "authorId": 21570,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.58852388,
+          "lng": -46.51489927
+        },
+        "date": "2025-05-20T17:54:57",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      }
+    },
+    "id": 1497226,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.47,
+    "priority": 3,
+    "requester": {
+      "city": "Patos de Minas",
+      "id": 21204,
+      "image": "logoi9.png",
+      "name": "Drogasil Major Gote 479 - Patos de Minas - JAVA 3035",
+      "phone": "",
+      "region": 1
+    },
+    "route": "hlkpBd}{zGKSCG]A}ACBHPn@xAbFALEDsBp@yE~AcBj@MF]gA",
+    "situation": {
+      "description": "A caminho",
+      "type": 1
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497228": {
+    "addresses": [
+      {
+        "city": "PATOS DE MINAS",
+        "goal": "250520156716",
+        "lat": -18.5716451,
+        "lng": -46.5094283,
+        "neighborhood": "CAIÇARAS",
+        "number": "930",
+        "position": 0,
+        "responsible": "DROGASIL - PATOS DE MINAS 4",
+        "state": "MG",
+        "status": 1,
+        "street": "RUA JOSÉ AUGUSTO DE QUEIROZ",
+        "zipCode": "38702152"
+      },
+      {
+        "city": "Patos de Minas",
+        "goal": "250520156716",
+        "lat": -18.5660564,
+        "lng": -46.5154703,
+        "neighborhood": "Alto dos Caicaras",
+        "number": "229",
+        "position": 1,
+        "responsible": "GERSON LUIS RODRIGUES DA SILVA",
+        "state": "MG",
+        "street": "Rua Topazio",
+        "zipCode": "38702202"
+      }
+    ],
+    "date": "2025-05-20T17:56:18",
+    "deliveryTime": 3,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -18.5768497,
+        "lng": -46.5156719
+      },
+      "id": 21225,
+      "image": "p-21225.jpg",
+      "name": "Alysson Henrique de Araújo ",
+      "phone": "(34) 98839-7356",
+      "vehicle": {
+        "color": "Vermelha ",
+        "id": 12111,
+        "model": "Honda/CG 125 Fan Ks",
+        "plate": "pwl-4f39"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.725,
+      "way": 1.725
+    },
+    "domain": {
+      "merchantId": "4316",
+      "name": "rd"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:56:18",
+        "description": "Entrega solicitada via: Integração rd"
+      },
+      "-OQjU1_ycDjoil8dfhV0": {
+        "authorId": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5768752,
+          "lng": -46.515725
+        },
+        "date": "2025-05-20T17:56:52",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjU1vy6Kt9oHqIDZ3d": {
+        "authorId": 21225,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -18.5768752,
+          "lng": -46.515725
+        },
+        "date": "2025-05-20T17:56:55",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      }
+    },
+    "id": 1497228,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 6.97,
+    "priority": 3,
+    "requester": {
+      "city": "Patos de Minas",
+      "id": 21205,
+      "image": "logoi9.png",
+      "name": "Drogasil Caiçaras - Patos de Minas - JAVA 4316",
+      "phone": "",
+      "region": 1
+    },
+    "route": "xgjpB|zzzGEhI{@?eA??cBBaDCeB@IAQKMOGU?QPA\\LZLPJTFNB`@ClCAjHA|E?zDFrAFH?D?H?Bc@Ha@HuACuD?kGEmDAECGAM?A~CaDA",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497229": {
+    "addresses": [
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.199504,
+        "lng": -47.2975236,
+        "neighborhood": "Centro",
+        "number": "1304",
+        "position": 0,
+        "responsible": "Casa Aliança Padaria Gourmet - Salto",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 2,
+        "street": "Rua Barão do Rio Branco"
+      },
+      {
+        "city": "Itu",
+        "complement": "Apto 33 capri",
+        "goal": "",
+        "lat": -23.2815777,
+        "lng": -47.2934983,
+        "neighborhood": "Vila Nova",
+        "number": "86",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "Pedro",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "street": "Rua Adolfo Rodrigues de Arruda"
+      },
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.199504,
+        "lng": -47.2975236,
+        "neighborhood": "Centro",
+        "number": "1304",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Casa Aliança Padaria Gourmet - Salto",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Rua Barão do Rio Branco"
+      }
+    ],
+    "checkCode": "8C5A9",
+    "date": "2025-05-20T17:57:10",
+    "deliveryTime": 54,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1994959,
+        "lng": -47.2974542
+      },
+      "id": 14122,
+      "image": "p-14122.jpg",
+      "name": "Rodrigo Alexandre Paro",
+      "phone": "(11) 93370-1997",
+      "vehicle": {
+        "color": "prata",
+        "id": 11110,
+        "model": "cg fan 150 esi",
+        "plate": "ECZ-6H15"
+      }
+    },
+    "distance": {
+      "back": 12.431,
+      "total": 23.416,
+      "way": 10.985000000000001
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:57:10",
+        "description": "Entrega solicitada por Thiago Augusto Moreira de Arruda"
+      },
+      "-OQjU9Y60lyc0j5rsxNO": {
+        "authorId": 14122,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.201295,
+          "lng": -47.2974902
+        },
+        "date": "2025-05-20T17:57:25",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjU9n1vodlcYepR_3e": {
+        "authorId": 14122,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.201295,
+          "lng": -47.2974902
+        },
+        "date": "2025-05-20T17:57:27",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjUDs5yEYaaPKCq7Xi": {
+        "authorId": 14122,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.2012772,
+          "lng": -47.2974412
+        },
+        "date": "2025-05-20T17:57:43",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      }
+    },
+    "id": 1497229,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "27.5",
+    "priority": 3,
+    "requester": {
+      "city": "Salto",
+      "id": 3325,
+      "image": "p-3325.jpg",
+      "name": "Casa Aliança Padaria Gourmet - Salto",
+      "phone": "(11) 4602-8597",
+      "region": 2
+    },
+    "route": "zcrlCnxt_HUb@|AfApElC`Ar@vCnBrAv@j@aAj@eAh@mAfEyHjBwDR_@jCZb@DfEf@`AHFAJg@ZiBHUpBqDdAgBDKL@VBjBWl@Kd@@NDbCdEb@p@\\\\`@`@n@VdBd@`DfAb@b@FJZJVG`@AtA^hIjCrA`@lAj@rFbCdGdCvDxA|@TlMdFdNdFdBn@|I~CzJnDlEdBzB`AxEpAvDr@`B^xBTtG`@vNbAfKx@dDV|Hd@lEN~IP~DAhEWhDe@`C_@jC[~JoAlIkApPcCt@Mr@MXMVGPBd@Tx@|@`@Zh@X`@Lv@HfCDJ@ZNZXRJ|@BfDB|@@j@HzBt@lBf@|ALr@?b@EpAe@l@Wd@e@nA}Ar@eAHc@NM^cA@IMSYg@IK{@w@iBiBeAyA_@k@nDcD`D_DlIsH~@_AlB_BbDwCv@{@p@m@bFwE|CwCtBzC^e@r@i@rCiChBcBfBoArD_CfJcGbBm@r@Q`Ce@rASx@\\bAR~D|@dBV~BRfHh@f@D^z@b@dArCrGD@ZGzDy@rBg@HAn@tBh@~BRx@|@dDh@xBkAR_HlA_Cd@iARkCf@i@Ta@?AAECMKEAg@s@m@eAeBuBg@e@o@_@sAe@cBg@uAQs@CuADs@L_Ef@q@Ho@TWJa@Ve@b@{BrC}@v@]XG@SL_@n@EV?Hg@|A[bAGf@GrAPbEHpACrAIx@Ib@Ux@{@p@y@j@a@J[D}@AuCUyF]gAEoASyBc@gAG{@DuAd@gEbBo@R}AZcBXoALiF|@qBb@e@T]XQn@WjAw@nAaAhA}Av@eAXw@@eAMcAYgBo@y@UaAAiFAa@AMEuAmAcBcB_DgDi@]Q?k@?Oj@_@dAYb@URUFoBX{B`@{Df@{IpAaG|@wEn@qD^kCV}HdA{DTqD?qFK_EO_FY_Ik@aM_AgKo@eJo@sBUsAWwCm@qA[uEqAsGkCsGeCyFsB_Ac@oAkAg@e@SKe@IwBYe@KeDgAoFmBqI_Dc@WcAw@oDiBe@OmDa@o@O_Bo@qEmBmCgA_Cw@cH{Be@S{@y@[CqAAqBo@mBs@UOQUUo@_@yEOwBQ}@Hc@JMf@a@lAaCFO?QIUqAgAgAs@KCMHMNg@~@eDaCoHkFqHmFeBoAm@c@i@fAeAtB{AnCgDxGeC|EiG`MuH~No@jA",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "19.89",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497230": {
+    "addresses": [
+      {
+        "city": "Indaiatuba",
+        "complement": "",
+        "lat": -23.0826664,
+        "lng": -47.2048165,
+        "neighborhood": "Cidade Nova",
+        "number": "1015",
+        "position": 0,
+        "retDescription": "",
+        "state": "SP",
+        "status": 3,
+        "street": "Avenida Presidente Kennedy",
+        "zipCode": "13.334-170"
+      },
+      {
+        "city": "Indaiatuba",
+        "complement": "Casa",
+        "goal": "Ifood (8583)",
+        "lat": -23.0617147,
+        "lng": -47.216554,
+        "neighborhood": "Parque Res. Indaia",
+        "number": "43",
+        "position": 1,
+        "responsible": "RODRIGO NASCIMENTO",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "R. Vitório Arvani"
+      }
+    ],
+    "date": "2025-05-20T17:57:51",
+    "deliveryTime": 7,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.0825638,
+        "lng": -47.2046555
+      },
+      "id": 20070,
+      "image": "p-20070.jpg",
+      "name": "Hugo Jean Gramarin Nascimbem",
+      "phone": "(19) 99939-0664",
+      "vehicle": {
+        "color": "Preta",
+        "id": 11531,
+        "model": "Yes",
+        "plate": "EJO-4211"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.117,
+      "way": 3.117
+    },
+    "domain": {
+      "merchantId": "97021786-148e-4011-b44b-99fbce16ce8a",
+      "name": "ifood"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:57:51",
+        "description": "Entrega solicitada via: Integração ifood"
+      },
+      "-OQjV29OezmWwMfnPbPt": {
+        "authorId": 20070,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.0825969,
+          "lng": -47.2046578
+        },
+        "date": "2025-05-20T18:01:17",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjV2WbFtHDyFxGMqyH": {
+        "authorId": 20070,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.0825969,
+          "lng": -47.2046578
+        },
+        "date": "2025-05-20T18:01:19",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjVPR1CyUHdqOD-nmy": {
+        "authorId": 20070,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.08258371,
+          "lng": -47.2046773
+        },
+        "date": "2025-05-20T18:02:53",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjVPzNYVnlbKckR1hA": {
+        "authorId": 20070,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.08258371,
+          "lng": -47.2046773
+        },
+        "date": "2025-05-20T18:02:55",
+        "description": "Despachado",
+        "event": "dispatch"
+      }
+    },
+    "id": 1497230,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 12.25,
+    "priority": 3,
+    "requester": {
+      "city": "Indaiatuba",
+      "id": 6369,
+      "image": "p-6369.png",
+      "name": "Amo Pastel Kennedy - Indaiatuba",
+      "phone": "(19) 3816-6191",
+      "region": 3
+    },
+    "route": "ti{kCbub_HcBrEmAdDwAlD{BfG}@~BSp@y@xE[nBe@x@aAdAWR{@^k@J{@D{@?eABk@A{@Hk@LSLsEbEuBnBYX[^a@^kC`BwC`BgA`@sD~@}@V{@\\uAv@}BxAaC`B{B|Ak@Vc@HA?A?E?[CeAQaAUs@WyAs@eDcAc@Ba@NGHEL?FALq@n@[PIDKB_@?MEmCgA_@YWWc@KgDKg@MYUcCiBkAcAWhA",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": 8.53,
+    "type": "fast",
+    "vehicleType": 1
+  },
+  "1497231": {
+    "addresses": [
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.1947129,
+        "lng": -47.2855534,
+        "neighborhood": "Vila Roma",
+        "number": "1661",
+        "position": 0,
+        "responsible": "Drogaria Popular - Salto",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 3,
+        "street": "Avenida 9 de julho"
+      },
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "entrega",
+        "lat": -23.1916803,
+        "lng": -47.2846847,
+        "neighborhood": "Vila Roma",
+        "number": "167",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "luana",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Melvin Jones"
+      }
+    ],
+    "date": "2025-05-20T17:59:44",
+    "deliveryTime": 2.4833333333333334,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1948942,
+        "lng": -47.2859312
+      },
+      "id": 8505,
+      "image": "p-8505.jpg",
+      "name": "Guilherme Edson da Silva",
+      "phone": "(11) 94961-2791",
+      "vehicle": {
+        "color": "dourada ",
+        "id": 10346,
+        "model": "Twister 250",
+        "plate": "ebm-0h49"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 0.765,
+      "way": 0.765
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T17:59:44",
+        "description": "Entrega solicitada por Drogaria Popular - Salto"
+      },
+      "-OQjUk5kw0P9rFuBMEPn": {
+        "authorId": 8505,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.19830275,
+          "lng": -47.28196422
+        },
+        "date": "2025-05-20T17:59:59",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      },
+      "-OQjUkJS_ffXWCO0Ufqr": {
+        "authorId": 8505,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.19830275,
+          "lng": -47.28196422
+        },
+        "date": "2025-05-20T18:00:00",
+        "description": "Em diração ao local de coleta",
+        "event": "goingToOrigin"
+      },
+      "-OQjVdE6V1WDjzuqi_fy": {
+        "authorId": 8505,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.1949319,
+          "lng": -47.285907
+        },
+        "date": "2025-05-20T18:03:54",
+        "description": "Aguardando no local de coleta",
+        "event": "arrivedAtCollection"
+      },
+      "-OQjVe0Bb0qaLBDQju8n": {
+        "authorId": 8505,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.1949319,
+          "lng": -47.285907
+        },
+        "date": "2025-05-20T18:03:57",
+        "description": "Despachado",
+        "event": "dispatch"
+      },
+      "-OQjVeFTnfFdKJtgbBJI": {
+        "authorId": 8505,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.1949319,
+          "lng": -47.285907
+        },
+        "date": "2025-05-20T18:03:58",
+        "description": "Em direção ao ponto 1",
+        "event": "onDeliveryRoute"
+      }
+    },
+    "id": 1497231,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "7",
+    "priority": 1,
+    "requester": {
+      "city": "Salto",
+      "id": 9645,
+      "image": "logoi9.png",
+      "name": "Drogaria Popular - Salto",
+      "phone": "(11) 9848-5791",
+      "region": 2
+    },
+    "route": "|eqlCtmr_HtC|BWjAgBVgBVwBd@yBb@QcAc@kCa@iC_@yBKu@qALcAH",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "6",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497232": {
+    "addresses": [
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.199504,
+        "lng": -47.2975236,
+        "neighborhood": "Centro",
+        "number": "1304",
+        "position": 0,
+        "responsible": "Casa Aliança Padaria Gourmet - Salto",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Rua Barão do Rio Branco"
+      },
+      {
+        "city": "Salto",
+        "complement": "PICCOLO",
+        "goal": "PAES E OUTROS",
+        "lat": -23.162299,
+        "lng": -47.3304447,
+        "neighborhood": "Condomínio Fechado Piccolo Paese",
+        "number": "14",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "MAXIMILIANO NETO /dentro do condominio",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "street": "Rua Benedito de Barros Silveira"
+      },
+      {
+        "city": "Salto",
+        "complement": "",
+        "goal": "Retorno",
+        "lat": -23.199504,
+        "lng": -47.2975236,
+        "neighborhood": "Centro",
+        "number": "1304",
+        "pointType": 2,
+        "position": 2,
+        "responsible": "Casa Aliança Padaria Gourmet - Salto",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "Rua Barão do Rio Branco"
+      }
+    ],
+    "checkCode": "40102",
+    "date": "2025-05-20T18:01:17",
+    "deliveryTime": 39.416666666666664,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1994959,
+        "lng": -47.2974542
+      },
+      "id": 14122,
+      "image": "p-14122.jpg",
+      "name": "Rodrigo Alexandre Paro",
+      "phone": "(11) 93370-1997",
+      "vehicle": {
+        "color": "Preta",
+        "id": 7977,
+        "model": "CG TITAN 150 KS",
+        "plate": "DPQ-6850"
+      }
+    },
+    "distance": {
+      "back": 10.615,
+      "total": 20.629,
+      "way": 10.014000000000001
+    },
+    "hasReturn": true,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:01:17",
+        "description": "Entrega solicitada por Casa Aliança Padaria Gourmet - Salto"
+      },
+      "-OQjVRaoQWyM_NZNEV9B": {
+        "date": "2025-05-20T18:03:02",
+        "description": "Entregador Modificado 14122 (feito por Vinicius Gomes Siqueira Fermino)"
+      }
+    },
+    "id": 1497232,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "22",
+    "priority": 3,
+    "requester": {
+      "city": "Salto",
+      "id": 3325,
+      "image": "p-3325.jpg",
+      "name": "Casa Aliança Padaria Gourmet - Salto",
+      "phone": "(11) 4602-8597",
+      "region": 2
+    },
+    "route": "zcrlCnxt_HqIjPwEfJQZKVu@hAs@`@q@b@_CrAu@j@m@h@m@dAQZEF_ClEy@hAoAtAaGtF_D~CoCnCeFtEmA`Ak@\\YJc@Dw@AcBAc@AcAXYXSZW`@a@\\}@f@]Hk@@SAYIo@YSCODKFOLARBTFJRTxA@L?JFPHVVv@vATP?B@JHPRFREJGPOTI^@t@r@b@x@fAvAhA|APD`BrCtAfClAdCjB~CdHxIp@v@xDvE?TFLp@~Ap@dCXbBB`ADf@Bz@?dAKdCUhBWrAi@`Aa@^s@`@SPoBb@wFzA{E~A_Dx@qAXeQ~EqP`F_D|@iBd@sGbCoCnAgClAkItEqb@|U_FrC_FlCuAt@Y@i@G]SMMAMIWOMWGO@[KUUE[Lc@t@mB`@_AVc@vDyD`@a@vD{D`GeG\\_@hKiKxB}BqBsBkDsDg@m@GKEMMAIKmEzC{CrBc@F_AG}Cg@UE[BQKGCwAAc@?a@A]MYSQ[WsAYa@_@Qe@EcAMuElC]RqAl@uDtDmCjCa@j@iC_BAjA@kAhC~A`@k@lCkCtDuDpAm@\\StEmCbALd@D^PX`@VrAPZXR\\L`@@b@?vA@FBPJZCTD|Cf@~@Fb@GzCsBlE{CHJDPp@`AhBrBlD|DgBhB_H`HiBfBeHlHkKnKs@vAQb@q@fBC^Jb@FV@LADCJAFBXHPTNV@VIPSDWCUISLUFQNQlA_@r@UdCs@h@KV?P@VH|@`@r@`@j@Ph@Ad@G^K`B]t@Y`C}@d@WPGLMFU?WGQGGG_@AYDYPi@FOzHgEfOmIxF}CzEeCpFyBdK}CjVeHpI_C|M{DxCw@fCq@NBn@IdAIz@?dDNVDx@\\l@b@VF\\EPMJSBO?QK]YSOCSUI][}BIiA?[@w@Hw@By@CeACk@Ge@Ie@_@}A}@sBuAqBs@iAQCGKyA{BeAkA_HkImCgDy@wAsD_HqAaCuDkGEa@Wm@Sy@]uBM[WQE}@h@Wj@UVEf@E|@?r@Cx@QrAk@p@q@fCyBnBiBzEaFbF}EhCaCp@w@z@kAxBuDd@q@`AsAb@c@^UlAk@nAe@nBs@pAk@jA]rCm@dCm@dBkDbDeGfHwMsHsEkBnD",
+    "situation": {
+      "description": "A caminho",
+      "type": 1
+    },
+    "transfer": "15.9",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497233": {
+    "addresses": [
+      {
+        "city": "ITAPETININGA",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5916291,
+        "lng": -48.0612347,
+        "neighborhood": "VILA RIO BRANCO",
+        "number": "332",
+        "position": 0,
+        "responsible": "DROGAL - ITAPETININGA,SP - 217",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "AV. PADRE ANTONIO BRUNETTI"
+      },
+      {
+        "city": "ITAPETININGA",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5928414,
+        "lng": -48.0709975,
+        "neighborhood": "JARDIM SHANGRI-LA",
+        "number": "334",
+        "position": 1,
+        "responsible": "NEIVA SILVA - DROGAL-1533574061638-01",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "street": "RUA DOUTOR ALBERTO LEME CAVALHEIRO"
+      }
+    ],
+    "date": "2025-05-20T18:04:15",
+    "deliveryTime": 2,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5915282,
+        "lng": -48.0611125
+      },
+      "id": 20652,
+      "image": "p-20652.jpg",
+      "name": "Thaisa Beatriz Nogueira Franco ",
+      "phone": "(15) 99708-6561",
+      "vehicle": {
+        "color": "preto ",
+        "id": 11835,
+        "model": "Fan 160",
+        "plate": "fgx-2c25"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.176,
+      "way": 1.176
+    },
+    "domain": {
+      "merchantId": 19931,
+      "name": "lets"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:04:16",
+        "description": "Entrega solicitada via: Integração lets"
+      },
+      "-OQjW0rYvg4_AJK3YMaB": {
+        "date": "2025-05-20T18:05:34",
+        "description": "Entregador Modificado 20652 (feito por Vinicius Gomes Siqueira Fermino)"
+      }
+    },
+    "id": 1497233,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "0",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": 8.5,
+    "priority": 3,
+    "requester": {
+      "city": "São Paulo",
+      "id": 19931,
+      "image": "p-199312.jpg",
+      "name": "Lets Delivery",
+      "phone": "",
+      "region": 1
+    },
+    "route": "tv~nCt}idHk@jHq@tJ}@nL]hGWrBLBfBmAj@dAdCvEzC|F",
+    "situation": {
+      "description": "A caminho",
+      "type": 1
+    },
+    "transfer": 6,
+    "type": "fast",
+    "vehicleType": 1
   }
-]
+}
