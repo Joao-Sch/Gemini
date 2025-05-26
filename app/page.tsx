@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
 import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
-
 
 //#region TIPOS
 type UIMessage = {
@@ -54,9 +53,15 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
+  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [pendingDelivery, setPendingDelivery] = useState<any>(null);
-
+  const [deliveryStep, setDeliveryStep] = useState<
+    null | "destino" | "responsavel"
+  >(null);
+  const [pendingDelivery, setPendingDelivery] = useState<{
+    enderecoDestino?: Delivery["enderecoDestino"];
+  } | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   //#endregion
 
   const ai = new GoogleGenAI({
@@ -101,6 +106,82 @@ export default function Chat() {
     setIsSubmitClicked(true);
     setIsLoading(true);
 
+    // Adiciona a mensagem do usuário ao chat
+    const userMessage: UIMessage = {
+      id: `user-message-${Date.now()}-${Math.random()}`,
+      role: "user",
+      content: input,
+      timestamp: new Date().toISOString(),
+    };
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === currentConversationId
+          ? { ...conv, messages: [...conv.messages, userMessage] }
+          : conv
+      )
+    );
+
+    if (deliveryStep) {
+      const response = await handleInsertDelivery(input);
+      sendResponse(response);
+      setInput("");
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      return;
+    }
+
+    if (deliveryStep === "destino") {
+      // Extrai endereço da mensagem do usuário
+      const [rua, numero, bairro, cidade, cep] = input.split(",");
+      if (!rua || !numero || !bairro || !cidade || !cep) {
+        sendResponse(
+          "Por favor, informe todos os campos do endereço separados por vírgula."
+        );
+        setIsLoading(false);
+        setIsSubmitClicked(false);
+        return;
+      }
+      setPendingDelivery({
+        enderecoDestino: {
+          rua: rua.trim(),
+          numero: numero.trim(),
+          bairro: bairro.trim(),
+          cidade: cidade.trim(),
+          cep: cep.trim(),
+        },
+      });
+      setDeliveryStep("responsavel");
+      sendResponse("Qual o nome do responsável pela entrega?");
+      setInput("");
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      return;
+    }
+
+    if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
+      // Salva a entrega
+      const nomeResponsavel = input.trim();
+      if (!nomeResponsavel) {
+        sendResponse("Por favor, informe o nome do responsável.");
+        setIsLoading(false);
+        setIsSubmitClicked(false);
+        return;
+      }
+      const newDelivery: Delivery = {
+        nomeResponsavel,
+        enderecoDestino: pendingDelivery.enderecoDestino,
+      };
+      setDeliveries((prev) => [...prev, newDelivery]);
+      sendResponse("Entrega cadastrada com sucesso!");
+      setDeliveryStep(null);
+      setPendingDelivery(null);
+      setInput("");
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      return;
+    }
+
+    // LISTA DE ENTREGAS
     if (input.trim().toLowerCase() === "/listar-entregas") {
       sendResponse(
         deliveries.length === 0
@@ -123,6 +204,7 @@ export default function Chat() {
     }
 
     if (uploadedImages.length > 0) {
+      // Adiciona todas as imagens e o texto ao chat do usuário
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === currentConversationId
@@ -145,6 +227,7 @@ export default function Chat() {
         )
       );
 
+      // Envia apenas a primeira imagem para o Gemini
       const response = await sendToGemini({
         text: input.trim() || undefined,
         image: uploadedImages[0],
@@ -159,26 +242,10 @@ export default function Chat() {
       return;
     }
 
-    // Caso contrário, fluxo normal de texto
     if (!input.trim()) {
       setIsLoading(false);
       return;
     }
-
-    const userMessage: UIMessage = {
-      id: `user-message-${Date.now()}-${Math.random()}`,
-      role: "user",
-      content: input,
-      timestamp: new Date().toISOString(),
-    };
-
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === currentConversationId
-          ? { ...conv, messages: [...conv.messages, userMessage] }
-          : conv
-      )
-    );
 
     try {
       const response = await processUserInput(input);
@@ -215,7 +282,7 @@ export default function Chat() {
 
   //#region Funções de Busca
   const fetchDeliveryDetails = (deliveryId: number) => {
-    return entregas[1497102];
+    return entregas[19923]
   };
 
   const fecthDriverDetails = (driverId: number) => {
@@ -273,7 +340,31 @@ export default function Chat() {
     }
   };
   //#endregion
+    // Adiciona a nova entrega ao array de entregas
+    setDeliveries((prev) => {
+      const updatedDeliveries = [...prev, newDelivery];
+      console.log("Updated delivery list:", updatedDeliveries);
+      return updatedDeliveries;
+    });
 
+    sendResponse("Delivery registered successfully!");
+    sendResponse(
+      deliveries.length === 0
+        ? "No deliveries registered."
+        : [...deliveries, newDelivery] // Inclui a nova entrega na resposta
+            .map(
+              (d, i) =>
+                `Delivery ${i + 1}: ${d.nomeResponsavel}, Destination: ${
+                  d.enderecoDestino?.rua
+                }, ${d.enderecoDestino?.numero}, ${
+                  d.enderecoDestino?.bairro
+                }, ${d.enderecoDestino?.cidade}, ${d.enderecoDestino?.cep}`
+            )
+            .join("\n")
+    );
+    setDeliveryData({});
+  };
+  //#endregion
 
   //#region FUNÇÕES DE ENVIO DE ENVIO
   //#region Search Delivery
@@ -340,78 +431,41 @@ export default function Chat() {
 
   //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
   //#region Insert Delivery
-  const handleInsertDelivery = (deliveryJson: string | object) => {
-    let deliveryData;
-    try {
-      if (typeof deliveryJson === "object" && deliveryJson !== null) {
-        deliveryData = deliveryJson;
-      } else if (typeof deliveryJson === "string") {
-        const jsonMatch = deliveryJson.match(/\{[\s\S]*?\}/);
-        if (jsonMatch) {
-          deliveryData = JSON.parse(jsonMatch[0]);
-        }
+  const handleInsertDelivery = async (userInput: string): Promise<string> => {
+    if (deliveryStep === "destino") {
+      // Extrai endereço da mensagem do usuário
+      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+      if (!rua || !numero || !bairro || !cidade || !cep) {
+        return "Por favor, informe todos os campos do endereço separados por vírgula.";
       }
-    } catch (e) {
-      return "Desculpe, não consegui entender o endereço. Por favor, tente novamente.";
-    }
-
-    if (!deliveryData || typeof deliveryData !== "object") {
-      // Só retorna erro se realmente tentou processar um JSON
-      return "";
-    }
-
-    // Normaliza os campos para aceitar tanto PT quanto EN
-    const rua = deliveryData.rua || deliveryData.street;
-    const numero = deliveryData.numero || deliveryData.number;
-    const bairro = deliveryData.bairro || deliveryData.neighborhood;
-    const cidade = deliveryData.cidade || deliveryData.city || "";
-    const cep = deliveryData.cep || deliveryData.zip || "";
-    const responsavel = deliveryData.responsavel || deliveryData.responsible;
-
-    // Se só veio o endereço, guarda e espera o responsável
-    if (rua && numero && bairro && !responsavel) {
-      setPendingDelivery({ rua, numero, bairro, cidade, cep });
-      return "";
-    }
-
-    // Se temos endereço pendente e agora veio o responsável
-    if (pendingDelivery && responsavel) {
-      setDeliveries((prev) => [
-        ...prev,
-        {
-          nomeResponsavel: responsavel,
-          enderecoDestino: {
-            rua: pendingDelivery.rua,
-            numero: pendingDelivery.numero,
-            bairro: pendingDelivery.bairro,
-            cidade: pendingDelivery.cidade,
-            cep: pendingDelivery.cep,
-          },
+      setPendingDelivery({
+        enderecoDestino: {
+          rua: rua.trim(),
+          numero: numero.trim(),
+          bairro: bairro.trim(),
+          cidade: cidade.trim(),
+          cep: cep.trim(),
         },
-      ]);
+      });
+      setDeliveryStep("responsavel");
+      return "Qual o nome do responsável pela entrega?";
+    }
+    if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
+      // Salva a entrega
+      const nomeResponsavel = userInput.trim();
+      if (!nomeResponsavel) {
+        return "Por favor, informe o nome do responsável.";
+      }
+      const newDelivery: Delivery = {
+        nomeResponsavel,
+        enderecoDestino: pendingDelivery.enderecoDestino,
+      };
+      setDeliveries((prev) => [...prev, newDelivery]);
+      setDeliveryStep(null);
       setPendingDelivery(null);
-      return "Entrega registrada com sucesso! ✅";
+      return "Entrega cadastrada com sucesso!";
     }
-
-    // Caso venha tudo junto (endereço + responsável)
-    if (rua && numero && bairro && responsavel) {
-      setDeliveries((prev) => [
-        ...prev,
-        {
-          nomeResponsavel: responsavel,
-          enderecoDestino: {
-            rua,
-            numero,
-            bairro,
-            cidade,
-            cep,
-          },
-        },
-      ]);
-      return "Entrega registrada com sucesso! ✅";
-    }
-
-    return "";
+    return "Não entendi sua solicitação.";
   };
   //#endregion
   //#endregion
@@ -438,7 +492,7 @@ export default function Chat() {
           text: `# General
 1 - You are a customer service bot, a point of support when the user needs to consult information at I9 Delivery.
 2 - Event correlation is used to pass information related to the event, such as the delivery ID or the delivery driver's name.
-3 - Always respond in the same language as the user's message.
+3 - Always respond in Portuguese.
 4 - Whenever the system passes information to you, it will be within 'data'.
 5 - Never share someone's location; instead, use Euclidean distance to calculate the distance.
 
@@ -459,30 +513,13 @@ export default function Chat() {
 2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
 
 # Insert Delivery:
-1. When the user wants to add a delivery, first ask: "What is the delivery address?".
-2. When the user provides the address, extract and return the following fields as JSON:
-   - street
-   - number
-   - neighborhood
-   - city (if present)
-   - zip (if present)
-   Example:
-   {
-     "street": "R. São João",
-     "number": "397",
-     "neighborhood": "Vila Sao Francisco",
-     "city": "",
-     "zip": ""
-   }
-3. After receiving the address, ask: "Who is the person responsible for the delivery?".
-4. When the user provides the name, return it as JSON:
-   Example:
-   {
-     "responsible": "João"
-   }
-5. When all information is collected, confirm the registration and add the delivery to the list.
-6. Always validate that all required fields are present before confirming the registration.
-7. Only confirm the registration when all information is complete.
+1 - When the user asks to add or insert a delivery, first ask for the responsible person's name.
+2 - After receiving the name, ask for the destination address in the format: street, number, neighborhood, city, ZIP code.
+3 - After receiving the destination address, ask for the origin address (same format as the destination) or allow the user to type "use default address".
+4 - Always validate that the user has provided all required fields before confirming the delivery.
+5 - Only confirm the delivery registration when all information is complete and the user confirms.
+6 - If the user provides all information in a single message, extract the data and confirm the registration.
+7 - Always respond in English.
 
 # General Response:
 1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
@@ -541,10 +578,11 @@ export default function Chat() {
           return await handleSearchDriver(structuredResponse);
 
         case "insert_delivery":
-          // Só envia resposta se houver mensagem
-          const msg = handleInsertDelivery(structuredResponse.message);
-          if (msg) return msg;
+          setDeliveryStep("destino");
+          setPendingDelivery({});
+          sendResponse("Qual o endereço de destino da entrega? (Rua, número, bairro, cidade, CEP)");
           return "";
+
         case "general_response":
         default:
           return (
@@ -615,6 +653,12 @@ export default function Chat() {
     }, 20); // Ajuste a velocidade da "digitação" aqui (em ms)
   };
   //#endregion
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentConversation?.messages]);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -703,38 +747,36 @@ export default function Chat() {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {m.role === "user" && m.content.includes("data:image/") ? (
-                      m.content.split("\n").map((part, i) => {
-                        const imageMatch = part.match(
-                          /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
-                        );
-                        if (imageMatch) {
-                          return (
-                            <Image
-                              key={i}
-                              src={imageMatch[1]}
-                              alt={`Imagem enviada pelo usuário ${i + 1}`}
-                              width={200}
-                              height={200}
-                              className="imgUser rounded-md mb-4 mr-2"
-                              unoptimized
-                            />
+                    {m.role === "user" && m.content.includes("data:image/")
+                      ? m.content.split("\n").map((part, i) => {
+                          const imageMatch = part.match(
+                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
                           );
-                        }
-                        return (
-                          <p key={i} className="text-sm text-white">
-                            {part}
-                          </p>
-                        );
-                      })
-                    ) : (
-                      m.content.split("\n").map((line, i) => (
-                        <span key={i}>
-                          {line}
-                          <br />
-                        </span>
-                      ))
-                    )}
+                          if (imageMatch) {
+                            return (
+                              <Image
+                                key={i}
+                                src={imageMatch[1]}
+                                alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                width={200}
+                                height={200}
+                                className="imgUser rounded-md mb-4 mr-2"
+                                unoptimized
+                              />
+                            );
+                          }
+                          return (
+                            <p key={i} className="text-sm text-white">
+                              {part}
+                            </p>
+                          );
+                        })
+                      : m.content.split("\n").map((line, i) => (
+                          <span key={i}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                     {m.timestamp && (
                       <span className="text-xs text-gray-400 block mt-1">
                         {new Date(m.timestamp).toLocaleTimeString([], {
@@ -747,9 +789,10 @@ export default function Chat() {
                 </div>
               ))
             )}
+            <div ref={messagesEndRef} /> {/* Referência para o final das mensagens */}
           </div>
           <div className="border-t p-4">
-            {/* Pré-visualização */}
+            {/* Pré-visualização das imagens carregadas */}
             {uploadedImages.length > 0 && (
               <div className="flex space-x-2 mb-4 overflow-x-auto">
                 {uploadedImages.map((image, index) => (
@@ -777,7 +820,7 @@ export default function Chat() {
               </div>
             )}
 
-            {/* Formulário */}
+            {/* Formulário de entrada */}
             <form onSubmit={handleFormSubmit} className="flex w-full space-x-2">
               <input
                 value={input}
@@ -790,7 +833,7 @@ export default function Chat() {
               <input
                 type="file"
                 accept="image/*"
-                multiple
+                multiple // Permite selecionar múltiplas imagens
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"
