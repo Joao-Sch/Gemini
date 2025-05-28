@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
+import users from "@/lib/users.json";
 import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
@@ -31,7 +33,7 @@ type Delivery = {
     cidade: string;
     cep: string;
   };
-  enderecoOrigem?: {
+  enderecoOrigem: {
     rua: string;
     numero: string;
     bairro: string;
@@ -52,8 +54,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  const [deliveries, setDeliveries] = useState<Delivery[]>([]); // Lista de entregas
-  const [deliveryData, setDeliveryData] = useState<Partial<Delivery>>({});
+  const [deliveries, setDeliveries] = useState<any[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [deliveryStep, setDeliveryStep] = useState<
     null | "destino" | "responsavel"
@@ -81,9 +82,9 @@ export default function Chat() {
 
   useEffect(() => {
     if (conversations.length === 0) {
-      createNewConversation(); // Cria a conversa inicial
+      createNewConversation();
     }
-  }, []);
+  });
 
   const switchConversation = (id: string) => {
     setCurrentConversationId(id);
@@ -121,60 +122,10 @@ export default function Chat() {
       )
     );
 
+    // Fluxo conversacional de entrega
     if (deliveryStep) {
       const response = await handleInsertDelivery(input);
       sendResponse(response);
-      setInput("");
-      setIsLoading(false);
-      setIsSubmitClicked(false);
-      return;
-    }
-
-    if (deliveryStep === "destino") {
-      // Extrai endereço da mensagem do usuário
-      const [rua, numero, bairro, cidade, cep] = input.split(",");
-      if (!rua || !numero || !bairro || !cidade || !cep) {
-        sendResponse(
-          "Por favor, informe todos os campos do endereço separados por vírgula."
-        );
-        setIsLoading(false);
-        setIsSubmitClicked(false);
-        return;
-      }
-      setPendingDelivery({
-        enderecoDestino: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          cep: cep.trim(),
-        },
-      });
-      setDeliveryStep("responsavel");
-      sendResponse("Qual o nome do responsável pela entrega?");
-      setInput("");
-      setIsLoading(false);
-      setIsSubmitClicked(false);
-      return;
-    }
-
-    if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
-      // Salva a entrega
-      const nomeResponsavel = input.trim();
-      if (!nomeResponsavel) {
-        sendResponse("Por favor, informe o nome do responsável.");
-        setIsLoading(false);
-        setIsSubmitClicked(false);
-        return;
-      }
-      const newDelivery: Delivery = {
-        nomeResponsavel,
-        enderecoDestino: pendingDelivery.enderecoDestino,
-      };
-      setDeliveries((prev) => [...prev, newDelivery]);
-      sendResponse("Entrega cadastrada com sucesso!");
-      setDeliveryStep(null);
-      setPendingDelivery(null);
       setInput("");
       setIsLoading(false);
       setIsSubmitClicked(false);
@@ -189,13 +140,16 @@ export default function Chat() {
           : deliveries
               .map(
                 (d, i) =>
-                  `Entrega ${i + 1}: ${d.nomeResponsavel}, Destino: ${
-                    d.enderecoDestino?.rua
-                  }, ${d.enderecoDestino?.numero}, ${
-                    d.enderecoDestino?.bairro
-                  }, ${d.enderecoDestino?.cidade}, ${d.enderecoDestino?.cep}`
+                  `Entrega ${i + 1}:
+Responsável: ${d.nomeResponsavel}
+Destino: ${d.enderecoDestino.rua}, ${d.enderecoDestino.numero}, ${
+                    d.enderecoDestino.bairro
+                  }, ${d.enderecoDestino.cidade}, ${d.enderecoDestino.cep}
+Origem: ${d.enderecoOrigem.rua}, ${d.enderecoOrigem.numero}, ${
+                    d.enderecoOrigem.bairro
+                  }, ${d.enderecoOrigem.cidade}, ${d.enderecoOrigem.cep}`
               )
-              .join("\n")
+              .join("\n\n")
       );
       setInput("");
       setIsLoading(false);
@@ -204,7 +158,6 @@ export default function Chat() {
     }
 
     if (uploadedImages.length > 0) {
-      // Adiciona todas as imagens e o texto ao chat do usuário
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === currentConversationId
@@ -227,7 +180,6 @@ export default function Chat() {
         )
       );
 
-      // Envia apenas a primeira imagem para o Gemini
       const response = await sendToGemini({
         text: input.trim() || undefined,
         image: uploadedImages[0],
@@ -249,7 +201,6 @@ export default function Chat() {
 
     try {
       const response = await processUserInput(input);
-      // Só envia resposta se não for string vazia
       if (response && response.trim() !== "") {
         sendResponse(response);
       }
@@ -262,6 +213,7 @@ export default function Chat() {
     setTimeout(() => setIsSubmitClicked(false), 500);
     setIsLoading(false);
   };
+  //#endregion
 
   //#region Função de Upload de Imagem
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -273,16 +225,18 @@ export default function Chat() {
           const base64Image = reader.result as string;
           setUploadedImages((prev) => [...prev, base64Image]);
         };
-        reader.readAsDataURL(file); // Garante que o formato seja data:image/...
+        reader.readAsDataURL(file);
       });
     }
   };
   //#endregion
-  //#endregion
 
   //#region Funções de Busca
   const fetchDeliveryDetails = (deliveryId: number) => {
-    return entregas[19923]
+    // Busca primeiro no entregas.json
+    const found = (entregas as Record<string, any>)[String(deliveryId)];
+    if (found) return found;
+    return deliveries.find((d: any) => d.id === deliveryId);
   };
 
   const fecthDriverDetails = (driverId: number) => {
@@ -334,73 +288,64 @@ export default function Chat() {
       return partialMessage;
     } catch (error) {
       console.error("Erro ao enviar mensagem ao Gemini:", error);
-      const errorMessage =
-        "Desculpe, ocorreu um erro ao interagir com a IA. Tente novamente.";
-      return errorMessage;
+      return "Desculpe, ocorreu um erro ao interagir com a IA. Tente novamente.";
     }
-  };
-  //#endregion
-    // Adiciona a nova entrega ao array de entregas
-    setDeliveries((prev) => {
-      const updatedDeliveries = [...prev, newDelivery];
-      console.log("Updated delivery list:", updatedDeliveries);
-      return updatedDeliveries;
-    });
-
-    sendResponse("Delivery registered successfully!");
-    sendResponse(
-      deliveries.length === 0
-        ? "No deliveries registered."
-        : [...deliveries, newDelivery] // Inclui a nova entrega na resposta
-            .map(
-              (d, i) =>
-                `Delivery ${i + 1}: ${d.nomeResponsavel}, Destination: ${
-                  d.enderecoDestino?.rua
-                }, ${d.enderecoDestino?.numero}, ${
-                  d.enderecoDestino?.bairro
-                }, ${d.enderecoDestino?.cidade}, ${d.enderecoDestino?.cep}`
-            )
-            .join("\n")
-    );
-    setDeliveryData({});
   };
   //#endregion
 
   //#region FUNÇÕES DE ENVIO DE ENVIO
   //#region Search Delivery
   const handleSearchDelivery = async (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     structuredResponse: any
   ): Promise<string> => {
     const deliveryId = parseInt(structuredResponse.event.correlation, 10);
 
     if (isNaN(deliveryId)) {
-      return structuredResponse.message || "Please provide the delivery ID.";
+      return (
+        structuredResponse.message || "Por favor, informe o ID da entrega."
+      );
     }
 
     const deliveryDetails = fetchDeliveryDetails(deliveryId);
     if (deliveryDetails) {
-      const prompt = `
-    The client provided the delivery ID: ${deliveryId}.
-    Here are the delivery details:
-    - Status: ${deliveryDetails.situacao}
-    - Delivery Person's Name: ${deliveryDetails.nomeEntregador}
-    - Vehicle: ${deliveryDetails.veiculo}
-    - Value: $${deliveryDetails.valor.toFixed(2)}
-    - Delivery Estimate: calculate the Euclidean distance between the origin point and the delivery point and provide the delivery estimate in minutes based on the delivery person's location ${
-      deliveryDetails.coordenadas
-    } and the client's location which is always "latitude": -23.55052, "longitude": -46.633308. Only provide the estimated time without giving details of how it was calculated.
+      const origem = deliveryDetails.addresses.find(
+        (a: any) => a.position === 0
+      );
+      const destino = deliveryDetails.addresses.find(
+        (a: any) => a.position === 1
+      );
 
-    Please generate a friendly and clear response for the client.`;
+      // Monta um prompt amigável para o Gemini
+      const prompt = `
+Aqui estão os detalhes da entrega:
+- ID: ${deliveryDetails.id}
+- Status: ${deliveryDetails.situation?.description ?? "N/A"}
+- Origem: ${origem?.street ?? ""}, ${origem?.number ?? ""}, ${
+        origem?.neighborhood ?? ""
+      }, ${origem?.city ?? ""}, ${origem?.state ?? ""}, ${origem?.zipCode ?? ""}
+- Responsável Origem: ${origem?.responsible ?? "N/A"}
+- Destino: ${destino?.street ?? ""}, ${destino?.number ?? ""}, ${
+        destino?.neighborhood ?? ""
+      }, ${destino?.city ?? ""}, ${destino?.state ?? ""}, ${
+        destino?.zipCode ?? ""
+      }
+- Responsável Destino: ${destino?.responsible ?? "N/A"}
+- Motoboy: ${deliveryDetails.deliveryman?.name ?? "N/A"}
+- Veículo: ${deliveryDetails.deliveryman?.vehicle?.model ?? "N/A"}
+- Valor: R$ ${deliveryDetails.price ?? "N/A"}
+
+Por favor, gere uma mensagem clara, amigável para o cliente com essas informações.
+    `.trim();
+
       return await sendToGemini({ text: prompt });
     } else {
-      return "No delivery found with the provided ID.";
+      return "Nenhuma entrega encontrada com o ID informado.";
     }
   };
   //#endregion
+
   //#region Search Driver
   const handleSearchDriver = async (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     structuredResponse: any
   ): Promise<string> => {
     const driverId = parseInt(structuredResponse.event.correlation, 10);
@@ -423,17 +368,20 @@ export default function Chat() {
                       Please format this response in a friendly and clear manner for the client.`;
       return await sendToGemini(prompt);
     } else {
-      return "No delivery driver found with the provided ID.";
+      return "Nenhum motboy encontrado com esse ID.";
     }
   };
   //#endregion
   //#endregion
 
+  const generateRandomId = () => {
+    return Math.floor(1000000 + Math.random() * 9000000);
+  };
+
   //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
   //#region Insert Delivery
   const handleInsertDelivery = async (userInput: string): Promise<string> => {
     if (deliveryStep === "destino") {
-      // Extrai endereço da mensagem do usuário
       const [rua, numero, bairro, cidade, cep] = userInput.split(",");
       if (!rua || !numero || !bairro || !cidade || !cep) {
         return "Por favor, informe todos os campos do endereço separados por vírgula.";
@@ -451,15 +399,59 @@ export default function Chat() {
       return "Qual o nome do responsável pela entrega?";
     }
     if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
-      // Salva a entrega
       const nomeResponsavel = userInput.trim();
       if (!nomeResponsavel) {
         return "Por favor, informe o nome do responsável.";
       }
-      const newDelivery: Delivery = {
-        nomeResponsavel,
-        enderecoDestino: pendingDelivery.enderecoDestino,
+
+      // Busca o endereço de origem no users.json
+      const user = users.find(
+        (u: any) =>
+          u.name?.toLowerCase().trim() === nomeResponsavel.toLowerCase().trim()
+      );
+      if (!user || !user.endereco) {
+        return "Responsável não encontrado ou sem endereço cadastrado no sistema.";
+      }
+
+      const newId = generateRandomId();
+      const randomEntrega = Object.values(entregas)[
+        Math.floor(Math.random() * Object.values(entregas).length)
+      ] as any;
+
+      const addresses = [
+        {
+          street: user.endereco.rua,
+          number: user.endereco.numero,
+          neighborhood: user.endereco.bairro,
+          city: user.endereco.cidade,
+          state: "",
+          zipCode: user.endereco.cep,
+          position: 0,
+          responsible: nomeResponsavel,
+          status: 0, 
+        },
+        {
+          street: pendingDelivery.enderecoDestino.rua,
+          number: pendingDelivery.enderecoDestino.numero,
+          neighborhood: pendingDelivery.enderecoDestino.bairro,
+          city: pendingDelivery.enderecoDestino.cidade,
+          state: "", 
+          zipCode: pendingDelivery.enderecoDestino.cep,
+          position: 1,
+          responsible: nomeResponsavel,
+          status: 0,
+        },
+      ];
+
+      // Cria a nova entrega com campos extras
+      const newDelivery = {
+        id: newId,
+        addresses,
+        deliveryman: randomEntrega?.deliveryman ?? null,
+        price: randomEntrega?.price ?? null,
+        situation: { description: "Pendente", type: 0 },
       };
+
       setDeliveries((prev) => [...prev, newDelivery]);
       setDeliveryStep(null);
       setPendingDelivery(null);
@@ -580,7 +572,9 @@ export default function Chat() {
         case "insert_delivery":
           setDeliveryStep("destino");
           setPendingDelivery({});
-          sendResponse("Qual o endereço de destino da entrega? (Rua, número, bairro, cidade, CEP)");
+          sendResponse(
+            "Qual o endereço de destino da entrega? (Rua, número, bairro, cidade, CEP)"
+          );
           return "";
 
         case "general_response":
@@ -616,11 +610,10 @@ export default function Chat() {
     const botMessage: UIMessage = {
       id: `bot-message-${Date.now()}-${Math.random()}`,
       role: "assistant",
-      content: "", // Começa vazio para o efeito de digitação
+      content: "",
       timestamp: new Date().toISOString(),
     };
 
-    // Adiciona a mensagem do bot (vazia inicialmente)
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === currentConversationId
@@ -629,7 +622,6 @@ export default function Chat() {
       )
     );
 
-    // Efeito de digitação
     let index = 0;
     const interval = setInterval(() => {
       if (index < response.length) {
@@ -650,7 +642,7 @@ export default function Chat() {
       } else {
         clearInterval(interval);
       }
-    }, 20); // Ajuste a velocidade da "digitação" aqui (em ms)
+    }, 20);
   };
   //#endregion
 
@@ -789,7 +781,8 @@ export default function Chat() {
                 </div>
               ))
             )}
-            <div ref={messagesEndRef} /> {/* Referência para o final das mensagens */}
+            <div ref={messagesEndRef} />{" "}
+            {/* Referência para o final das mensagens */}
           </div>
           <div className="border-t p-4">
             {/* Pré-visualização das imagens carregadas */}
@@ -833,7 +826,7 @@ export default function Chat() {
               <input
                 type="file"
                 accept="image/*"
-                multiple // Permite selecionar múltiplas imagens
+                multiple
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"
@@ -880,3 +873,4 @@ export default function Chat() {
     </div>
   );
 }
+//#endregion

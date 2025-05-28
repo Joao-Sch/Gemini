@@ -1,52 +1,122 @@
 [
     {
         "id": 1,
-        "name": "John Doe",
-        "email": ""
+        "name": "joao",
+        "email": "",
+        "endereco": {
+            "rua": "Rua das Flores",
+            "numero": "100",
+            "bairro": "Centro",
+            "cidade": "São Paulo",
+            "cep": "01000-000"
+        }
     },
     {
         "id": 2,
-        "name": "Jane Smith",
-        "email": ""
+        "name": "Ana",
+        "email": "",
+        "endereco": {
+            "rua": "Avenida Brasil",
+            "numero": "200",
+            "bairro": "Jardins",
+            "cidade": "São Paulo",
+            "cep": "01400-000"
+        }
     },
     {
         "id": 3,
-        "name": "Alice Johnson",
-        "email": ""
+        "name": "Carlos",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Augusta",
+            "numero": "300",
+            "bairro": "Consolação",
+            "cidade": "São Paulo",
+            "cep": "01305-000"
+        }
     },
     {
         "id": 4,
-        "name": "Bob Brown",
-        "email": ""
+        "name": "Bruna",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Bela Cintra",
+            "numero": "400",
+            "bairro": "Cerqueira César",
+            "cidade": "São Paulo",
+            "cep": "01415-000"
+        }
     },
     {
         "id": 5,
-        "name": "Charlie Davis",
-        "email": ""
+        "name": "Rafael",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Oscar Freire",
+            "numero": "500",
+            "bairro": "Pinheiros",
+            "cidade": "São Paulo",
+            "cep": "05409-010"
+        }
     },
     {
         "id": 6,
-        "name": "Diana Evans",
-        "email": ""
+        "name": "Marina",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Haddock Lobo",
+            "numero": "600",
+            "bairro": "Jardim Paulista",
+            "cidade": "São Paulo",
+            "cep": "01414-000"
+        }
     },
     {
         "id": 7,
-        "name": "Ethan Foster",
-        "email": ""
+        "name": "Pedro",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Frei Caneca",
+            "numero": "700",
+            "bairro": "Bela Vista",
+            "cidade": "São Paulo",
+            "cep": "01307-000"
+        }
     },
     {
         "id": 8,
-        "name": "Fiona Green",
-        "email": ""
+        "name": "Letícia",
+        "email": "",
+        "endereco": {
+            "rua": "Rua da Consolação",
+            "numero": "800",
+            "bairro": "Consolação",
+            "cidade": "São Paulo",
+            "cep": "01302-000"
+        }
     },
     {
         "id": 9,
-        "name": "George Hall",
-        "email": ""
+        "name": "Gabriel",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Pamplona",
+            "numero": "900",
+            "bairro": "Jardim Paulista",
+            "cidade": "São Paulo",
+            "cep": "01405-002"
+        }
     },
     {
         "id": 10,
-        "name": "Hannah Turner",
-        "email": ""
+        "name": "Julia",
+        "email": "",
+        "endereco": {
+            "rua": "Rua Itapeva",
+            "numero": "1000",
+            "bairro": "Bela Vista",
+            "cidade": "São Paulo",
+            "cep": "01332-000"
+        }
     }
 ]
