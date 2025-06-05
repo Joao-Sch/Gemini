@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
-import users from "@/lib/users.json";
+//import users from "@/lib/users.json";
 import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
@@ -121,16 +121,6 @@ export default function Chat() {
           : conv
       )
     );
-
-    // Fluxo conversacional de entrega
-    if (deliveryStep) {
-      const response = await handleInsertDelivery(input);
-      sendResponse(response);
-      setInput("");
-      setIsLoading(false);
-      setIsSubmitClicked(false);
-      return;
-    }
 
     // LISTA DE ENTREGAS
     if (input.trim().toLowerCase() === "/listar-entregas") {
@@ -366,7 +356,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       - Deliveries made: ${driverDetails.entregasRealizadas}
                       - Rating: ${driverDetails.avaliacao} 
                       Please format this response in a friendly and clear manner for the client.`;
-      return await sendToGemini(prompt);
+      return await sendToGemini({ text: prompt });
     } else {
       return "Nenhum motboy encontrado com esse ID.";
     }
@@ -378,89 +368,38 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     return Math.floor(1000000 + Math.random() * 9000000);
   };
 
-  //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
-  //#region Insert Delivery
-  const handleInsertDelivery = async (userInput: string): Promise<string> => {
-    if (deliveryStep === "destino") {
-      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-      if (!rua || !numero || !bairro || !cidade || !cep) {
-        return "Por favor, informe todos os campos do endereço separados por vírgula.";
-      }
-      setPendingDelivery({
-        enderecoDestino: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          cep: cep.trim(),
-        },
-      });
-      setDeliveryStep("responsavel");
-      return "Qual o nome do responsável pela entrega?";
+  //#endregion
+
+  const handleInsertDelivery = async (
+    structuredResponse: any
+  ): Promise<string> => {
+    const address = structuredResponse.event?.address;
+
+    if (!address) {
+      return "Por favor, informe o endereço completo.";
     }
-    if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
-      const nomeResponsavel = userInput.trim();
-      if (!nomeResponsavel) {
-        return "Por favor, informe o nome do responsável.";
-      }
 
-      // Busca o endereço de origem no users.json
-      const user = users.find(
-        (u: any) =>
-          u.name?.toLowerCase().trim() === nomeResponsavel.toLowerCase().trim()
-      );
-      if (!user || !user.endereco) {
-        return "Responsável não encontrado ou sem endereço cadastrado no sistema.";
-      }
+    const newDelivery = {
+      id: generateRandomId(),
+      enderecoDestino: {
+        rua: address.rua ?? "",
+        numero: address.numero ?? "",
+        bairro: address.bairro ?? "",
+        cidade: address.cidade ?? "",
+        cep: address.cep ?? "",
+      },
+      enderecoOrigem: {
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "",
+        cep: "",
+      },
+    };
 
-      const newId = generateRandomId();
-      const randomEntrega = Object.values(entregas)[
-        Math.floor(Math.random() * Object.values(entregas).length)
-      ] as any;
-
-      const addresses = [
-        {
-          street: user.endereco.rua,
-          number: user.endereco.numero,
-          neighborhood: user.endereco.bairro,
-          city: user.endereco.cidade,
-          state: "",
-          zipCode: user.endereco.cep,
-          position: 0,
-          responsible: nomeResponsavel,
-          status: 0, 
-        },
-        {
-          street: pendingDelivery.enderecoDestino.rua,
-          number: pendingDelivery.enderecoDestino.numero,
-          neighborhood: pendingDelivery.enderecoDestino.bairro,
-          city: pendingDelivery.enderecoDestino.cidade,
-          state: "", 
-          zipCode: pendingDelivery.enderecoDestino.cep,
-          position: 1,
-          responsible: nomeResponsavel,
-          status: 0,
-        },
-      ];
-
-      // Cria a nova entrega com campos extras
-      const newDelivery = {
-        id: newId,
-        addresses,
-        deliveryman: randomEntrega?.deliveryman ?? null,
-        price: randomEntrega?.price ?? null,
-        situation: { description: "Pendente", type: 0 },
-      };
-
-      setDeliveries((prev) => [...prev, newDelivery]);
-      setDeliveryStep(null);
-      setPendingDelivery(null);
-      return "Entrega cadastrada com sucesso!";
-    }
-    return "Não entendi sua solicitação.";
+    setDeliveries((prev) => [...prev, newDelivery]);
+    return `Entrega adicionada com sucesso para o endereço: ${address.rua}, ${address.numero}, ${address.bairro}, ${address.cidade}, ${address.cep}`;
   };
-  //#endregion
-  //#endregion
 
   //#region Funções de Processamento
   const processUserInput = async (userInput: string): Promise<string> => {
@@ -504,14 +443,47 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 1 - Whenever a user asks about a delivery driver, request their ID of driver.
 2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
 
-# Insert Delivery:
-1 - When the user asks to add or insert a delivery, first ask for the responsible person's name.
-2 - After receiving the name, ask for the destination address in the format: street, number, neighborhood, city, ZIP code.
-3 - After receiving the destination address, ask for the origin address (same format as the destination) or allow the user to type "use default address".
-4 - Always validate that the user has provided all required fields before confirming the delivery.
-5 - Only confirm the delivery registration when all information is complete and the user confirms.
-6 - If the user provides all information in a single message, extract the data and confirm the registration.
-7 - Always respond in English.
+# Address Extraction
+Whenever the user provides a Brazilian address (for delivery or pickup), ALWAYS extract the following fields: rua, numero, bairro, cidade, estado, cep.
+- Always return these fields inside an "address" object within the "event" object in the JSON response, like this:
+{
+  "event": {
+    "code": "insert_delivery",
+    "address": {
+      "rua": "...",
+      "numero": "...",
+      "bairro": "...",
+      "cidade": "...",
+      "estado": "...",
+      "cep": "..."
+    }
+  },
+  "message": "Endereço recebido!"
+}
+- If any field cannot be identified, return null for that field.
+- Never return any explanation, just the JSON object.
+- Example input: "R. José Maria dos Passos, 200 - Vila Padre Bento, Itu - SP, 02312-100"
+- Example output: {"event":{"code":"insert_delivery","address":{"rua":"R. José Maria dos Passos","numero":"200","bairro":"Vila Padre Bento","cidade":"Itu","estado":"SP","cep":"02312-100"}},"message":"Endereço recebido!"}
+
+# Adicionar Entrega:
+1 - Se o usuário informar um endereço e um nome de responsável para uma nova entrega, use o event code: insert_delivery.
+2 - Retorne o endereço extraído em 'address' e o nome do responsável em 'nomeResponsavel' dentro do objeto 'event'.
+Exemplo de resposta:
+{
+  "event": {
+    "code": "insert_delivery",
+    "address": {
+      "rua": "...",
+      "numero": "...",
+      "bairro": "...",
+      "cidade": "...",
+      "estado": "...",
+      "cep": "..."
+    },
+    "nomeResponsavel": "Fulano de Tal"
+  },
+  "message": "Entrega registrada!"
+}
 
 # General Response:
 1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
@@ -570,12 +542,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           return await handleSearchDriver(structuredResponse);
 
         case "insert_delivery":
-          setDeliveryStep("destino");
-          setPendingDelivery({});
-          sendResponse(
-            "Qual o endereço de destino da entrega? (Rua, número, bairro, cidade, CEP)"
-          );
-          return "";
+          return await handleInsertDelivery(structuredResponse);
 
         case "general_response":
         default:
@@ -777,6 +744,36 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         })}
                       </span>
                     )}
+                    {m.role === "assistant" &&
+                    m.content.includes("data:image/") ? (
+                      <div className="flex flex-col mt-2">
+                        {m.content.split("\n").map((part, i) => {
+                          const imageMatch = part.match(
+                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
+                          );
+                          if (imageMatch) {
+                            return (
+                              <Image
+                                key={i}
+                                src={imageMatch[1]}
+                                alt={`Imagem enviada pela assistente ${i + 1}`}
+                                width={200}
+                                height={200}
+                                className="imgAssistant rounded-md mb-4"
+                                unoptimized
+                              />
+                            );
+                          }
+                          return null;
+                        })}
+                        {m.content.split("\n").map((line, i) => (
+                          <span key={i} className="text-sm text-gray-800">
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))
