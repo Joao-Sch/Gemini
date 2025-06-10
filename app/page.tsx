@@ -9,6 +9,7 @@ import users from "@/lib/users.json";
 import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
+import { FiSearch } from "react-icons/fi";
 
 //#region TIPOS
 type UIMessage = {
@@ -66,6 +67,7 @@ export default function Chat() {
   const [showDeliveriesSidebar, setShowDeliveriesSidebar] = useState(false);
   const [openDelivery, setOpenDelivery] = useState<number | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   //#endregion
 
@@ -260,7 +262,6 @@ export default function Chat() {
   const fecthDriverDetails = (driverId: number) => {
     return motoBoys.find((item) => item.id === driverId);
   };
-  //#endregion
 
   //#region Funções do Gemini
   const sendToGemini = async (payload: { text?: string; image?: string }) => {
@@ -701,26 +702,46 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         </div>
 
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
+
+        {/* Coloque o input de busca aqui */}
+        <div className="relative mb-4">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <FiSearch size={18} />
+          </span>
+          <input
+            type="text"
+            placeholder="Buscar conversa..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600"
+          />
+        </div>
+
         <button
           onClick={createNewConversation}
-          className=" w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
+          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
         >
           Nova Conversa
         </button>
+
         <div className="space-y-2">
-          {conversations.map((conv) => (
-            <button
-              key={conv.id}
-              onClick={() => switchConversation(conv.id)}
-              className={`slideConversation block w-full px-4 py-2 rounded-md transition-all duration-500
-      ${conv.id === currentConversationId
-        ? "bg-green-500 text-white scale-110"
-        : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"}
-      text-center`}
-            >
-              <b>{conv.title}</b>
-            </button>
-          ))}
+          {conversations
+            .filter((conv) =>
+              conv.title.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((conv) => (
+              <button
+                key={conv.id}
+                onClick={() => switchConversation(conv.id)}
+                className={`slideConversation block w-full px-4 py-2 rounded-md transition-all duration-500
+          ${conv.id === currentConversationId
+            ? "bg-green-500 text-white scale-110"
+            : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"}
+          text-center`}
+              >
+                <b>{conv.title}</b>
+              </button>
+            ))}
         </div>
       </div>
 
