@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
-//import users from "@/lib/users.json";
+import users from "@/lib/users.json";
 import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
@@ -21,6 +21,7 @@ type UIMessage = {
 
 type Conversation = {
   id: string;
+  title: string;
   messages: UIMessage[];
 };
 
@@ -62,6 +63,9 @@ export default function Chat() {
   const [pendingDelivery, setPendingDelivery] = useState<{
     enderecoDestino?: Delivery["enderecoDestino"];
   } | null>(null);
+  const [showDeliveriesSidebar, setShowDeliveriesSidebar] = useState(false);
+  const [openDelivery, setOpenDelivery] = useState<number | null>(null);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   //#endregion
 
@@ -73,6 +77,7 @@ export default function Chat() {
   const createNewConversation = () => {
     const newConv: Conversation = {
       id: `Conversa ${conversationCounter}`,
+      title: "Nova conversa", // título inicial
       messages: [],
     };
     setConversations((prev) => [...prev, newConv]);
@@ -122,24 +127,47 @@ export default function Chat() {
       )
     );
 
+    // Gera título com Gemini se for a primeira mensagem
+    const conv = conversations.find((c) => c.id === currentConversationId);
+    if (conv && conv.messages.length === 0) {
+      try {
+        const geminiTitle = await generateTitleWithGemini(input, ai);
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === currentConversationId
+              ? { ...c, title: geminiTitle }
+              : c
+          )
+        );
+      } catch {
+        // fallback: usa os primeiros 30 caracteres
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === currentConversationId
+              ? { ...c, title: input.slice(0, 30) }
+              : c
+          )
+        );
+      }
+    }
+
+    // Fluxo conversacional de entrega
+    if (deliveryStep) {
+      const response = await handleInsertDelivery(input);
+      sendResponse(response);
+      setInput("");
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      return;
+    }
+
     // LISTA DE ENTREGAS
     if (input.trim().toLowerCase() === "/listar-entregas") {
+      setShowDeliveriesSidebar(true);
       sendResponse(
         deliveries.length === 0
           ? "Nenhuma entrega registrada."
-          : deliveries
-              .map(
-                (d, i) =>
-                  `Entrega ${i + 1}:
-Responsável: ${d.nomeResponsavel}
-Destino: ${d.enderecoDestino.rua}, ${d.enderecoDestino.numero}, ${
-                    d.enderecoDestino.bairro
-                  }, ${d.enderecoDestino.cidade}, ${d.enderecoDestino.cep}
-Origem: ${d.enderecoOrigem.rua}, ${d.enderecoOrigem.numero}, ${
-                    d.enderecoOrigem.bairro
-                  }, ${d.enderecoOrigem.cidade}, ${d.enderecoOrigem.cep}`
-              )
-              .join("\n\n")
+          : "Veja a lista de entregas na aba à direita!"
       );
       setInput("");
       setIsLoading(false);
@@ -317,7 +345,7 @@ Aqui estão os detalhes da entrega:
 - Destino: ${destino?.street ?? ""}, ${destino?.number ?? ""}, ${
         destino?.neighborhood ?? ""
       }, ${destino?.city ?? ""}, ${destino?.state ?? ""}, ${
-        destino?.zipCode ?? ""
+        destino?.zipCode ?? "N/A"
       }
 - Responsável Destino: ${destino?.responsible ?? "N/A"}
 - Motoboy: ${deliveryDetails.deliveryman?.name ?? "N/A"}
@@ -356,7 +384,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       - Deliveries made: ${driverDetails.entregasRealizadas}
                       - Rating: ${driverDetails.avaliacao} 
                       Please format this response in a friendly and clear manner for the client.`;
-      return await sendToGemini({ text: prompt });
+      return await sendToGemini(prompt);
     } else {
       return "Nenhum motboy encontrado com esse ID.";
     }
@@ -368,38 +396,89 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     return Math.floor(1000000 + Math.random() * 9000000);
   };
 
-  //#endregion
-
-  const handleInsertDelivery = async (
-    structuredResponse: any
-  ): Promise<string> => {
-    const address = structuredResponse.event?.address;
-
-    if (!address) {
-      return "Por favor, informe o endereço completo.";
+  //#region FUNÇÕES DE INSERÇÃO DE ENTREGA
+  //#region Insert Delivery
+  const handleInsertDelivery = async (userInput: string): Promise<string> => {
+    if (deliveryStep === "destino") {
+      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
+      if (!rua || !numero || !bairro || !cidade || !cep) {
+        return "Por favor, informe todos os campos do endereço separados por vírgula.";
+      }
+      setPendingDelivery({
+        enderecoDestino: {
+          rua: rua.trim(),
+          numero: numero.trim(),
+          bairro: bairro.trim(),
+          cidade: cidade.trim(),
+          cep: cep.trim(),
+        },
+      });
+      setDeliveryStep("responsavel");
+      return "Qual o nome do responsável pela entrega?";
     }
+    if (deliveryStep === "responsavel" && pendingDelivery?.enderecoDestino) {
+      const nomeResponsavel = userInput.trim();
+      if (!nomeResponsavel) {
+        return "Por favor, informe o nome do responsável.";
+      }
 
-    const newDelivery = {
-      id: generateRandomId(),
-      enderecoDestino: {
-        rua: address.rua ?? "",
-        numero: address.numero ?? "",
-        bairro: address.bairro ?? "",
-        cidade: address.cidade ?? "",
-        cep: address.cep ?? "",
-      },
-      enderecoOrigem: {
-        rua: "",
-        numero: "",
-        bairro: "",
-        cidade: "",
-        cep: "",
-      },
-    };
+      // Busca o endereço de origem no users.json
+      const user = users.find(
+        (u: any) =>
+          u.name?.toLowerCase().trim() === nomeResponsavel.toLowerCase().trim()
+      );
+      if (!user || !user.endereco) {
+        return "Responsável não encontrado ou sem endereço cadastrado no sistema.";
+      }
 
-    setDeliveries((prev) => [...prev, newDelivery]);
-    return `Entrega adicionada com sucesso para o endereço: ${address.rua}, ${address.numero}, ${address.bairro}, ${address.cidade}, ${address.cep}`;
+      const newId = generateRandomId();
+      const randomEntrega = Object.values(entregas)[
+        Math.floor(Math.random() * Object.values(entregas).length)
+      ] as any;
+
+      const addresses = [
+        {
+          street: user.endereco.rua,
+          number: user.endereco.numero,
+          neighborhood: user.endereco.bairro,
+          city: user.endereco.cidade,
+          state: "",
+          zipCode: user.endereco.cep,
+          position: 0,
+          responsible: nomeResponsavel,
+          status: 0, 
+        },
+        {
+          street: pendingDelivery.enderecoDestino.rua,
+          number: pendingDelivery.enderecoDestino.numero,
+          neighborhood: pendingDelivery.enderecoDestino.bairro,
+          city: pendingDelivery.enderecoDestino.cidade,
+          state: "", 
+          zipCode: pendingDelivery.enderecoDestino.cep,
+          position: 1,
+          responsible: nomeResponsavel,
+          status: 0,
+        },
+      ];
+
+      // Cria a nova entrega com campos extras
+      const newDelivery = {
+        id: newId,
+        addresses,
+        deliveryman: randomEntrega?.deliveryman ?? null,
+        price: randomEntrega?.price ?? null,
+        situation: { description: "Pendente", type: 0 },
+      };
+
+      setDeliveries((prev) => [...prev, newDelivery]);
+      setDeliveryStep(null);
+      setPendingDelivery(null);
+      return "Entrega cadastrada com sucesso!";
+    }
+    return "Não entendi sua solicitação.";
   };
+  //#endregion
+  //#endregion
 
   //#region Funções de Processamento
   const processUserInput = async (userInput: string): Promise<string> => {
@@ -436,59 +515,26 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
 # Delivery:
 1 - Whenever a user asks about a delivery **and does not provide the delivery ID**, you MUST ask for the delivery ID. Your response should have the event code 'search_delivery' but the 'correlation' field should be empty or undefined, and the 'message' should clearly request the delivery ID.
-2 - Whenever a user asks about a delivery **and provides the delivery ID**, use the event code: search_delivery and include the provided ID in the 'correlation' field.
-3 - Whenever you need to consult information about a delivery, use the event code: search_delivery.
+2 - Whenever a user asks about a delivery **and fornece o ID da entrega**, use o código de evento: search_delivery e inclua o ID fornecido no campo 'correlation'.
+3 - Sempre que precisar consultar informações sobre uma entrega, use o código de evento: search_delivery.
 
-# Delivery Driver:
-1 - Whenever a user asks about a delivery driver, request their ID of driver.
-2 - Whenever you need to consult information about a delivery driver, use the event code: search_driver.
+# Entregador:
+1 - Sempre que um usuário perguntar sobre um entregador, solicite o ID do entregador.
+2 - Sempre que precisar consultar informações sobre um entregador, use o código de evento: search_driver.
 
-# Address Extraction
-Whenever the user provides a Brazilian address (for delivery or pickup), ALWAYS extract the following fields: rua, numero, bairro, cidade, estado, cep.
-- Always return these fields inside an "address" object within the "event" object in the JSON response, like this:
-{
-  "event": {
-    "code": "insert_delivery",
-    "address": {
-      "rua": "...",
-      "numero": "...",
-      "bairro": "...",
-      "cidade": "...",
-      "estado": "...",
-      "cep": "..."
-    }
-  },
-  "message": "Endereço recebido!"
-}
-- If any field cannot be identified, return null for that field.
-- Never return any explanation, just the JSON object.
-- Example input: "R. José Maria dos Passos, 200 - Vila Padre Bento, Itu - SP, 02312-100"
-- Example output: {"event":{"code":"insert_delivery","address":{"rua":"R. José Maria dos Passos","numero":"200","bairro":"Vila Padre Bento","cidade":"Itu","estado":"SP","cep":"02312-100"}},"message":"Endereço recebido!"}
+# Inserir Entrega:
+1 - Quando o usuário pedir para adicionar ou inserir uma entrega, primeiro pergunte o nome da pessoa responsável.
+2 - Após receber o nome, pergunte o endereço de destino no formato: rua, número, bairro, cidade, CEP.
+3 - Depois de receber o endereço de destino, pergunte o endereço de origem (mesmo formato do destino) ou permita que o usuário digite "usar endereço padrão".
+4 - Sempre valide se o usuário forneceu todos os campos obrigatórios antes de confirmar a entrega.
+5 - Somente confirme o registro da entrega quando todas as informações estiverem completas e o usuário confirmar.
+6 - Se o usuário fornecer todas as informações em uma única mensagem, extraia os dados e confirme o registro.
+7 - Sempre responda em inglês.
 
-# Adicionar Entrega:
-1 - Se o usuário informar um endereço e um nome de responsável para uma nova entrega, use o event code: insert_delivery.
-2 - Retorne o endereço extraído em 'address' e o nome do responsável em 'nomeResponsavel' dentro do objeto 'event'.
-Exemplo de resposta:
-{
-  "event": {
-    "code": "insert_delivery",
-    "address": {
-      "rua": "...",
-      "numero": "...",
-      "bairro": "...",
-      "cidade": "...",
-      "estado": "...",
-      "cep": "..."
-    },
-    "nomeResponsavel": "Fulano de Tal"
-  },
-  "message": "Entrega registrada!"
-}
-
-# General Response:
-1 - If the user's message is not related to deliveries or drivers, respond normally based on the context of the message.
-2 - Use the event code: general_response for such cases.
-3 - Ensure the response is friendly, clear, and concise.
+# Resposta Geral:
+1 - Se a mensagem do usuário não estiver relacionada a entregas ou entregadores, responda normalmente com base no contexto da mensagem.
+2 - Use o código de evento: general_response para tais casos.
+3 - Garanta que a resposta seja amigável, clara e concisa.
 `,
         },
       ],
@@ -542,7 +588,12 @@ Exemplo de resposta:
           return await handleSearchDriver(structuredResponse);
 
         case "insert_delivery":
-          return await handleInsertDelivery(structuredResponse);
+          setDeliveryStep("destino");
+          setPendingDelivery({});
+          sendResponse(
+            "Qual o endereço de destino da entrega? (Rua, número, bairro, cidade, CEP)"
+          );
+          return "";
 
         case "general_response":
         default:
@@ -619,9 +670,17 @@ Exemplo de resposta:
     }
   }, [currentConversation?.messages]);
 
+  useEffect(() => {
+    if (showDeliveriesSidebar) {
+      setTimeout(() => setSidebarVisible(true), 10); // delay para ativar a transição
+    } else {
+      setSidebarVisible(false);
+    }
+  }, [showDeliveriesSidebar]);
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
+      {/* Sidebar de conversas */}
       <div
         className={`sideBar w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out "translate-x-0" : "-translate-x-full"
           } sm:translate-x-0 sm:block`}
@@ -653,22 +712,23 @@ Exemplo de resposta:
             <button
               key={conv.id}
               onClick={() => switchConversation(conv.id)}
-              className={`slideConversation block w-full text-left px-4 py-2 rounded-md transition-all duration-500 ${
-                conv.id === currentConversationId
-                  ? "bg-green-500 text-white scale-110"
-                  : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-              }`}
+              className={`slideConversation block w-full px-4 py-2 rounded-md transition-all duration-500
+      ${conv.id === currentConversationId
+        ? "bg-green-500 text-white scale-110"
+        : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"}
+      text-center`}
             >
-              {conv.id}
+              <b>{conv.title}</b>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-grow flex flex-col items-center justify-center p-4">
+      {/* Container central para chat + entregas */}
+      <div className="flex flex-1 justify-center items-center">
+        {/* Chat */}
         <div
-          className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden"
+          className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
           style={{
             boxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
             WebkitBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
@@ -744,40 +804,10 @@ Exemplo de resposta:
                         })}
                       </span>
                     )}
-                    {m.role === "assistant" &&
-                    m.content.includes("data:image/") ? (
-                      <div className="flex flex-col mt-2">
-                        {m.content.split("\n").map((part, i) => {
-                          const imageMatch = part.match(
-                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
-                          );
-                          if (imageMatch) {
-                            return (
-                              <Image
-                                key={i}
-                                src={imageMatch[1]}
-                                alt={`Imagem enviada pela assistente ${i + 1}`}
-                                width={200}
-                                height={200}
-                                className="imgAssistant rounded-md mb-4"
-                                unoptimized
-                              />
-                            );
-                          }
-                          return null;
-                        })}
-                        {m.content.split("\n").map((line, i) => (
-                          <span key={i} className="text-sm text-gray-800">
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               ))
-            )}
+           )}
             <div ref={messagesEndRef} />{" "}
             {/* Referência para o final das mensagens */}
           </div>
@@ -866,8 +896,116 @@ Exemplo de resposta:
             </form>
           </div>
         </div>
+
+        {/* Sidebar de Entregas colada ao chat */}
+        {showDeliveriesSidebar && (
+          <div
+            className={`sidebar-entregas-animada${
+              sidebarVisible ? " sidebar-entregas-animada--visible" : ""
+            }`}
+            style={{
+              width: "20rem",
+              height: "60vh",
+              background: "white",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+              overflowY: "auto",
+              borderLeft: "1px solid rgb(235, 230, 229)",
+              borderTopRightRadius: "0.5rem",
+              borderBottomRightRadius: "0.5rem",
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+              flexDirection: "column",
+              alignSelf: "center",
+              padding: 0,
+              marginBottom: "6px", 
+            }}
+          >
+            <div className="bg-green-800 text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center">
+              <span>ENTREGAS</span>
+              <button
+                className="text-white font-bold text-xl"
+                onClick={() => setShowDeliveriesSidebar(false)}
+                title="Fechar"
+              >
+                ×
+              </button>
+            </div>
+            {deliveries.length === 0 ? (
+              <p className="text-gray-500 p-4">Nenhuma entrega registrada.</p>
+            ) : (
+              <ul className="entrega-lista flex-1">
+                {deliveries.map((d, i) => {
+                  const origem = d.addresses?.find((a: any) => a.position === 0) || {};
+                  const destino = d.addresses?.find((a: any) => a.position === 1) || {};
+                  return (
+                    <li key={d.id} className="entrega-item">
+                      <button
+                        className="entrega-btn"
+                        onClick={() => setOpenDelivery(openDelivery === i ? null : i)}
+                      >
+                        <span>
+                          <span className="entrega-icon">📦</span>
+                          {`Entrega ${i + 1} - `}
+                          <b>{destino.responsible ?? "Não informado"}</b>
+                        </span>
+                        <span>{openDelivery === i ? "▲" : "▼"}</span>
+                      </button>
+                      <div className={`entrega-details${openDelivery === i ? " open" : ""}`}>
+                        {openDelivery === i && (
+                          <>
+                            <div><b>Status:</b> {d.situation?.description ?? "Não informado"}</div>
+                            <div><b>Motoboy:</b> {d.deliveryman?.name ?? "Não informado"}</div>
+                            <div><b>Veículo:</b> {d.deliveryman?.vehicle?.model ?? "Não informado"}</div>
+                            <div><b>Valor:</b> R$ {d.price ?? "Não informado"}</div>
+                            <div>
+                              <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
+                              {origem.number ?? "Não informado"},{" "}
+                              {origem.neighborhood ?? "Não informado"},{" "}
+                              {origem.city ?? "Não informado"},{" "}
+                              {origem.state ?? "Não informado"},{" "}
+                              {origem.zipCode ?? "Não informado"}
+                            </div>
+                            <div>
+                              <b>Destino:</b> {destino.street ?? "Não informado"},{" "}
+                              {destino.number ?? "Não informado"},{" "}
+                              {destino.neighborhood ?? "Não informado"},{" "}
+                              {destino.city ?? "Não informado"},{" "}
+                              {destino.state ?? "Não informado"},{" "}
+                              {destino.zipCode ?? "Não informado"}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 //#endregion
+
+async function generateTitleWithGemini(userMessage: string, aiInstance: GoogleGenAI): Promise<string> {
+  const prompt = `
+Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem do usuário para nomear uma conversa de chat. Não use pontuação no final.
+
+Mensagem: "${userMessage}"
+Título:
+  `.trim();
+
+  try {
+    const response = await aiInstance.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+    });
+    const title =
+      response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    return title.replace(/^["']|["']$/g, "").replace(/[.?!]$/, "");
+  } catch {
+    return userMessage.slice(0, 30);
+  }
+}
