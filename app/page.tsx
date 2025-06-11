@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { GoogleGenAI, Type } from "@google/genai";
 import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
@@ -10,6 +9,7 @@ import Image from "next/image";
 import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
 
 //#region TIPOS
 type UIMessage = {
@@ -68,7 +68,11 @@ export default function Chat() {
   const [openDelivery, setOpenDelivery] = useState<number | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [searchPlaceholder, setSearchPlaceholder] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
   //#endregion
 
   const ai = new GoogleGenAI({
@@ -136,9 +140,7 @@ export default function Chat() {
         const geminiTitle = await generateTitleWithGemini(input, ai);
         setConversations((prev) =>
           prev.map((c) =>
-            c.id === currentConversationId
-              ? { ...c, title: geminiTitle }
-              : c
+            c.id === currentConversationId ? { ...c, title: geminiTitle } : c
           )
         );
       } catch {
@@ -401,18 +403,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
   //#region Insert Delivery
   const handleInsertDelivery = async (userInput: string): Promise<string> => {
     if (deliveryStep === "destino") {
-      const [rua, numero, bairro, cidade, cep] = userInput.split(",");
-      if (!rua || !numero || !bairro || !cidade || !cep) {
-        return "Por favor, informe todos os campos do endereço separados por vírgula.";
+      const endereco = extrairEndereco(userInput);
+      if (!endereco) {
+        return "Por favor, informe o endereço no formato: Rua, número - Bairro, Cidade - UF, CEP";
       }
       setPendingDelivery({
-        enderecoDestino: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          cep: cep.trim(),
-        },
+        enderecoDestino: endereco,
       });
       setDeliveryStep("responsavel");
       return "Qual o nome do responsável pela entrega?";
@@ -447,14 +443,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           zipCode: user.endereco.cep,
           position: 0,
           responsible: nomeResponsavel,
-          status: 0, 
+          status: 0,
         },
         {
           street: pendingDelivery.enderecoDestino.rua,
           number: pendingDelivery.enderecoDestino.numero,
           neighborhood: pendingDelivery.enderecoDestino.bairro,
           city: pendingDelivery.enderecoDestino.cidade,
-          state: "", 
+          state: "",
           zipCode: pendingDelivery.enderecoDestino.cep,
           position: 1,
           responsible: nomeResponsavel,
@@ -679,21 +675,43 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     }
   }, [showDeliveriesSidebar]);
 
+  const animatePlaceholder = (text: string) => {
+    setSearchPlaceholder("");
+    let i = 0;
+    if (placeholderInterval.current) clearInterval(placeholderInterval.current);
+    placeholderInterval.current = setInterval(() => {
+      setSearchPlaceholder((prev) => prev + text.charAt(i));
+      i++;
+      if (i >= text.length) {
+        if (placeholderInterval.current)
+          clearInterval(placeholderInterval.current);
+      }
+    }, 60); // ajuste a velocidade aqui
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div
+      className={`flex min-h-screen ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}
+    >
       {/* Sidebar de conversas */}
       <div
-        className={`sideBar w-64 bg-gray-250 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300 ease-in-out "translate-x-0" : "-translate-x-full"
-          } sm:translate-x-0 sm:block`}
+        className={`sideBar w-64 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300
+    ${darkMode ? "bg-[#3a3a3a] text-gray-100" : "bg-gray-100 text-gray-900"}`}
         style={{
-          boxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
-          WebkitBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
-          MozBoxShadow: "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          boxShadow: darkMode
+            ? "0 2px 8px 0 rgba(0,0,0,0.7)"
+            : "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          WebkitBoxShadow: darkMode
+            ? "0 2px 8px 0 rgba(0,0,0,0.7)"
+            : "16px 6px 11px -11px rgba(0,0,0,0.5)",
+          MozBoxShadow: darkMode
+            ? "0 2px 8px 0 rgba(0,0,0,0.7)"
+            : "16px 6px 11px -11px rgba(0,0,0,0.5)",
         }}
       >
         <div className="mb-4">
           <Image
-            src="/fb-og.png"
+            src={darkMode ? "/i9White.png" : "/fb-og.png"} // coloque o caminho da logo escura e clara
             alt="Logo"
             width={150}
             height={150}
@@ -703,26 +721,51 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
         <h2 className="text-lg font-bold mb-4">Conversas</h2>
 
-        {/* Coloque o input de busca aqui */}
+        <button
+          onClick={createNewConversation}
+          className="w-full bg-[#14532d] text-white px-4 py-2 rounded-md transition-colors duration-500 mb-4 hover:bg-[#22c55e]"
+        >
+          Nova Conversa
+        </button>
+
         <div className="relative mb-4">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <span
+            className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300
+    ${searchFocused ? "text-[#16a34a]" : "text-gray-400"}`}
+          >
             <FiSearch size={18} />
           </span>
           <input
             type="text"
-            placeholder="Buscar conversa..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600"
+            onFocus={() => {
+              setSearchFocused(true);
+              animatePlaceholder("BBuscar conversa");
+            }}
+            onBlur={() => {
+              setSearchFocused(false);
+              setSearchPlaceholder("");
+              if (placeholderInterval.current)
+                clearInterval(placeholderInterval.current);
+            }}
+            placeholder={searchFocused ? searchPlaceholder : ""} // só aparece animado ao focar
+            className={`
+    w-full
+    pl-10 pr-4
+    border rounded-md
+    focus:outline-none
+    transition-all duration-500
+    bg-white
+    ${searchFocused ? "h-12 border-[#16a34a]" : "h-8 border-gray-300"}
+  `}
+            style={{
+              transitionProperty: "height, border-color",
+              minHeight: "2rem",
+              maxHeight: "3rem",
+            }}
           />
         </div>
-
-        <button
-          onClick={createNewConversation}
-          className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-500 mb-4"
-        >
-          Nova Conversa
-        </button>
 
         <div className="space-y-2">
           {conversations
@@ -734,10 +777,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 key={conv.id}
                 onClick={() => switchConversation(conv.id)}
                 className={`slideConversation block w-full px-4 py-2 rounded-md transition-all duration-500
-          ${conv.id === currentConversationId
-            ? "bg-green-500 text-white scale-110"
-            : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"}
-          text-center`}
+    ${
+      conv.id === currentConversationId
+        ? "bg-[#14532d] text-white scale-110"
+        : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-[#178a46]"
+    }
+    text-center`}
               >
                 <b>{conv.title}</b>
               </button>
@@ -749,14 +794,21 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       <div className="flex flex-1 justify-center items-center">
         {/* Chat */}
         <div
-          className="w-full max-w-2xl bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
+          className={`w-full max-w-2xl rounded-lg shadow-md overflow-hidden flex flex-col
+    ${darkMode ? "bg-[#222] text-gray-100" : "bg-white text-gray-700"}`}
           style={{
-            boxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
-            WebkitBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
-            MozBoxShadow: "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            boxShadow: darkMode
+              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            WebkitBoxShadow: darkMode
+              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            MozBoxShadow: darkMode
+              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
           }}
         >
-          <div className="bg-green-600 text-white p-4 flex justify-between items-center">
+          <div className="bg-[#14532d] text-white p-4 flex justify-between items-center">
             <h1 className="text-xl font-bold">Chatbot I9</h1>
             <Image
               src="/logo_i9delivery.png"
@@ -828,7 +880,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   </div>
                 </div>
               ))
-           )}
+            )}
             <div ref={messagesEndRef} />{" "}
             {/* Referência para o final das mensagens */}
           </div>
@@ -882,7 +934,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               />
               <label
                 htmlFor="file-upload"
-                className={`bg-gray-100 text-green-600 px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-green-800 hover:text-white transition-colors duration-600 flex ${
+                className={`bg-gray-100 text-[#16a34a] px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-[#14532d] hover:text-white transition-colors duration-600 flex ${
                   isLoading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
@@ -890,13 +942,13 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               </label>
               <button
                 type="submit"
-                className={`bg-gray-100 border text-green-600 px-4 py-2 rounded-md cursor-pointer
-                   ${
-                     isLoading
-                       ? "bg-green-800 scale-105 text-white cursor-not-allowed"
-                       : "hover:bg-green-800 hover:text-white transition-colors duration-600"
-                   }
-                 `}
+                className={`bg-gray-100 border text-[#16a34a] px-4 py-2 rounded-md cursor-pointer
+     ${
+       isLoading
+         ? "bg-[#14532d] scale-105 text-white cursor-not-allowed"
+         : "hover:bg-[#14532d] hover:text-white transition-colors duration-600"
+     }
+   `}
                 disabled={isLoading}
               >
                 {isSubmitClicked && !isLoading ? (
@@ -927,8 +979,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             style={{
               width: "20rem",
               height: "60vh",
-              background: "white",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+              background: darkMode ? "#333" : "white",
+              boxShadow: darkMode
+                ? "0 4px 24px rgba(0,0,0,0.7)"
+                : "0 4px 24px rgba(0,0,0,0.12)",
               overflowY: "auto",
               borderLeft: "1px solid rgb(235, 230, 229)",
               borderTopRightRadius: "0.5rem",
@@ -938,10 +992,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               flexDirection: "column",
               alignSelf: "center",
               padding: 0,
-              marginBottom: "6px", 
+              marginBottom: "6px",
             }}
           >
-            <div className="bg-green-800 text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center">
+            <div className="bg-[#14532d] text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center">
               <span>ENTREGAS</span>
               <button
                 className="text-white font-bold text-xl"
@@ -956,13 +1010,17 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             ) : (
               <ul className="entrega-lista flex-1">
                 {deliveries.map((d, i) => {
-                  const origem = d.addresses?.find((a: any) => a.position === 0) || {};
-                  const destino = d.addresses?.find((a: any) => a.position === 1) || {};
+                  const origem =
+                    d.addresses?.find((a: any) => a.position === 0) || {};
+                  const destino =
+                    d.addresses?.find((a: any) => a.position === 1) || {};
                   return (
                     <li key={d.id} className="entrega-item">
                       <button
                         className="entrega-btn"
-                        onClick={() => setOpenDelivery(openDelivery === i ? null : i)}
+                        onClick={() =>
+                          setOpenDelivery(openDelivery === i ? null : i)
+                        }
                       >
                         <span>
                           <span className="entrega-icon">📦</span>
@@ -971,13 +1029,28 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         </span>
                         <span>{openDelivery === i ? "▲" : "▼"}</span>
                       </button>
-                      <div className={`entrega-details${openDelivery === i ? " open" : ""}`}>
+                      <div
+                        className={`entrega-details${
+                          openDelivery === i ? " open" : ""
+                        }`}
+                      >
                         {openDelivery === i && (
                           <>
-                            <div><b>Status:</b> {d.situation?.description ?? "Não informado"}</div>
-                            <div><b>Motoboy:</b> {d.deliveryman?.name ?? "Não informado"}</div>
-                            <div><b>Veículo:</b> {d.deliveryman?.vehicle?.model ?? "Não informado"}</div>
-                            <div><b>Valor:</b> R$ {d.price ?? "Não informado"}</div>
+                            <div>
+                              <b>Status:</b>{" "}
+                              {d.situation?.description ?? "Não informado"}
+                            </div>
+                            <div>
+                              <b>Motoboy:</b>{" "}
+                              {d.deliveryman?.name ?? "Não informado"}
+                            </div>
+                            <div>
+                              <b>Veículo:</b>{" "}
+                              {d.deliveryman?.vehicle?.model ?? "Não informado"}
+                            </div>
+                            <div>
+                              <b>Valor:</b> R$ {d.price ?? "Não informado"}
+                            </div>
                             <div>
                               <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
                               {origem.number ?? "Não informado"},{" "}
@@ -987,7 +1060,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                               {origem.zipCode ?? "Não informado"}
                             </div>
                             <div>
-                              <b>Destino:</b> {destino.street ?? "Não informado"},{" "}
+                              <b>Destino:</b>{" "}
+                              {destino.street ?? "Não informado"},{" "}
                               {destino.number ?? "Não informado"},{" "}
                               {destino.neighborhood ?? "Não informado"},{" "}
                               {destino.city ?? "Não informado"},{" "}
@@ -1005,12 +1079,53 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           </div>
         )}
       </div>
+
+      {/* Botão de alternância de modo escuro */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className={`
+            w-14 h-7 flex items-center rounded-full p-1 transition-colors duration-300
+            ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
+          `}
+          aria-label="Alternar modo escuro"
+        >
+          <div
+            className={`
+              w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300
+              ${darkMode ? "translate-x-7" : "translate-x-0"}
+              flex items-center justify-center
+            `}
+          >
+            {darkMode ? (
+              <span
+                role="img"
+                aria-label="Lua"
+                className="text-yellow-400 text-lg"
+              >
+                🌙
+              </span>
+            ) : (
+              <span
+                role="img"
+                aria-label="Sol"
+                className="text-yellow-500 text-lg"
+              >
+                ☀️
+              </span>
+            )}
+          </div>
+        </button>
+      </div>
     </div>
   );
 }
 //#endregion
 
-async function generateTitleWithGemini(userMessage: string, aiInstance: GoogleGenAI): Promise<string> {
+async function generateTitleWithGemini(
+  userMessage: string,
+  aiInstance: GoogleGenAI
+): Promise<string> {
   const prompt = `
 Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem do usuário para nomear uma conversa de chat. Não use pontuação no final.
 
@@ -1029,4 +1144,19 @@ Título:
   } catch {
     return userMessage.slice(0, 30);
   }
+}
+
+function extrairEndereco(enderecoCompleto: string) {
+  const regex =
+    /^(.*?),\s*(\d+)\s*-\s*(.*?),\s*([\w\s]+)\s*-\s*([A-Z]{2}),\s*(\d{5}-\d{3})$/;
+  const match = enderecoCompleto.match(regex);
+  if (!match) return null;
+  return {
+    rua: match[1].trim(),
+    numero: match[2].trim(),
+    bairro: match[3].trim(),
+    cidade: match[4].trim(),
+    estado: match[5].trim(),
+    cep: match[6].trim(),
+  };
 }
