@@ -71,6 +71,7 @@ export default function Chat() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [logoClicked, setLogoClicked] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
   //#endregion
@@ -689,9 +690,13 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     }, 60); // ajuste a velocidade aqui
   };
 
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", darkMode);
+  }, [darkMode]);
+
   return (
     <div
-      className={`flex min-h-screen ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}
+      className={`flex min-h-screen transition-colors duration-500 ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}
     >
       {/* Sidebar de conversas */}
       <div
@@ -715,7 +720,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             alt="Logo"
             width={150}
             height={150}
-            className="mx-auto"
+            className="mx-auto transition-transform duration-300 hover:scale-110"
           />
         </div>
 
@@ -723,7 +728,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
         <button
           onClick={createNewConversation}
-          className="w-full bg-[#14532d] text-white px-4 py-2 rounded-md transition-colors duration-500 mb-4 hover:bg-[#22c55e]"
+          className={`w-full px-4 py-2 rounded-md mb-4
+            transition-colors duration-500
+            ${darkMode
+              ? "bg-green-900 text-white hover:bg-green-800"
+              : "bg-green-500 text-white hover:bg-green-700"}
+          `}
         >
           Nova Conversa
         </button>
@@ -749,14 +759,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               if (placeholderInterval.current)
                 clearInterval(placeholderInterval.current);
             }}
-            placeholder={searchFocused ? searchPlaceholder : ""} // só aparece animado ao focar
+            placeholder={searchFocused ? searchPlaceholder : ""}
             className={`
     w-full
     pl-10 pr-4
     border rounded-md
     focus:outline-none
     transition-all duration-500
-    bg-white
+    ${darkMode ? "bg-[#222] text-gray-100 placeholder-gray-400" : "bg-white text-gray-900 placeholder-gray-400"}
     ${searchFocused ? "h-12 border-[#16a34a]" : "h-8 border-gray-300"}
   `}
             style={{
@@ -776,13 +786,18 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               <button
                 key={conv.id}
                 onClick={() => switchConversation(conv.id)}
-                className={`slideConversation block w-full px-4 py-2 rounded-md transition-all duration-500
-    ${
-      conv.id === currentConversationId
-        ? "bg-[#14532d] text-white scale-110"
-        : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-[#178a46]"
-    }
-    text-center`}
+                className={`slideConversation block w-full px-4 py-2 rounded-md text-center
+      transition-all duration-500 transition-colors
+      ${
+        conv.id === currentConversationId
+          ? darkMode
+            ? "bg-green-900 text-white scale-110"
+            : "bg-green-500 text-white scale-110"
+          : darkMode
+            ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
+            : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+      }
+      `}
               >
                 <b>{conv.title}</b>
               </button>
@@ -808,7 +823,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               : "0px 10px 26px 14px rgba(176,176,176,0.75)",
           }}
         >
-          <div className="bg-[#14532d] text-white p-4 flex justify-between items-center">
+          <div className={`${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex justify-between items-center transition-colors duration-500`}>
             <h1 className="text-xl font-bold">Chatbot I9</h1>
             <Image
               src="/logo_i9delivery.png"
@@ -833,11 +848,17 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   }`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      m.role === "user"
-                        ? "bg-green-800 text-white"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
+                    className={`max-w-[80%] p-3 rounded-lg
+                      transition-colors duration-500
+                      ${
+                        m.role === "user"
+                          ? darkMode
+                            ? "bg-green-900 text-white"
+                            : "bg-green-800 text-white"
+                          : darkMode
+                            ? "bg-gray-800 text-gray-100"
+                            : "bg-gray-100 text-gray-600"
+                      }`}
                   >
                     {m.role === "user" && m.content.includes("data:image/")
                       ? m.content.split("\n").map((part, i) => {
@@ -880,7 +901,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   </div>
                 </div>
               ))
-            )}
+           )}
             <div ref={messagesEndRef} />{" "}
             {/* Referência para o final das mensagens */}
           </div>
@@ -906,7 +927,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       }
                       className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
                     >
-                      ×
+                      
                     </button>
                   </div>
                 ))}
@@ -919,8 +940,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Digite sua mensagem..."
-                className="flex-grow bg-gray-100 p-2 border rounded-md focus:outline-none focus:border-green-800 transition-colors duration-600
-                  click:bg-white transition-colors duration-500 focus:shadow-lg focus: shadow-gray-400 focus:scale-101 trasition-transition-all duration-700"
+                className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
+                  ${darkMode
+                    ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
+                    : "bg-gray-100 text-gray-900 placeholder-gray-400 focus:border-green-800 focus:shadow-lg focus:shadow-gray-400"}
+                  click:bg-white
+                  focus:scale-101
+                  transition-all duration-700
+                `}
                 disabled={isLoading}
               />
               <input
@@ -934,21 +961,31 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               />
               <label
                 htmlFor="file-upload"
-                className={`bg-gray-100 text-[#16a34a] px-4 items-center py-2 border rounded-md cursor-pointer hover:bg-[#14532d] hover:text-white transition-colors duration-600 flex ${
-                  isLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`
+                  px-4 items-center py-2 border rounded-md cursor-pointer flex
+                  transition-colors duration-500
+                  ${darkMode
+                    ? "bg-[#222] text-green-600 hover:bg-green-900"
+                    : "bg-gray-100 text-green-600 hover:bg-green-800"}
+                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                `}
               >
                 <IoDocumentAttachOutline size={20} />
               </label>
               <button
                 type="submit"
-                className={`bg-gray-100 border text-[#16a34a] px-4 py-2 rounded-md cursor-pointer
-     ${
-       isLoading
-         ? "bg-[#14532d] scale-105 text-white cursor-not-allowed"
-         : "hover:bg-[#14532d] hover:text-white transition-colors duration-600"
-     }
-   `}
+                className={`
+                  border px-4 py-2 rounded-md cursor-pointer
+                  transition-colors duration-500
+                  ${darkMode
+                    ? "bg-[#222] text-green-600 hover:bg-green-900"
+                    : "bg-gray-100 text-green-600 hover:bg-green-800"}
+                  ${isLoading
+                    ? darkMode
+                      ? "bg-green-900 scale-105 text-white cursor-not-allowed"
+                      : "bg-green-800 scale-105 text-white cursor-not-allowed"
+                    : ""}
+                `}
                 disabled={isLoading}
               >
                 {isSubmitClicked && !isLoading ? (
@@ -995,10 +1032,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               marginBottom: "6px",
             }}
           >
-            <div className="bg-[#14532d] text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center">
+            <div className={`${darkMode ? "bg-green-900" : "bg-green-800"} text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center transition-colors duration-500`}>
               <span>ENTREGAS</span>
               <button
-                className="text-white font-bold text-xl"
+                className="text-white font-bold text-xl transition-colors duration-500"
                 onClick={() => setShowDeliveriesSidebar(false)}
                 title="Fechar"
               >
@@ -1085,23 +1122,24 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         <button
           onClick={() => setDarkMode((prev) => !prev)}
           className={`
-            w-14 h-7 flex items-center rounded-full p-1 transition-colors duration-300
+            w-14 h-7 flex items-center rounded-full p-1
+            transition-colors duration-500
             ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
           `}
           aria-label="Alternar modo escuro"
         >
           <div
             className={`
-              w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300
+              w-6 h-6 rounded-full bg-white shadow-md transform
+              transition-transform duration-300 flex items-center justify-center
               ${darkMode ? "translate-x-7" : "translate-x-0"}
-              flex items-center justify-center
             `}
           >
             {darkMode ? (
               <span
                 role="img"
                 aria-label="Lua"
-                className="text-yellow-400 text-lg"
+                className="text-yellow-400 text-lg transition-colors duration-500"
               >
                 🌙
               </span>
@@ -1109,7 +1147,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               <span
                 role="img"
                 aria-label="Sol"
-                className="text-yellow-500 text-lg"
+                className="text-yellow-500 text-lg transition-colors duration-500"
               >
                 ☀️
               </span>

@@ -309,3 +309,7 @@
   color: #14532d;
   vertical-align: middle;
 }
+
+body.dark-mode {
+  overflow: hidden !important;
+}
