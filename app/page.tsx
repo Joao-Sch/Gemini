@@ -72,6 +72,8 @@ export default function Chat() {
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [logoClicked, setLogoClicked] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
   //#endregion
@@ -694,14 +696,33 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     document.body.classList.toggle("dark-mode", darkMode);
   }, [darkMode]);
 
+  const handleLogoClick = () => {
+    setLogoClicked(true);
+    setTimeout(() => setLogoClicked(false), 1200); // duração da animação
+  };
+
   return (
     <div
-      className={`flex min-h-screen transition-colors duration-500 ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}
+      className={`flex flex-col sm:flex-row min-h-screen relative transition-colors duration-500 ${
+        darkMode ? "bg-[#333]" : "bg-gray-100"
+      }`}
     >
       {/* Sidebar de conversas */}
       <div
-        className={`sideBar w-64 shadow-md p-4 overflow-y-auto max-h-screen text-center transition-transform duration-300
-    ${darkMode ? "bg-[#3a3a3a] text-gray-100" : "bg-gray-100 text-gray-900"}`}
+        className={`
+    sideBar
+    w-4/5 max-w-xs
+    fixed sm:static
+    top-0 left-0 h-full z-50
+    ${darkMode ? "bg-[#3a3a3a] text-gray-100" : "bg-white text-gray-900"}
+    shadow-md p-4 overflow-y-auto
+    transition-transform duration-300
+    -translate-x-full
+    sm:translate-x-0 sm:w-64 sm:h-auto sm:shadow-md
+    ${sidebarOpen ? "translate-x-0" : ""}
+    relative
+    ${sidebarOpen ? "w-full max-w-full" : ""}
+  `}
         style={{
           boxShadow: darkMode
             ? "0 2px 8px 0 rgba(0,0,0,0.7)"
@@ -714,25 +735,46 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             : "16px 6px 11px -11px rgba(0,0,0,0.5)",
         }}
       >
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <Image
-            src={darkMode ? "/i9White.png" : "/fb-og.png"} // coloque o caminho da logo escura e clara
+            src={darkMode ? "/i9White.png" : "/fb-og.png"}
             alt="Logo"
             width={150}
             height={150}
-            className="mx-auto transition-transform duration-300 hover:scale-110"
+            className="mx-auto transition-transform duration-300 hover:scale-110 cursor-pointer"
+            onClick={handleLogoClick}
           />
+          {/* Motoboy animado */}
+          {logoClicked && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="./motoboy.png"
+              alt="Motoboy"
+              className="motoboy-global"
+              style={{
+                left: "260px",
+                position: "fixed",
+                zIndex: 50,
+                pointerEvents: "none",
+                height: "80px",
+                width: "80px",
+                transform: "scaleX(-1)",
+              }}
+            />
+          )}
         </div>
 
-        <h2 className="text-lg font-bold mb-4">Conversas</h2>
+        <h2 className="text-lg font-bold mb-4 text-center">Conversas</h2>
 
         <button
           onClick={createNewConversation}
           className={`w-full px-4 py-2 rounded-md mb-4
             transition-colors duration-500
-            ${darkMode
-              ? "bg-green-900 text-white hover:bg-green-800"
-              : "bg-green-500 text-white hover:bg-green-700"}
+            ${
+              darkMode
+                ? "bg-green-900 text-white hover:bg-green-800"
+                : "bg-green-500 text-white hover:bg-green-700"
+            }
           `}
         >
           Nova Conversa
@@ -741,7 +783,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         <div className="relative mb-4">
           <span
             className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300
-    ${searchFocused ? "text-[#16a34a]" : "text-gray-400"}`}
+        ${searchFocused ? "text-[#16a34a]" : "text-gray-400"}`}
           >
             <FiSearch size={18} />
           </span>
@@ -761,14 +803,18 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             }}
             placeholder={searchFocused ? searchPlaceholder : ""}
             className={`
-    w-full
-    pl-10 pr-4
-    border rounded-md
-    focus:outline-none
-    transition-all duration-500
-    ${darkMode ? "bg-[#222] text-gray-100 placeholder-gray-400" : "bg-white text-gray-900 placeholder-gray-400"}
-    ${searchFocused ? "h-12 border-[#16a34a]" : "h-8 border-gray-300"}
-  `}
+        w-full
+        pl-10 pr-4
+        border rounded-md
+        focus:outline-none
+        transition-all duration-500
+        ${
+          darkMode
+            ? "bg-[#222] text-gray-100 placeholder-gray-400"
+            : "bg-white text-gray-900 placeholder-gray-400"
+        }
+        ${searchFocused ? "h-12 border-[#16a34a]" : "h-8 border-gray-300"}
+      `}
             style={{
               transitionProperty: "height, border-color",
               minHeight: "2rem",
@@ -794,8 +840,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             ? "bg-green-900 text-white scale-110"
             : "bg-green-500 text-white scale-110"
           : darkMode
-            ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
-            : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+          ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
+          : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
       }
       `}
               >
@@ -803,14 +849,60 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               </button>
             ))}
         </div>
+
+        {/* Botão de alternar tema fixo no rodapé */}
+        <div className="absolute bottom-4 left-0 w-full flex justify-center">
+          <button
+            onClick={() => setDarkMode((prev) => !prev)}
+            className={`
+              w-14 h-7 flex items-center rounded-full p-1
+              transition-colors duration-500
+              ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
+            `}
+            aria-label="Alternar modo escuro"
+          >
+            <div
+              className={`
+                w-6 h-6 rounded-full bg-white shadow-md transform
+                transition-transform duration-300 flex items-center justify-center
+                ${darkMode ? "translate-x-7" : "translate-x-0"}
+              `}
+            >
+              {darkMode ? (
+                <span
+                  role="img"
+                  aria-label="Lua"
+                  className="text-yellow-400 text-lg transition-colors duration-500"
+                >
+                  🌙
+                </span>
+              ) : (
+                <span
+                  role="img"
+                  aria-label="Sol"
+                  className="text-yellow-500 text-lg transition-colors duration-500"
+                >
+                  ☀️
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Container central para chat + entregas */}
-      <div className="flex flex-1 justify-center items-center">
+      <div className="flex-1 flex flex-col w-full sm:h-auto sm:max-w-2xl sm:mx-auto px-0 sm:px-2 min-h-0 sm:justify-center">
         {/* Chat */}
         <div
-          className={`w-full max-w-2xl rounded-lg shadow-md overflow-hidden flex flex-col
-    ${darkMode ? "bg-[#222] text-gray-100" : "bg-white text-gray-700"}`}
+          className={`
+    w-full
+    sm:max-w-2xl
+    sm:rounded-lg
+    sm:shadow-md
+    overflow-hidden
+    flex flex-col
+    ${darkMode ? "bg-[#222] text-gray-100" : "bg-white text-gray-700"}
+  `}
           style={{
             boxShadow: darkMode
               ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
@@ -823,15 +915,38 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               : "0px 10px 26px 14px rgba(176,176,176,0.75)",
           }}
         >
-          <div className={`${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex justify-between items-center transition-colors duration-500`}>
-            <h1 className="text-xl font-bold">Chatbot I9</h1>
-            <Image
-              src="/logo_i9delivery.png"
-              alt="chatbot"
-              width={50}
-              height={50}
-              className="slideLogo"
-            />
+          <div
+            className={`${
+              darkMode ? "bg-green-900" : "bg-green-600"
+            } text-white p-4 flex items-center justify-center relative transition-colors duration-500`}
+          >
+            {/* Botão hambúrguer só no mobile */}
+            <button
+              className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
+              onClick={() => setSidebarOpen((open) => !open)}
+              aria-label="Abrir menu"
+            >
+              <svg width="28" height="28" fill="none" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 8h20M4 16h20"
+                />
+              </svg>
+            </button>
+            {/* Título centralizado */}
+            <h1 className="text-xl font-bold w-full text-center">Chatbot I9</h1>
+            {/* Logo à direita (opcional) */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <Image
+                src="/logo_i9delivery.png"
+                alt="chatbot"
+                width={40}
+                height={40}
+                className="slideLogo"
+              />
+            </div>
           </div>
           <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
             {currentConversation &&
@@ -856,8 +971,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                             ? "bg-green-900 text-white"
                             : "bg-green-800 text-white"
                           : darkMode
-                            ? "bg-gray-800 text-gray-100"
-                            : "bg-gray-100 text-gray-600"
+                          ? "bg-gray-800 text-gray-100"
+                          : "bg-gray-100 text-gray-600"
                       }`}
                   >
                     {m.role === "user" && m.content.includes("data:image/")
@@ -901,7 +1016,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   </div>
                 </div>
               ))
-           )}
+            )}
             <div ref={messagesEndRef} />{" "}
             {/* Referência para o final das mensagens */}
           </div>
@@ -926,9 +1041,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         )
                       }
                       className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                    >
-                      
-                    </button>
+                    ></button>
                   </div>
                 ))}
               </div>
@@ -941,9 +1054,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 onChange={handleInputChange}
                 placeholder="Digite sua mensagem..."
                 className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
-                  ${darkMode
-                    ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
-                    : "bg-gray-100 text-gray-900 placeholder-gray-400 focus:border-green-800 focus:shadow-lg focus:shadow-gray-400"}
+                  ${
+                    darkMode
+                      ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
+                      : "bg-gray-100 text-gray-900 placeholder-gray-400 focus:border-green-800 focus:shadow-lg focus:shadow-gray-400"
+                  }
                   click:bg-white
                   focus:scale-101
                   transition-all duration-700
@@ -964,9 +1079,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 className={`
                   px-4 items-center py-2 border rounded-md cursor-pointer flex
                   transition-colors duration-500
-                  ${darkMode
-                    ? "bg-[#222] text-green-600 hover:bg-green-900"
-                    : "bg-gray-100 text-green-600 hover:bg-green-800"}
+                  ${
+                    darkMode
+                      ? "bg-[#222] text-green-600 hover:bg-green-900"
+                      : "bg-gray-100 text-green-600 hover:bg-green-800"
+                  }
                   ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               >
@@ -977,14 +1094,18 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 className={`
                   border px-4 py-2 rounded-md cursor-pointer
                   transition-colors duration-500
-                  ${darkMode
-                    ? "bg-[#222] text-green-600 hover:bg-green-900"
-                    : "bg-gray-100 text-green-600 hover:bg-green-800"}
-                  ${isLoading
-                    ? darkMode
-                      ? "bg-green-900 scale-105 text-white cursor-not-allowed"
-                      : "bg-green-800 scale-105 text-white cursor-not-allowed"
-                    : ""}
+                  ${
+                    darkMode
+                      ? "bg-[#222] text-green-600 hover:bg-green-900"
+                      : "bg-gray-100 text-green-600 hover:bg-green-800"
+                  }
+                  ${
+                    isLoading
+                      ? darkMode
+                        ? "bg-green-900 scale-105 text-white cursor-not-allowed"
+                        : "bg-green-800 scale-105 text-white cursor-not-allowed"
+                      : ""
+                  }
                 `}
                 disabled={isLoading}
               >
@@ -1032,7 +1153,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               marginBottom: "6px",
             }}
           >
-            <div className={`${darkMode ? "bg-green-900" : "bg-green-800"} text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center transition-colors duration-500`}>
+            <div
+              className={`${
+                darkMode ? "bg-green-900" : "bg-green-800"
+              } text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center transition-colors duration-500`}
+            >
               <span>ENTREGAS</span>
               <button
                 className="text-white font-bold text-xl transition-colors duration-500"
@@ -1115,45 +1240,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             )}
           </div>
         )}
-      </div>
-
-      {/* Botão de alternância de modo escuro */}
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          className={`
-            w-14 h-7 flex items-center rounded-full p-1
-            transition-colors duration-500
-            ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
-          `}
-          aria-label="Alternar modo escuro"
-        >
-          <div
-            className={`
-              w-6 h-6 rounded-full bg-white shadow-md transform
-              transition-transform duration-300 flex items-center justify-center
-              ${darkMode ? "translate-x-7" : "translate-x-0"}
-            `}
-          >
-            {darkMode ? (
-              <span
-                role="img"
-                aria-label="Lua"
-                className="text-yellow-400 text-lg transition-colors duration-500"
-              >
-                🌙
-              </span>
-            ) : (
-              <span
-                role="img"
-                aria-label="Sol"
-                className="text-yellow-500 text-lg transition-colors duration-500"
-              >
-                ☀️
-              </span>
-            )}
-          </div>
-        </button>
       </div>
     </div>
   );

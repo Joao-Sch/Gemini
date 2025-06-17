@@ -14,7 +14,7 @@
 }
 
 .dropdownMenu.show {
-  transform: translateX(0); /* Quando a sidebar for aberta, ela vem para a tela */
+  transform: translateX(0);
 }
 
 .dropdownMenu li {

@@ -313,3 +313,11 @@
 body.dark-mode {
   overflow: hidden !important;
 }
+
+@keyframes motoboy-run-global {
+  0% { left: 260px; }
+  100% { left: calc(100vw + 100vw); }
+}
+.motoboy-global {
+  animation: motoboy-run-global 2.5s linear forwards;
+}
