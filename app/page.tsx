@@ -1241,6 +1241,18 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           </div>
         )}
       </div>
+      {sidebarOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.3)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9998,
+          }}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

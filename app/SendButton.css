@@ -321,3 +321,42 @@ body.dark-mode {
 .motoboy-global {
   animation: motoboy-run-global 2.5s linear forwards;
 }
+
+/* Seu CSS normal para telas grandes permanece igual */
+
+/* Adicione este bloco para telas até 768px (mobile) */
+@media (max-width: 768px) {
+  /* Altere apenas o que precisa para mobile */
+  body {
+    padding: 10px;
+  }
+  .container {
+    flex-direction: column;
+    width: 100%;
+  }
+  /* Outros ajustes específicos para mobile */
+}
+
+/* Exemplo para o layout principal */
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.main-container {
+  min-height: 100vh; /* Ocupa toda a altura da tela */
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-area {
+  flex: 1; /* Faz o chat crescer para ocupar o espaço disponível */
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  /* Remova margens/paddings desnecessários */
+  margin: 0;
+  padding: 0;
+}
+
