@@ -696,6 +696,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     document.body.classList.toggle("dark-mode", darkMode);
   }, [darkMode]);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   const handleLogoClick = () => {
     setLogoClicked(true);
     setTimeout(() => setLogoClicked(false), 1200); // duração da animação
@@ -714,7 +722,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     w-4/5 max-w-xs
     fixed sm:static
     top-0 left-0 h-full z-50
-    ${darkMode ? "bg-[#3a3a3a] text-gray-100" : "bg-white text-gray-900"}
     shadow-md p-4 overflow-y-auto
     transition-transform duration-300
     -translate-x-full
