@@ -1204,7 +1204,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   Nenhuma entrega registrada.
                 </p>
               ) : (
-                <ul className="entrega-lista">
+                <ul className="entrega-lista shadow-lg bg-[var(--sidebar)] rounded-xl p-4">
                   {deliveries.map((d, i) => {
                     const origem =
                       d.addresses?.find((a: any) => a.position === 0) || {};
@@ -1214,12 +1214,23 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       <li key={d.id} className="entrega-item">
                         <button
                           className="entrega-btn"
-                          onClick={() =>
-                            setOpenDelivery(openDelivery === i ? null : i)
-                          }
+                          style={{
+                            background: darkMode ? "#14532d" : "#178a46", // cor escura no dark
+                            color: "white",
+                            borderRadius: "0.5rem",
+                            width: "100%",
+                            fontWeight: "bold",
+                            boxShadow: "0 2px 8px 0 rgba(0,0,0,0.10)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "0.75rem 1rem",
+                            marginBottom: "0.5rem",
+                          }}
+                          onClick={() => setOpenDelivery(openDelivery === i ? null : i)}
                         >
                           <span>
-                            <span className="entrega-icon">📦</span>
+                            <span className="entrega-icon" style={{ marginRight: 8 }}>📦</span>
                             {`Entrega ${i + 1} - `}
                             <b>{destino.responsible ?? "Não informado"}</b>
                           </span>
@@ -1229,6 +1240,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           className={`entrega-details${
                             openDelivery === i ? " open" : ""
                           }`}
+                          style={{
+                            background: darkMode ? "#222" : "#f9f9f9",
+                            color: darkMode ? "#eee" : "#222",
+                            borderRadius: "0.5rem",
+                            marginTop: "0.5rem",
+                            padding: openDelivery === i ? "0.75rem 1rem" : "0",
+                            transition: "all 0.3s",
+                          }}
                         >
                           {openDelivery === i && (
                             <>
