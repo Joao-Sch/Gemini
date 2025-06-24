@@ -46,7 +46,7 @@ type Delivery = {
 
 //#endregion
 
-export default function Chat() {
+export default function Page() {
   //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
@@ -711,7 +711,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   return (
     <div
-      className={`flex flex-col sm:flex-row min-h-screen relative transition-colors duration-500 ${
+      className={`flex min-h-screen w-full ${
         darkMode ? "bg-[#333]" : "bg-gray-100"
       }`}
     >
@@ -898,10 +898,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       </div>
 
       {/* Container central para chat + entregas */}
-      <div className="flex-1 flex flex-col w-full sm:h-auto sm:max-w-2xl sm:mx-auto px-0 sm:px-2 min-h-0 sm:justify-center">
-        {/* Chat */}
-        <div
-          className={`
+      <div className="flex flex-1 items-center justify-center gap-x-12 pr-12">
+        {/* Chat principal */}
+        <div className="mx-auto w-full max-w-2xl">
+          {/* Chat */}
+          <div
+            className={`
     w-full
     sm:max-w-2xl
     sm:rounded-lg
@@ -910,67 +912,69 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     flex flex-col
     ${darkMode ? "bg-[#222] text-gray-100" : "bg-white text-gray-700"}
   `}
-          style={{
-            boxShadow: darkMode
-              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
-              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-            WebkitBoxShadow: darkMode
-              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
-              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-            MozBoxShadow: darkMode
-              ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
-              : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-          }}
-        >
-          <div
-            className={`${
-              darkMode ? "bg-green-900" : "bg-green-600"
-            } text-white p-4 flex items-center justify-center relative transition-colors duration-500`}
+            style={{
+              boxShadow: darkMode
+                ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+                : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+              WebkitBoxShadow: darkMode
+                ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+                : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+              MozBoxShadow: darkMode
+                ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
+                : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+            }}
           >
-            {/* Botão hambúrguer só no mobile */}
-            <button
-              className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
-              onClick={() => setSidebarOpen((open) => !open)}
-              aria-label="Abrir menu"
+            <div
+              className={`${
+                darkMode ? "bg-green-900" : "bg-green-600"
+              } text-white p-4 flex items-center justify-center relative transition-colors duration-500`}
             >
-              <svg width="28" height="28" fill="none" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 8h20M4 16h20"
+              {/* Botão hambúrguer só no mobile */}
+              <button
+                className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
+                onClick={() => setSidebarOpen((open) => !open)}
+                aria-label="Abrir menu"
+              >
+                <svg width="28" height="28" fill="none" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 8h20M4 16h20"
+                  />
+                </svg>
+              </button>
+              {/* Título centralizado */}
+              <h1 className="text-xl font-bold w-full text-center">
+                Chatbot I9
+              </h1>
+              {/* Logo à direita (opcional) */}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Image
+                  src="/logo_i9delivery.png"
+                  alt="chatbot"
+                  width={40}
+                  height={40}
+                  className="slideLogo"
                 />
-              </svg>
-            </button>
-            {/* Título centralizado */}
-            <h1 className="text-xl font-bold w-full text-center">Chatbot I9</h1>
-            {/* Logo à direita (opcional) */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-              <Image
-                src="/logo_i9delivery.png"
-                alt="chatbot"
-                width={40}
-                height={40}
-                className="slideLogo"
-              />
-            </div>
-          </div>
-          <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
-            {currentConversation &&
-            currentConversation.messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
-                Envie uma mensagem para começar a conversa
               </div>
-            ) : (
-              currentConversation?.messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={`flex ${
-                    m.role === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
+            </div>
+            <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
+              {currentConversation &&
+              currentConversation.messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
+                  Envie uma mensagem para começar a conversa
+                </div>
+              ) : (
+                currentConversation?.messages.map((m) => (
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg
+                    key={m.id}
+                    className={`flex ${
+                      m.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[80%] p-3 rounded-lg
                       transition-colors duration-500
                       ${
                         m.role === "user"
@@ -981,86 +985,89 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           ? "bg-gray-800 text-gray-100"
                           : "bg-gray-100 text-gray-600"
                       }`}
-                  >
-                    {m.role === "user" && m.content.includes("data:image/")
-                      ? m.content.split("\n").map((part, i) => {
-                          const imageMatch = part.match(
-                            /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
-                          );
-                          if (imageMatch) {
-                            return (
-                              <Image
-                                key={i}
-                                src={imageMatch[1]}
-                                alt={`Imagem enviada pelo usuário ${i + 1}`}
-                                width={200}
-                                height={200}
-                                className="imgUser rounded-md mb-4 mr-2"
-                                unoptimized
-                              />
+                    >
+                      {m.role === "user" && m.content.includes("data:image/")
+                        ? m.content.split("\n").map((part, i) => {
+                            const imageMatch = part.match(
+                              /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
                             );
-                          }
-                          return (
-                            <p key={i} className="text-sm text-white">
-                              {part}
-                            </p>
-                          );
-                        })
-                      : m.content.split("\n").map((line, i) => (
-                          <span key={i}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                    {m.timestamp && (
-                      <span className="text-xs text-gray-400 block mt-1">
-                        {new Date(m.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    )}
+                            if (imageMatch) {
+                              return (
+                                <Image
+                                  key={i}
+                                  src={imageMatch[1]}
+                                  alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                  width={200}
+                                  height={200}
+                                  className="imgUser rounded-md mb-4 mr-2"
+                                  unoptimized
+                                />
+                              );
+                            }
+                            return (
+                              <p key={i} className="text-sm text-white">
+                                {part}
+                              </p>
+                            );
+                          })
+                        : m.content.split("\n").map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                      {m.timestamp && (
+                        <span className="text-xs text-gray-400 block mt-1">
+                          {new Date(m.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />{" "}
+              {/* Referência para o final das mensagens */}
+            </div>
+            <div className="border-t p-4">
+              {/* Pré-visualização das imagens carregadas */}
+              {uploadedImages.length > 0 && (
+                <div className="flex space-x-2 mb-4 overflow-x-auto">
+                  {uploadedImages.map((image, index) => (
+                    <div key={index} className="relative">
+                      <Image
+                        src={image}
+                        alt={`Imagem carregada ${index + 1}`}
+                        width={50}
+                        height={50}
+                        className="rounded-md border border-gray-300"
+                        unoptimized
+                      />
+                      <button
+                        onClick={() =>
+                          setUploadedImages((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          )
+                        }
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                      ></button>
+                    </div>
+                  ))}
                 </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />{" "}
-            {/* Referência para o final das mensagens */}
-          </div>
-          <div className="border-t p-4">
-            {/* Pré-visualização das imagens carregadas */}
-            {uploadedImages.length > 0 && (
-              <div className="flex space-x-2 mb-4 overflow-x-auto">
-                {uploadedImages.map((image, index) => (
-                  <div key={index} className="relative">
-                    <Image
-                      src={image}
-                      alt={`Imagem carregada ${index + 1}`}
-                      width={50}
-                      height={50}
-                      className="rounded-md border border-gray-300"
-                      unoptimized
-                    />
-                    <button
-                      onClick={() =>
-                        setUploadedImages((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        )
-                      }
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                    ></button>
-                  </div>
-                ))}
-              </div>
-            )}
+              )}
 
-            {/* Formulário de entrada */}
-            <form onSubmit={handleFormSubmit} className="flex w-full space-x-2">
-              <input
-                value={input}
-                onChange={handleInputChange}
-                placeholder="Digite sua mensagem..."
-                className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
+              {/* Formulário de entrada */}
+              <form
+                onSubmit={handleFormSubmit}
+                className="flex w-full space-x-2"
+              >
+                <input
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Digite sua mensagem..."
+                  className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
                   ${
                     darkMode
                       ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
@@ -1070,20 +1077,20 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   focus:scale-101
                   transition-all duration-700
                 `}
-                disabled={isLoading}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileUpload}
-                className="hidden"
-                id="file-upload"
-                disabled={isLoading}
-              />
-              <label
-                htmlFor="file-upload"
-                className={`
+                  disabled={isLoading}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="file-upload"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="file-upload"
+                  className={`
                   px-4 items-center py-2 border rounded-md cursor-pointer flex
                   transition-colors duration-500
                   ${
@@ -1093,12 +1100,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   }
                   ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
-              >
-                <IoDocumentAttachOutline size={20} />
-              </label>
-              <button
-                type="submit"
-                className={`
+                >
+                  <IoDocumentAttachOutline size={20} />
+                </label>
+                <button
+                  type="submit"
+                  className={`
                   border px-4 py-2 rounded-md cursor-pointer
                   transition-colors duration-500
                   ${
@@ -1114,137 +1121,181 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       : ""
                   }
                 `}
-                disabled={isLoading}
-              >
-                {isSubmitClicked && !isLoading ? (
-                  "Enviado"
-                ) : isLoading ? (
-                  <div className="wave-container-button">
-                    <h1 className="wave-text-button">
-                      <span>. </span>
-                      <span>. </span>
-                      <span>. </span>
-                      <span>.</span>
-                    </h1>
-                  </div>
-                ) : (
-                  "Enviar"
-                )}
-              </button>
-            </form>
+                  disabled={isLoading}
+                >
+                  {isSubmitClicked && !isLoading ? (
+                    "Enviado"
+                  ) : isLoading ? (
+                    <div className="wave-container-button">
+                      <h1 className="wave-text-button">
+                        <span>. </span>
+                        <span>. </span>
+                        <span>. </span>
+                        <span>. </span>
+                      </h1>
+                    </div>
+                  ) : (
+                    "Enviar"
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-
-        {/* Sidebar de Entregas colada ao chat */}
+        {/* Sidebar de entregas */}
         {showDeliveriesSidebar && (
           <div
-            className={`sidebar-entregas-animada${
-              sidebarVisible ? " sidebar-entregas-animada--visible" : ""
-            }`}
+            className={`sidebar-entregas-animada${sidebarVisible ? " sidebar-entregas-animada--visible" : ""}`}
             style={{
               width: "20rem",
               height: "60vh",
-              background: darkMode ? "#333" : "white",
-              boxShadow: darkMode
-                ? "0 4px 24px rgba(0,0,0,0.7)"
-                : "0 4px 24px rgba(0,0,0,0.12)",
-              overflowY: "auto",
-              borderLeft: "1px solid rgb(235, 230, 229)",
-              borderTopRightRadius: "0.5rem",
-              borderBottomRightRadius: "0.5rem",
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
+              background: "var(--sidebar)",
+              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.25)",
+              borderRadius: "1rem",
+              display: "flex",
               flexDirection: "column",
-              alignSelf: "center",
-              padding: 0,
-              marginBottom: "6px",
+              overflow: "hidden",
             }}
           >
+            {/* Header */}
             <div
-              className={`${
-                darkMode ? "bg-green-900" : "bg-green-800"
-              } text-white p-3 rounded-t-lg text-center font-semibold flex justify-between items-center transition-colors duration-500`}
+              style={{
+                background: darkMode ? "#14532d" : "#178a46", // muda conforme o tema
+                color: "white",
+                padding: "1rem",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderTopLeftRadius: "1rem",
+                borderTopRightRadius: "1rem",
+                minHeight: "3.5rem",
+              }}
             >
               <span>ENTREGAS</span>
               <button
-                className="text-white font-bold text-xl transition-colors duration-500"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "white",
+                  fontSize: "1.5rem",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
                 onClick={() => setShowDeliveriesSidebar(false)}
                 title="Fechar"
               >
                 ×
               </button>
             </div>
-            {deliveries.length === 0 ? (
-              <p className="text-gray-500 p-4">Nenhuma entrega registrada.</p>
-            ) : (
-              <ul className="entrega-lista flex-1">
-                {deliveries.map((d, i) => {
-                  const origem =
-                    d.addresses?.find((a: any) => a.position === 0) || {};
-                  const destino =
-                    d.addresses?.find((a: any) => a.position === 1) || {};
-                  return (
-                    <li key={d.id} className="entrega-item">
-                      <button
-                        className="entrega-btn"
-                        onClick={() =>
-                          setOpenDelivery(openDelivery === i ? null : i)
-                        }
-                      >
-                        <span>
-                          <span className="entrega-icon">📦</span>
-                          {`Entrega ${i + 1} - `}
-                          <b>{destino.responsible ?? "Não informado"}</b>
-                        </span>
-                        <span>{openDelivery === i ? "▲" : "▼"}</span>
-                      </button>
-                      <div
-                        className={`entrega-details${
-                          openDelivery === i ? " open" : ""
-                        }`}
-                      >
-                        {openDelivery === i && (
-                          <>
-                            <div>
-                              <b>Status:</b>{" "}
-                              {d.situation?.description ?? "Não informado"}
-                            </div>
-                            <div>
-                              <b>Motoboy:</b>{" "}
-                              {d.deliveryman?.name ?? "Não informado"}
-                            </div>
-                            <div>
-                              <b>Veículo:</b>{" "}
-                              {d.deliveryman?.vehicle?.model ?? "Não informado"}
-                            </div>
-                            <div>
-                              <b>Valor:</b> R$ {d.price ?? "Não informado"}
-                            </div>
-                            <div>
-                              <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
-                              {origem.number ?? "Não informado"},{" "}
-                              {origem.neighborhood ?? "Não informado"},{" "}
-                              {origem.city ?? "Não informado"},{" "}
-                              {origem.state ?? "Não informado"},{" "}
-                              {origem.zipCode ?? "Não informado"}
-                            </div>
-                            <div>
-                              <b>Destino:</b>{" "}
-                              {destino.street ?? "Não informado"},{" "}
-                              {destino.number ?? "Não informado"},{" "}
-                              {destino.neighborhood ?? "Não informado"},{" "}
-                              {destino.city ?? "Não informado"},{" "}
-                              {destino.state ?? "Não informado"},{" "}
-                              {destino.zipCode ?? "Não informado"}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+            {/* Conteúdo */}
+            <div
+              style={{
+                flex: 1,
+                background: "var(--sidebar)", // acompanha o tema
+                overflowY: "auto",
+                padding: "1rem",
+                color: "var(--sidebar-foreground)",
+              }}
+            >
+              {deliveries.length === 0 ? (
+                <p style={{ color: "var(--muted-foreground)" }}>
+                  Nenhuma entrega registrada.
+                </p>
+              ) : (
+                <ul className="entrega-lista">
+                  {deliveries.map((d, i) => {
+                    const origem =
+                      d.addresses?.find((a: any) => a.position === 0) || {};
+                    const destino =
+                      d.addresses?.find((a: any) => a.position === 1) || {};
+                    return (
+                      <li key={d.id} className="entrega-item">
+                        <button
+                          className="entrega-btn"
+                          onClick={() =>
+                            setOpenDelivery(openDelivery === i ? null : i)
+                          }
+                        >
+                          <span>
+                            <span className="entrega-icon">📦</span>
+                            {`Entrega ${i + 1} - `}
+                            <b>{destino.responsible ?? "Não informado"}</b>
+                          </span>
+                          <span>{openDelivery === i ? "▲" : "▼"}</span>
+                        </button>
+                        <div
+                          className={`entrega-details${
+                            openDelivery === i ? " open" : ""
+                          }`}
+                        >
+                          {openDelivery === i && (
+                            <>
+                              <div>
+                                <b>Status:</b>{" "}
+                                {d.situation?.description ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Motoboy:</b>{" "}
+                                {d.deliveryman?.name ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Veículo:</b>{" "}
+                                {d.deliveryman?.vehicle?.model ??
+                                  "Não informado"}
+                              </div>
+                              <div>
+                                <b>Valor:</b> R$ {d.price ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Origem:</b>{" "}
+                                {origem.street ?? "Não informado"},{" "}
+                                {origem.number ?? "Não informado"},{" "}
+                                {origem.neighborhood ?? "Não informado"},{" "}
+                                {origem.city ?? "Não informado"},{" "}
+                                {origem.state ?? "Não informado"},{" "}
+                                {origem.zipCode ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Motoboy:</b>{" "}
+                                {d.deliveryman?.name ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Veículo:</b>{" "}
+                                {d.deliveryman?.vehicle?.model ??
+                                  "Não informado"}
+                              </div>
+                              <div>
+                                <b>Valor:</b> R$ {d.price ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Origem:</b>{" "}
+                                {origem.street ?? "Não informado"},{" "}
+                                {origem.number ?? "Não informado"},{" "}
+                                {origem.neighborhood ?? "Não informado"},{" "}
+                                {origem.city ?? "Não informado"},{" "}
+                                {origem.state ?? "Não informado"},{" "}
+                                {origem.zipCode ?? "Não informado"}
+                              </div>
+                              <div>
+                                <b>Destino:</b>{" "}
+                                {destino.street ?? "Não informado"},{" "}
+                                {destino.number ?? "Não informado"},{" "}
+                                {destino.neighborhood ?? "Não informado"},{" "}
+                                {destino.city ?? "Não informado"},{" "}
+                                {destino.state ?? "Não informado"},{" "}
+                                {destino.zipCode ?? "Não informado"}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
         )}
       </div>
