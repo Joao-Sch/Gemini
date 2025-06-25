@@ -46,6 +46,42 @@ type Delivery = {
 
 //#endregion
 
+async function generateTitleWithGemini(
+  userMessage: string,
+  aiInstance: GoogleGenAI
+): Promise<string> {
+  const prompt = `
+Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem do usuário para nomear uma conversa de chat. Não use pontuação no final.
+
+Mensagem: "${userMessage}"
+Título:
+  `.trim();
+
+  try {
+    const response = await aiInstance.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+    });
+    const title =
+      response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    return title.replace(/^["']|["']$/g, "").replace(/[.?!]$/, "");
+  } catch {
+    return userMessage.slice(0, 30);
+  }
+}
+
+function extrairEndereco(enderecoCompleto: string) {
+  const regex =
+    /^(.*?),\s*(\d+)\s*-\s*(.*?),\s*(.*?)\s*-\s*([A-Z]{2}),\s*([\d-]+)$/;
+  const match = enderecoCompleto.match(regex);
+
+  if (match) {
+    const [, rua, numero, bairro, cidade, uf, cep] = match;
+    return { rua, numero, bairro, cidade, uf, cep: cep.replace(/-/g, "") };
+  }
+  return null;
+}
+
 export default function Page() {
   //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -390,7 +426,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       - Deliveries made: ${driverDetails.entregasRealizadas}
                       - Rating: ${driverDetails.avaliacao} 
                       Please format this response in a friendly and clear manner for the client.`;
-      return await sendToGemini(prompt);
+      return await sendToGemini({ text: prompt });
     } else {
       return "Nenhum motboy encontrado com esse ID.";
     }
@@ -898,37 +934,29 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       </div>
 
       {/* Container central para chat + entregas */}
-      <div className="flex flex-1 items-center justify-center gap-x-12 pr-12">
+      {/* Adicionado 'overflow-hidden' ao container pai para evitar rolagem excessiva */}
+      <div className="flex flex-1 min-h-0 min-w-0 items-stretch justify-center gap-x-4 pr-4 h-screen w-screen overflow-hidden">
         {/* Chat principal */}
-        <div className="mx-auto w-full max-w-2xl">
-          {/* Chat */}
+        {/* Adicionado 'min-w-0' para permitir que o flex-item encolha */}
+        <div className="flex-1 h-full max-w-2xl mx-auto flex flex-col min-w-0">
           <div
             className={`
-    w-full
-    sm:max-w-2xl
-    sm:rounded-lg
-    sm:shadow-md
-    overflow-hidden
-    flex flex-col
-    ${darkMode ? "bg-[#222] text-gray-100" : "bg-white text-gray-700"}
-  `}
+        flex flex-col h-full w-full
+        sm:rounded-lg sm:shadow-md
+        overflow-hidden
+        ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
+      `}
             style={{
               boxShadow: darkMode
                 ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
                 : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-              WebkitBoxShadow: darkMode
-                ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
-                : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-              MozBoxShadow: darkMode
-                ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
-                : "0px 10px 26px 14px rgba(176,176,176,0.75)",
+              minHeight: "100%",
+              height: "100%",
+              maxHeight: "100%",
             }}
           >
-            <div
-              className={`${
-                darkMode ? "bg-green-900" : "bg-green-600"
-              } text-white p-4 flex items-center justify-center relative transition-colors duration-500`}
-            >
+            {/* Header */}
+            <div className={`${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex items-center justify-center relative transition-colors duration-500 shrink-0`}>
               {/* Botão hambúrguer só no mobile */}
               <button
                 className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
@@ -959,22 +987,31 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 />
               </div>
             </div>
-            <div className="h-[60vh] overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
-              {currentConversation &&
-              currentConversation.messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
-                  Envie uma mensagem para começar a conversa
-                </div>
-              ) : (
-                currentConversation?.messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`flex ${
-                      m.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg
+            {/* Mensagens */}
+            {/* Adicionado 'pr-2' e 'pl-2' para garantir algum padding mesmo em 320px, 'px-4' pode ser muito grande */}
+            <div className="flex-1 min-h-0 overflow-y-auto px-2 sm:px-4"> {/* Ajustado px-4 para px-2 em mobile */}
+              <div className="flex flex-col h-full w-full min-w-0 max-w-full">
+                {/* Header */}
+                <div className="shrink-0">{/* ... */}</div>
+                {/* Mensagens */}
+                <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
+                  {currentConversation &&
+                  currentConversation.messages.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
+                      Envie uma mensagem para começar a conversa
+                    </div>
+                  ) : (
+                    currentConversation?.messages.map((m) => (
+                      <div
+                        key={m.id}
+                        className={`flex ${
+                          m.role === "user" ? "justify-end" : "justify-start"
+                        }`}
+                      >
+                        {/* Adicionado 'break-words' para quebrar palavras longas */}
+                        {/* Reduzido max-w para 75% em telas menores para dar mais espaço para padding */}
+                        <div
+                          className={`max-w-[80%] sm:max-w-[75%] p-3 rounded-lg break-words
                       transition-colors duration-500
                       ${
                         m.role === "user"
@@ -985,89 +1022,91 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           ? "bg-gray-800 text-gray-100"
                           : "bg-gray-100 text-gray-600"
                       }`}
-                    >
-                      {m.role === "user" && m.content.includes("data:image/")
-                        ? m.content.split("\n").map((part, i) => {
-                            const imageMatch = part.match(
-                              /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
-                            );
-                            if (imageMatch) {
-                              return (
-                                <Image
-                                  key={i}
-                                  src={imageMatch[1]}
-                                  alt={`Imagem enviada pelo usuário ${i + 1}`}
-                                  width={200}
-                                  height={200}
-                                  className="imgUser rounded-md mb-4 mr-2"
-                                  unoptimized
-                                />
-                              );
-                            }
-                            return (
-                              <p key={i} className="text-sm text-white">
-                                {part}
-                              </p>
-                            );
-                          })
-                        : m.content.split("\n").map((line, i) => (
-                            <span key={i}>
-                              {line}
-                              <br />
+                        >
+                          {m.role === "user" && m.content.includes("data:image/")
+                            ? m.content.split("\n").map((part, i) => {
+                                const imageMatch = part.match(
+                                  /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
+                                );
+                                if (imageMatch) {
+                                  return (
+                                    <Image
+                                      key={i}
+                                      src={imageMatch[1]}
+                                      alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                      width={200}
+                                      height={200}
+                                      className="imgUser rounded-md mb-4 mr-2"
+                                      unoptimized
+                                    />
+                                  );
+                                }
+                                return (
+                                  <p key={i} className="text-sm text-white">
+                                    {part}
+                                  </p>
+                                );
+                              })
+                            : m.content.split("\n").map((line, i) => (
+                                <span key={i}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                          {m.timestamp && (
+                            <span className="text-xs text-gray-400 block mt-1">
+                              {new Date(m.timestamp).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
                             </span>
-                          ))}
-                      {m.timestamp && (
-                        <span className="text-xs text-gray-400 block mt-1">
-                          {new Date(m.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />{" "}
-              {/* Referência para o final das mensagens */}
-            </div>
-            <div className="border-t p-4">
-              {/* Pré-visualização das imagens carregadas */}
-              {uploadedImages.length > 0 && (
-                <div className="flex space-x-2 mb-4 overflow-x-auto">
-                  {uploadedImages.map((image, index) => (
-                    <div key={index} className="relative">
-                      <Image
-                        src={image}
-                        alt={`Imagem carregada ${index + 1}`}
-                        width={50}
-                        height={50}
-                        className="rounded-md border border-gray-300"
-                        unoptimized
-                      />
-                      <button
-                        onClick={() =>
-                          setUploadedImages((prev) =>
-                            prev.filter((_, i) => i !== index)
-                          )
-                        }
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                      ></button>
-                    </div>
-                  ))}
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  <div ref={messagesEndRef} />{" "}
+                  {/* Referência para o final das mensagens */}
                 </div>
-              )}
+                {/* Input */}
+                <div className="border-t p-4 shrink-0 bg-inherit">
+                  {/* Pré-visualização das imagens carregadas */}
+                  {uploadedImages.length > 0 && (
+                    <div className="flex space-x-2 mb-4 overflow-x-auto">
+                      {uploadedImages.map((image, index) => (
+                        <div key={index} className="relative">
+                          <Image
+                            src={image}
+                            alt={`Imagem carregada ${index + 1}`}
+                            width={50}
+                            height={50}
+                            className="rounded-md border border-gray-300"
+                            unoptimized
+                          />
+                          <button
+                            onClick={() =>
+                              setUploadedImages((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              )
+                            }
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                          ></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-              {/* Formulário de entrada */}
-              <form
-                onSubmit={handleFormSubmit}
-                className="flex w-full space-x-2"
-              >
-                <input
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder="Digite sua mensagem..."
-                  className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
+                  {/* Formulário de entrada */}
+                  {/* Adicionado 'gap-1' para reduzir o espaço entre os itens em telas pequenas */}
+                  <form
+                    onSubmit={handleFormSubmit}
+                    className="flex w-full space-x-2 sm:gap-2 gap-1"
+                  >
+                    <input
+                      value={input}
+                      onChange={handleInputChange}
+                      placeholder="Digite sua mensagem..."
+                      className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
                   ${
                     darkMode
                       ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
@@ -1077,20 +1116,20 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   focus:scale-101
                   transition-all duration-700
                 `}
-                  disabled={isLoading}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="file-upload"
-                  disabled={isLoading}
-                />
-                <label
-                  htmlFor="file-upload"
-                  className={`
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="file-upload"
+                      disabled={isLoading}
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className={`
                   px-4 items-center py-2 border rounded-md cursor-pointer flex
                   transition-colors duration-500
                   ${
@@ -1100,13 +1139,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   }
                   ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
-                >
-                  <IoDocumentAttachOutline size={20} />
-                </label>
-                <button
-                  type="submit"
-                  className={`
-                  border px-4 py-2 rounded-md cursor-pointer
+                    >
+                      <IoDocumentAttachOutline size={20} />
+                    </label>
+                    {/* Alterado 'px-4' para 'px-2' e 'py-2' para 'py-1' em mobile para o botão de enviar */}
+                    <button
+                      type="submit"
+                      className={`
+                  border px-2 py-1 sm:px-4 sm:py-2 rounded-md cursor-pointer
                   transition-colors duration-500
                   ${
                     darkMode
@@ -1121,68 +1161,54 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                       : ""
                   }
                 `}
-                  disabled={isLoading}
-                >
-                  {isSubmitClicked && !isLoading ? (
-                    "Enviado"
-                  ) : isLoading ? (
-                    <div className="wave-container-button">
-                      <h1 className="wave-text-button">
-                        <span>. </span>
-                        <span>. </span>
-                        <span>. </span>
-                        <span>. </span>
-                      </h1>
-                    </div>
-                  ) : (
-                    "Enviar"
-                  )}
-                </button>
-              </form>
+                      disabled={isLoading}
+                    >
+                      {isSubmitClicked && !isLoading ? (
+                        "Enviado"
+                      ) : isLoading ? (
+                        <div className="wave-container-button">
+                          <h1 className="wave-text-button">
+                            <span>. </span>
+                            <span>. </span>
+                            <span>. </span>
+                            <span>. </span>
+                          </h1>
+                        </div>
+                      ) : (
+                        "Enviar"
+                      )}
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         {/* Sidebar de entregas */}
         {showDeliveriesSidebar && (
           <div
-            className={`sidebar-entregas-animada${sidebarVisible ? " sidebar-entregas-animada--visible" : ""}`}
-            style={{
-              width: "20rem",
-              height: "60vh",
-              background: "var(--sidebar)",
-              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.25)",
-              borderRadius: "1rem",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
+            className={`
+              sidebar-entregas-animada
+              ${sidebarVisible ? "sidebar-entregas-animada--visible" : ""}
+              fixed inset-y-0 right-0 z-40
+              w-64 sm:w-80 md:w-96 lg:w-1/4 xl:w-1/5 max-w-xs
+              sm:static sm:h-auto sm:max-w-none sm:min-w-[20rem]
+              flex flex-col rounded-lg shadow-xl
+              ${darkMode ? "bg-[var(--sidebar)]" : "bg-white"}
+              transition-transform duration-300 ease-in-out
+            `}
           >
             {/* Header */}
             <div
-              style={{
-                background: darkMode ? "#14532d" : "#178a46", // muda conforme o tema
-                color: "white",
-                padding: "1rem",
-                fontWeight: "bold",
-                fontSize: "1.1rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                borderTopLeftRadius: "1rem",
-                borderTopRightRadius: "1rem",
-                minHeight: "3.5rem",
-              }}
+              className={`
+                p-4 font-bold text-lg flex items-center justify-between
+                rounded-t-lg min-h-[3.5rem]
+                ${darkMode ? "bg-[#14532d] text-white" : "bg-[#178a46] text-white"}
+              `}
             >
               <span>ENTREGAS</span>
               <button
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "white",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
+                className="bg-transparent border-none text-white text-2xl cursor-pointer font-bold"
                 onClick={() => setShowDeliveriesSidebar(false)}
                 title="Fechar"
               >
@@ -1190,84 +1216,91 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               </button>
             </div>
             {/* Conteúdo */}
+            {/* Adicionado 'overflow-x-hidden' e 'break-words' para o conteúdo da sidebar */}
             <div
-              style={{
-                flex: 1,
-                background: "var(--sidebar)", // acompanha o tema
-                overflowY: "auto",
-                padding: "1rem",
-                color: "var(--sidebar-foreground)",
-              }}
+              className={`
+                flex-1 overflow-y-auto p-4
+                ${darkMode ? "bg-[var(--sidebar)] text-[var(--sidebar-foreground)]" : "bg-white text-gray-700"}
+                overflow-x-hidden break-words
+              `}
             >
               {deliveries.length === 0 ? (
-                <p style={{ color: "var(--muted-foreground)" }}>
+                <p className={`${darkMode ? "text-[var(--muted-foreground)]" : "text-gray-500"}`}>
                   Nenhuma entrega registrada.
                 </p>
               ) : (
-                <ul className="entrega-lista shadow-lg bg-[var(--sidebar)] rounded-xl p-4">
+                <ul
+                  className="entrega-lista shadow-lg rounded-xl bg-transparent p-0"
+                >
                   {deliveries.map((d, i) => {
                     const origem =
                       d.addresses?.find((a: any) => a.position === 0) || {};
                     const destino =
                       d.addresses?.find((a: any) => a.position === 1) || {};
                     return (
-                      <li key={d.id} className="entrega-item">
+                      <li key={d.id} className="entrega-item p-2">
                         <button
-                          className="entrega-btn"
-                          style={{
-                            background: darkMode ? "#14532d" : "#178a46", // cor escura no dark
-                            color: "white",
-                            borderRadius: "0.5rem",
-                            width: "100%",
-                            fontWeight: "bold",
-                            boxShadow: "0 2px 8px 0 rgba(0,0,0,0.10)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            padding: "0.75rem 1rem",
-                            marginBottom: "0.5rem",
-                          }}
+                          className={`
+                            w-full flex items-center justify-between
+                            font-bold rounded-lg shadow-sm p-3 mb-2
+                            ${
+                              d.situation?.description === "Pendente"
+                                ? darkMode
+                                  ? "bg-green-800 text-green-200"
+                                  : "bg-green-200 text-green-900"
+                                : d.situation?.description === "Entregue"
+                                ? darkMode
+                                  ? "bg-green-900 text-green-200"
+                                  : "bg-green-300 text-green-900"
+                                : d.situation?.description === "Cancelado"
+                                ? darkMode
+                                  ? "bg-red-900 text-red-200"
+                                  : "bg-red-200 text-red-900"
+                                : darkMode
+                                ? "bg-[#14532d] text-white"
+                                : "bg-[#178a46] text-white"
+                            }
+                            hover:opacity-90 transition-opacity duration-200
+                          `}
                           onClick={() => setOpenDelivery(openDelivery === i ? null : i)}
                         >
-                          <span>
-                            <span className="entrega-icon" style={{ marginRight: 8 }}>📦</span>
-                            {`Entrega ${i + 1} - `}
-                            <b>{destino.responsible ?? "Não informado"}</b>
+                          {/* Adicionado 'flex-1' e 'min-w-0' para o span do texto do botão */}
+                          <span className="flex-1 min-w-0 flex items-center">
+                            <span className="entrega-icon mr-2 shrink-0">📦</span>
+                            <span className="truncate"> {/* truncate para evitar que o texto transborde */}
+                              {`Entrega ${i + 1} - `}
+                              <b>{destino.responsible ?? "Não informado"}</b>
+                            </span>
                           </span>
-                          <span>{openDelivery === i ? "▲" : "▼"}</span>
+                          <span className="ml-2 shrink-0">{openDelivery === i ? "▲" : "▼"}</span>
                         </button>
                         <div
-                          className={`entrega-details${
-                            openDelivery === i ? " open" : ""
-                          }`}
-                          style={{
-                            background: darkMode ? "#222" : "#f9f9f9",
-                            color: darkMode ? "#eee" : "#222",
-                            borderRadius: "0.5rem",
-                            marginTop: "0.5rem",
-                            padding: openDelivery === i ? "0.75rem 1rem" : "0",
-                            transition: "all 0.3s",
-                          }}
+                          className={`
+                            entrega-details
+                            ${openDelivery === i ? "open" : ""}
+                            rounded-lg mt-2 p-0
+                            ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
+                          `}
                         >
                           {openDelivery === i && (
-                            <>
-                              <div>
+                            <div className="p-3"> {/* Adicione padding aqui para o conteúdo da div de detalhes */}
+                              <div className="mb-1">
                                 <b>Status:</b>{" "}
                                 {d.situation?.description ?? "Não informado"}
                               </div>
-                              <div>
+                              <div className="mb-1">
                                 <b>Motoboy:</b>{" "}
                                 {d.deliveryman?.name ?? "Não informado"}
                               </div>
-                              <div>
+                              <div className="mb-1">
                                 <b>Veículo:</b>{" "}
                                 {d.deliveryman?.vehicle?.model ??
                                   "Não informado"}
                               </div>
-                              <div>
+                              <div className="mb-1">
                                 <b>Valor:</b> R$ {d.price ?? "Não informado"}
                               </div>
-                              <div>
+                              <div className="mb-1">
                                 <b>Origem:</b>{" "}
                                 {origem.street ?? "Não informado"},{" "}
                                 {origem.number ?? "Não informado"},{" "}
@@ -1276,28 +1309,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                 {origem.state ?? "Não informado"},{" "}
                                 {origem.zipCode ?? "Não informado"}
                               </div>
-                              <div>
-                                <b>Motoboy:</b>{" "}
-                                {d.deliveryman?.name ?? "Não informado"}
-                              </div>
-                              <div>
-                                <b>Veículo:</b>{" "}
-                                {d.deliveryman?.vehicle?.model ??
-                                  "Não informado"}
-                              </div>
-                              <div>
-                                <b>Valor:</b> R$ {d.price ?? "Não informado"}
-                              </div>
-                              <div>
-                                <b>Origem:</b>{" "}
-                                {origem.street ?? "Não informado"},{" "}
-                                {origem.number ?? "Não informado"},{" "}
-                                {origem.neighborhood ?? "Não informado"},{" "}
-                                {origem.city ?? "Não informado"},{" "}
-                                {origem.state ?? "Não informado"},{" "}
-                                {origem.zipCode ?? "Não informado"}
-                              </div>
-                              <div>
+                              <div className="mb-1">
                                 <b>Destino:</b>{" "}
                                 {destino.street ?? "Não informado"},{" "}
                                 {destino.number ?? "Não informado"},{" "}
@@ -1306,7 +1318,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                 {destino.state ?? "Não informado"},{" "}
                                 {destino.zipCode ?? "Não informado"}
                               </div>
-                            </>
+                            </div>
                           )}
                         </div>
                       </li>
@@ -1318,6 +1330,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           </div>
         )}
       </div>
+
+      {/* Overlay para fechar sidebar no mobile */}
       {sidebarOpen && (
         <div
           style={{
@@ -1330,46 +1344,15 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Overlay para fechar sidebar de entregas no mobile */}
+      {showDeliveriesSidebar && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
+          onClick={() => setShowDeliveriesSidebar(false)}
+        />
+      )}
     </div>
   );
 }
 //#endregion
-
-async function generateTitleWithGemini(
-  userMessage: string,
-  aiInstance: GoogleGenAI
-): Promise<string> {
-  const prompt = `
-Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem do usuário para nomear uma conversa de chat. Não use pontuação no final.
-
-Mensagem: "${userMessage}"
-Título:
-  `.trim();
-
-  try {
-    const response = await aiInstance.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    });
-    const title =
-      response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-    return title.replace(/^["']|["']$/g, "").replace(/[.?!]$/, "");
-  } catch {
-    return userMessage.slice(0, 30);
-  }
-}
-
-function extrairEndereco(enderecoCompleto: string) {
-  const regex =
-    /^(.*?),\s*(\d+)\s*-\s*(.*?),\s*([\w\s]+)\s*-\s*([A-Z]{2}),\s*(\d{5}-\d{3})$/;
-  const match = enderecoCompleto.match(regex);
-  if (!match) return null;
-  return {
-    rua: match[1].trim(),
-    numero: match[2].trim(),
-    bairro: match[3].trim(),
-    cidade: match[4].trim(),
-    estado: match[5].trim(),
-    cep: match[6].trim(),
-  };
-}

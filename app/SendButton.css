@@ -211,6 +211,7 @@
     opacity: 0;
     transform: translateX(-120%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -220,7 +221,7 @@
 .sidebar-entregas-animada {
   opacity: 0;
   transform: translateX(120%);
-  transition: opacity 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1);
+  transition: opacity 0.4s cubic-bezier(.4, 0, .2, 1), transform 0.4s cubic-bezier(.4, 0, .2, 1);
   display: flex;
 }
 
@@ -230,21 +231,38 @@
 }
 
 .entrega-lista {
-  background: #f8fafc;
-  border-radius: 0 0 12px 12px;
+  background: transparent;
+  border-radius: 16px;
   padding: 8px 0;
   margin: 0;
   list-style: none;
+  overflow-x: hidden;
+}
+
+@media (max-width: 640px) {
+  .entrega-lista {
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
 }
 
 .entrega-item {
   background: #fff;
+  /* claro no tema claro */
   border-radius: 8px;
   margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s, transform 0.2s, background 0.2s;
   border: 1px solid #e5e7eb;
   overflow: hidden;
+}
+
+.dark .entrega-item {
+  background: #222;
+  /* escuro no tema dark */
+  border: 1px solid #333;
 }
 
 .entrega-item:last-child {
@@ -256,7 +274,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #208045;   /* verde mais escuro */
+  background: #208045;
+  /* verde mais escuro */
   color: #fff;
   font-weight: 600;
   font-size: 1rem;
@@ -268,16 +287,18 @@
   border-radius: 8px 8px 0 0;
 }
 
-.entrega-btn:hover, .entrega-btn:focus {
-  background: #14532d;   /* verde ainda mais escuro no hover */
-  box-shadow: 0 2px 8px rgba(20,83,45,0.10);
+.entrega-btn:hover,
+.entrega-btn:focus {
+  background: #14532d;
+  /* verde ainda mais escuro no hover */
+  box-shadow: 0 2px 8px rgba(20, 83, 45, 0.10);
 }
 
 .entrega-details {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s cubic-bezier(.4,0,.2,1), padding 0.3s;
+  transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1), opacity 0.4s cubic-bezier(.4, 0, .2, 1), padding 0.3s;
   background: #f1f5f9;
   padding: 0 18px;
 }
@@ -289,7 +310,17 @@
 }
 
 .entrega-details b {
-  color: #14532d; /* verde escuro */
+  color: #14532d;
+  /* verde escuro */
+}
+
+.dark .entrega-details {
+  background: #23272b !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .entrega-details b {
+  color: #4ade80 !important; /* verde claro para destaque */
 }
 
 .entrega-info-row {
@@ -315,9 +346,15 @@ body.dark-mode {
 }
 
 @keyframes motoboy-run-global {
-  0% { left: 260px; }
-  100% { left: calc(100vw + 100vw); }
+  0% {
+    left: 260px;
+  }
+
+  100% {
+    left: calc(100vw + 100vw);
+  }
 }
+
 .motoboy-global {
   animation: motoboy-run-global 2.5s linear forwards;
 }
@@ -326,37 +363,74 @@ body.dark-mode {
 
 /* Adicione este bloco para telas até 768px (mobile) */
 @media (max-width: 768px) {
-  /* Altere apenas o que precisa para mobile */
   body {
-    padding: 10px;
+    padding: 0 !important; /* Remova padding lateral */
   }
-  .container {
-    flex-direction: column;
-    width: 100%;
+  .container, .main-container, .chat-area {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  /* Outros ajustes específicos para mobile */
+}
+
+/* Adicione este bloco para telas até 480px (mobile menor) */
+@media (max-width: 480px) {
+  .entrega-btn,
+  .entrega-details,
+  .chat-input, /* ajuste para sua classe de input */
+  .chat-area {
+    font-size: 0.95rem;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
 }
 
 /* Exemplo para o layout principal */
-body, html {
+body,
+html {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
+html, body, #__next {
+  height: 100%;
+  min-height: 100%;
+  width: 100vw;
+  min-width: 0;      /* <-- Troque de 100vw para 0 */
+  max-width: 100vw;  /* <-- Adicione isto */
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden; /* <-- Troque overflow para só x */
+}
+
 .main-container {
-  min-height: 100vh; /* Ocupa toda a altura da tela */
+  min-height: 100vh;
+  /* Ocupa toda a altura da tela */
   display: flex;
   flex-direction: column;
 }
 
 .chat-area {
-  flex: 1; /* Faz o chat crescer para ocupar o espaço disponível */
+  flex: 1;
+  /* Faz o chat crescer para ocupar o espaço disponível */
   display: flex;
   flex-direction: column;
   justify-content: stretch;
   /* Remova margens/paddings desnecessários */
-  margin: 0;
-  padding: 0;
 }
 
+
+.dark .entrega-item {
+  background: #222; /* escuro no tema dark */
+  border: 1px solid #333;
+}
+
+.dark .entrega-lista {
+  background: #181c1f !important;
+}
