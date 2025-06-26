@@ -177,4 +177,15 @@ body, .main-container, .chat-area {
   box-sizing: border-box;
 }
 
+@media (max-width: 639px) {
+  .chat-mobile-full {
+    height: 100% !important;
+  }
+}
+@media (min-width: 640px) {
+  .chat-mobile-full {
+    height: auto !important;
+  }
+}
+
 

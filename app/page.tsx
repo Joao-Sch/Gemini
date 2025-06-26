@@ -934,11 +934,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       </div>
 
       {/* Container central para chat + entregas */}
-      {/* Adicionado 'overflow-hidden' ao container pai para evitar rolagem excessiva */}
-      <div className="flex flex-1 min-h-0 min-w-0 items-stretch justify-center gap-x-4 pr-4 h-screen w-screen overflow-hidden">
+      <div className="flex flex-1 min-h-0 min-w-0 items-stretch justify-center gap-x-4  h-screen w-screen overflow-hidden">
         {/* Chat principal */}
         {/* Adicionado 'min-w-0' para permitir que o flex-item encolha */}
-        <div className="flex-1 h-full max-w-2xl mx-auto flex flex-col min-w-0">
+        <div className="flex-1 h-full sm:h-auto max-w-2xl mx-auto flex flex-col min-w-0">
           <div
             className={`
         flex flex-col h-full w-full
@@ -1100,22 +1099,22 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   {/* Adicionado 'gap-1' para reduzir o espaço entre os itens em telas pequenas */}
                   <form
                     onSubmit={handleFormSubmit}
-                    className="flex w-full space-x-2 sm:gap-2 gap-1"
+                    className="flex w-full flex-wrap items-center gap-1 sm:gap-2"
                   >
                     <input
                       value={input}
                       onChange={handleInputChange}
                       placeholder="Digite sua mensagem..."
-                      className={`flex-grow p-2 border rounded-md focus:outline-none transition-colors duration-600
-                  ${
-                    darkMode
-                      ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
-                      : "bg-gray-100 text-gray-900 placeholder-gray-400 focus:border-green-800 focus:shadow-lg focus:shadow-gray-400"
-                  }
-                  click:bg-white
-                  focus:scale-101
-                  transition-all duration-700
-                `}
+                      className={`flex-grow min-w-0 p-2 border rounded-md focus:outline-none transition-colors duration-600
+      ${
+        darkMode
+          ? "bg-[#222] text-gray-100 placeholder-gray-400 focus:border-green-900 focus:shadow-lg focus:shadow-green-900"
+          : "bg-gray-100 text-gray-900 placeholder-gray-400 focus:border-green-800 focus:shadow-lg focus:shadow-gray-400"
+      }
+      click:bg-white
+      focus:scale-101
+      transition-all duration-700
+    `}
                       disabled={isLoading}
                     />
                     <input
@@ -1130,38 +1129,39 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                     <label
                       htmlFor="file-upload"
                       className={`
-                  px-4 items-center py-2 border rounded-md cursor-pointer flex
-                  transition-colors duration-500
-                  ${
-                    darkMode
-                      ? "bg-[#222] text-green-600 hover:bg-green-900"
-                      : "bg-gray-100 text-green-600 hover:bg-green-800"
-                  }
-                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
-                `}
+      px-2 sm:px-4 py-1 sm:py-2 border rounded-md cursor-pointer flex
+      transition-colors duration-500
+      ${
+        darkMode
+          ? "bg-[#222] text-green-600 hover:bg-green-900"
+          : "bg-gray-100 text-green-600 hover:bg-green-800"
+      }
+      ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+    `}
+                      style={{ minWidth: "40px", justifyContent: "center" }}
                     >
                       <IoDocumentAttachOutline size={20} />
                     </label>
-                    {/* Alterado 'px-4' para 'px-2' e 'py-2' para 'py-1' em mobile para o botão de enviar */}
                     <button
                       type="submit"
                       className={`
-                  border px-2 py-1 sm:px-4 sm:py-2 rounded-md cursor-pointer
-                  transition-colors duration-500
-                  ${
-                    darkMode
-                      ? "bg-[#222] text-green-600 hover:bg-green-900"
-                      : "bg-gray-100 text-green-600 hover:bg-green-800"
-                  }
-                  ${
-                    isLoading
-                      ? darkMode
-                        ? "bg-green-900 scale-105 text-white cursor-not-allowed"
-                        : "bg-green-800 scale-105 text-white cursor-not-allowed"
-                      : ""
-                  }
-                `}
+      border px-2 sm:px-4 py-1 sm:py-2 rounded-md cursor-pointer
+      transition-colors duration-500
+      ${
+        darkMode
+          ? "bg-[#222] text-green-600 hover:bg-green-900"
+          : "bg-gray-100 text-green-600 hover:bg-green-800"
+      }
+      ${
+        isLoading
+          ? darkMode
+            ? "bg-green-900 scale-105 text-white cursor-not-allowed"
+            : "bg-green-800 scale-105 text-white cursor-not-allowed"
+          : ""
+      }
+    `}
                       disabled={isLoading}
+                      style={{ minWidth: "60px" }}
                     >
                       {isSubmitClicked && !isLoading ? (
                         "Enviado"
