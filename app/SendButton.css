@@ -154,15 +154,6 @@
   animation: imgUser 1s ease-in-out;
 }
 
-
-.bg-chat-placeholder {
-  background-image: url('/images.png');
-  background-size: 25%;
-  background-position: center;
-  background-repeat: no-repeat;
-  animation: bgChat 0.8s ease-in-out;
-}
-
 @keyframes accordionOpen {
   from {
     opacity: 0;
@@ -223,6 +214,7 @@
   transform: translateX(120%);
   transition: opacity 0.4s cubic-bezier(.4, 0, .2, 1), transform 0.4s cubic-bezier(.4, 0, .2, 1);
   display: flex;
+  border-radius: 16px !important; /* ou 24px para mais arredondado */
 }
 
 .sidebar-entregas-animada--visible {
@@ -433,4 +425,19 @@ html, body, #__next {
 
 .dark .entrega-lista {
   background: #181c1f !important;
+}
+
+@keyframes sidebarClose {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+.sidebar-entregas-animada--closing {
+  animation: sidebarClose 0.4s cubic-bezier(.4, 0, .2, 1) forwards;
 }

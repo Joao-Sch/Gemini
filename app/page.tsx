@@ -109,6 +109,7 @@ export default function Page() {
   const [darkMode, setDarkMode] = useState(false);
   const [logoClicked, setLogoClicked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -745,6 +746,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     setTimeout(() => setLogoClicked(false), 1200); // duração da animação
   };
 
+  function handleCloseSidebar() {
+    setClosing(true);
+    setTimeout(() => {
+      setShowDeliveriesSidebar(false);
+      setClosing(false);
+    }, 400); // tempo igual ao da animação
+  }
+
   return (
     <div
       className={`flex min-h-screen w-full ${
@@ -934,24 +943,21 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       </div>
 
       {/* Container central para chat + entregas */}
-      <div className="flex flex-1 min-h-0 min-w-0 items-stretch justify-center gap-x-4  h-screen w-screen overflow-hidden">
+      <div className="flex flex-1 min-h-0 min-w-0 items-center justify-center gap-x-4 overflow-hidden">
         {/* Chat principal */}
         {/* Adicionado 'min-w-0' para permitir que o flex-item encolha */}
-        <div className="flex-1 h-full sm:h-auto max-w-2xl mx-auto flex flex-col min-w-0">
+        <div className="flex-1 chat-mobile-full sm:h-[90vh] sm:max-w-2xl mx-auto flex flex-col min-w-0">
           <div
             className={`
-        flex flex-col h-full w-full
-        sm:rounded-lg sm:shadow-md
-        overflow-hidden
-        ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
-      `}
+      flex flex-col w-full h-full
+      sm:rounded-lg sm:shadow-md
+      overflow-hidden
+      ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
+    `}
             style={{
               boxShadow: darkMode
                 ? "0px 10px 26px 14px rgba(0,0,0,0.7)"
                 : "0px 10px 26px 14px rgba(176,176,176,0.75)",
-              minHeight: "100%",
-              height: "100%",
-              maxHeight: "100%",
             }}
           >
             {/* Header */}
@@ -988,7 +994,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             </div>
             {/* Mensagens */}
             {/* Adicionado 'pr-2' e 'pl-2' para garantir algum padding mesmo em 320px, 'px-4' pode ser muito grande */}
-            <div className="flex-1 min-h-0 overflow-y-auto px-2 sm:px-4"> {/* Ajustado px-4 para px-2 em mobile */}
+            <div className="flex-1 min-h-0 overflow-y-auto px-2 sm:px-4">
               <div className="flex flex-col h-full w-full min-w-0 max-w-full">
                 {/* Header */}
                 <div className="shrink-0">{/* ... */}</div>
@@ -996,8 +1002,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 bg-chat-placeholder">
                   {currentConversation &&
                   currentConversation.messages.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-gray-500 translate-y-16">
-                      Envie uma mensagem para começar a conversa
+                    <div className="flex items-center justify-center h-full">
+                      <span
+                        className="text-xl font-bold text-green-700 px-6 py-4 "
+                      >
+                        Envie uma mensagem para começar a conversa
+                      </span>
                     </div>
                   ) : (
                     currentConversation?.messages.map((m) => (
@@ -1190,10 +1200,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             className={`
               sidebar-entregas-animada
               ${sidebarVisible ? "sidebar-entregas-animada--visible" : ""}
+              ${closing ? "sidebar-entregas-animada--closing" : ""}
               fixed inset-y-0 right-0 z-40
-              w-64 sm:w-80 md:w-96 lg:w-1/4 xl:w-1/5 max-w-xs
-              sm:static sm:h-auto sm:max-w-none sm:min-w-[20rem]
-              flex flex-col rounded-lg shadow-xl
+              w-64 sm:w-80 md:w-96 lg:w-[28rem] xl:w-[32rem]
+              sm:static sm:h-[90vh] sm:max-w-none sm:min-w-[20rem]
+              flex flex-col rounded-xl shadow-xl
               ${darkMode ? "bg-[var(--sidebar)]" : "bg-white"}
               transition-transform duration-300 ease-in-out
             `}
@@ -1209,7 +1220,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               <span>ENTREGAS</span>
               <button
                 className="bg-transparent border-none text-white text-2xl cursor-pointer font-bold"
-                onClick={() => setShowDeliveriesSidebar(false)}
+                onClick={handleCloseSidebar}
                 title="Fechar"
               >
                 ×
