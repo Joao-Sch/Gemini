@@ -767,10 +767,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     w-4/5 max-w-xs
     fixed sm:static
     top-0 left-0 h-full z-50
-    shadow-md p-4 overflow-y-auto
+    shadow-md p-4
     transition-transform duration-300
     -translate-x-full
-    sm:translate-x-0 sm:w-64 sm:h-auto sm:shadow-md
+    sm:translate-x-0 sm:w-96 sm:h-auto sm:shadow-md
     ${sidebarOpen ? "translate-x-0" : ""}
     relative
     ${sidebarOpen ? "w-full max-w-full" : ""}
@@ -875,7 +875,9 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           />
         </div>
 
-        <div className="space-y-2">
+        <div
+          className="overflow-y-auto overflow-x-hidden space-y-2 px-3 max-h-[calc(100vh-340px)]"
+        >
           {conversations
             .filter((conv) =>
               conv.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -884,25 +886,25 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               <button
                 key={conv.id}
                 onClick={() => switchConversation(conv.id)}
-                className={`slideConversation block w-full px-4 py-2 rounded-md text-center
-      transition-all duration-500 transition-colors
-      ${
-        conv.id === currentConversationId
-          ? darkMode
-            ? "bg-green-900 text-white scale-110"
-            : "bg-green-500 text-white scale-110"
-          : darkMode
-          ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
-          : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-      }
-      `}
+                className={`slideConversation block w-full px-4 py-2 text-center rounded-md
+  transition-all duration-500 transition-colors
+  ${
+    conv.id === currentConversationId
+      ? darkMode
+        ? "bg-green-900 text-white scale-110"
+        : "bg-green-500 text-white scale-110"
+      : darkMode
+      ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
+      : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+  }
+`}
               >
                 <b>{conv.title}</b>
               </button>
             ))}
         </div>
 
-        {/* Botão de alternar tema fixo no rodapé */}
+        {/* Botão de alternar tema fixo no rodapé */}-
         <div className="absolute bottom-4 left-0 w-full flex justify-center">
           <button
             onClick={() => setDarkMode((prev) => !prev)}
@@ -961,7 +963,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             }}
           >
             {/* Header */}
-            <div className={`${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex items-center justify-center relative transition-colors duration-500 shrink-0`}>
+            <div
+              className={`${
+                darkMode ? "bg-green-900" : "bg-green-600"
+              } text-white p-4 flex items-center justify-center relative transition-colors duration-500 shrink-0`}
+            >
               {/* Botão hambúrguer só no mobile */}
               <button
                 className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
@@ -1003,9 +1009,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   {currentConversation &&
                   currentConversation.messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                      <span
-                        className="text-xl font-bold text-green-700 px-6 py-4 "
-                      >
+                      <span className="text-xl font-bold text-green-700 px-6 py-4 ">
                         Envie uma mensagem para começar a conversa
                       </span>
                     </div>
@@ -1032,7 +1036,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           : "bg-gray-100 text-gray-600"
                       }`}
                         >
-                          {m.role === "user" && m.content.includes("data:image/")
+                          {m.role === "user" &&
+                          m.content.includes("data:image/")
                             ? m.content.split("\n").map((part, i) => {
                                 const imageMatch = part.match(
                                   /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
@@ -1042,7 +1047,9 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                     <Image
                                       key={i}
                                       src={imageMatch[1]}
-                                      alt={`Imagem enviada pelo usuário ${i + 1}`}
+                                      alt={`Imagem enviada pelo usuário ${
+                                        i + 1
+                                      }`}
                                       width={200}
                                       height={200}
                                       className="imgUser rounded-md mb-4 mr-2"
@@ -1214,7 +1221,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               className={`
                 p-4 font-bold text-lg flex items-center justify-between
                 rounded-t-lg min-h-[3.5rem]
-                ${darkMode ? "bg-[#14532d] text-white" : "bg-[#178a46] text-white"}
+                ${
+                  darkMode
+                    ? "bg-[#14532d] text-white"
+                    : "bg-[#178a46] text-white"
+                }
               `}
             >
               <span>ENTREGAS</span>
@@ -1231,18 +1242,26 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             <div
               className={`
                 flex-1 overflow-y-auto p-4
-                ${darkMode ? "bg-[var(--sidebar)] text-[var(--sidebar-foreground)]" : "bg-white text-gray-700"}
+                ${
+                  darkMode
+                    ? "bg-[var(--sidebar)] text-[var(--sidebar-foreground)]"
+                    : "bg-white text-gray-700"
+                }
                 overflow-x-hidden break-words
               `}
             >
               {deliveries.length === 0 ? (
-                <p className={`${darkMode ? "text-[var(--muted-foreground)]" : "text-gray-500"}`}>
+                <p
+                  className={`${
+                    darkMode
+                      ? "text-[var(--muted-foreground)]"
+                      : "text-gray-500"
+                  }`}
+                >
                   Nenhuma entrega registrada.
                 </p>
               ) : (
-                <ul
-                  className="entrega-lista shadow-lg rounded-xl bg-transparent p-0"
-                >
+                <ul className="entrega-lista shadow-lg rounded-xl bg-transparent p-0">
                   {deliveries.map((d, i) => {
                     const origem =
                       d.addresses?.find((a: any) => a.position === 0) || {};
@@ -1273,28 +1292,42 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                             }
                             hover:opacity-90 transition-opacity duration-200
                           `}
-                          onClick={() => setOpenDelivery(openDelivery === i ? null : i)}
+                          onClick={() =>
+                            setOpenDelivery(openDelivery === i ? null : i)
+                          }
                         >
                           {/* Adicionado 'flex-1' e 'min-w-0' para o span do texto do botão */}
                           <span className="flex-1 min-w-0 flex items-center">
-                            <span className="entrega-icon mr-2 shrink-0">📦</span>
-                            <span className="truncate"> {/* truncate para evitar que o texto transborde */}
+                            <span className="entrega-icon mr-2 shrink-0">
+                              📦
+                            </span>
+                            <span className="truncate">
+                              {" "}
+                              {/* truncate para evitar que o texto transborde */}
                               {`Entrega ${i + 1} - `}
                               <b>{destino.responsible ?? "Não informado"}</b>
                             </span>
                           </span>
-                          <span className="ml-2 shrink-0">{openDelivery === i ? "▲" : "▼"}</span>
+                          <span className="ml-2 shrink-0">
+                            {openDelivery === i ? "▲" : "▼"}
+                          </span>
                         </button>
                         <div
                           className={`
                             entrega-details
                             ${openDelivery === i ? "open" : ""}
                             rounded-lg mt-2 p-0
-                            ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
+                            ${
+                              darkMode
+                                ? "bg-[#222] text-white"
+                                : "bg-[#f9f9f9] text-gray-800"
+                            }
                           `}
                         >
                           {openDelivery === i && (
-                            <div className="p-3"> {/* Adicione padding aqui para o conteúdo da div de detalhes */}
+                            <div className="p-3">
+                              {" "}
+                              {/* Adicione padding aqui para o conteúdo da div de detalhes */}
                               <div className="mb-1">
                                 <b>Status:</b>{" "}
                                 {d.situation?.description ?? "Não informado"}
