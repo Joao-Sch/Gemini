@@ -1000,7 +1000,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             </div>
             {/* Mensagens */}
             {/* Adicionado 'pr-2' e 'pl-2' para garantir algum padding mesmo em 320px, 'px-4' pode ser muito grande */}
-            <div className="flex-1 min-h-0 overflow-y-auto px-2 sm:px-4">
+            <div className="flex-1 min-h-0 overflow-y-auto">
               <div className="flex flex-col h-full w-full min-w-0 max-w-full">
                 {/* Header */}
                 <div className="shrink-0">{/* ... */}</div>
