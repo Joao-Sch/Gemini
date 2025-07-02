@@ -10,6 +10,7 @@ import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 //#region TIPOS
 type UIMessage = {
@@ -754,12 +755,45 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     }, 400); // tempo igual ao da animação
   }
 
+  const router = useRouter();
+
   return (
-    <div
-      className={`flex min-h-screen w-full ${
-        darkMode ? "bg-[#333]" : "bg-gray-100"
-      }`}
-    >
+    <div className={`flex min-h-screen w-full ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}>
+      {/* Botão tira lateral */}
+      <button
+        onClick={() => router.push("/heatMap")}
+        className={`
+          fixed top-1/2 right-0 z-50
+          flex items-center
+          bg-green-600 text-white
+          rounded-l-full
+          shadow-lg
+          transition-all duration-300
+          pr-2 pl-4 py-2
+          -translate-y-1/2
+          group
+          hover:right-0 hover:pr-4
+          w-12 hover:w-40
+          cursor-pointer
+          overflow-hidden
+        `}
+        title="Ver HeatMap"
+      >
+        <span className="text-2xl">🗺️</span>
+        <span
+          className={`
+            ml-3 text-base font-bold opacity-0
+            group-hover:opacity-100
+            transition-opacity duration-300
+            whitespace-nowrap
+            pointer-events-none
+          `}
+          style={{ width: "0", display: "inline-block" }}
+        >
+          HeatMap
+        </span>
+      </button>
+
       {/* Sidebar de conversas */}
       <div
         className={`
