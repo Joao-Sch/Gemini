@@ -801,10 +801,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     w-4/5 max-w-xs
     fixed sm:static
     top-0 left-0 h-full z-50
-    shadow-md p-4
+    shadow-md p-4 overflow-y-auto
     transition-transform duration-300
     -translate-x-full
-    sm:translate-x-0 sm:w-96 sm:h-auto sm:shadow-md
+    sm:translate-x-0 sm:w-64 sm:h-auto sm:shadow-md
     ${sidebarOpen ? "translate-x-0" : ""}
     relative
     ${sidebarOpen ? "w-full max-w-full" : ""}
@@ -909,9 +909,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           />
         </div>
 
-        <div
-          className="overflow-y-auto overflow-x-hidden space-y-2 px-3 max-h-[calc(100vh-340px)]"
-        >
+        <div className="space-y-2">
           {conversations
             .filter((conv) =>
               conv.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -920,41 +918,41 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               <button
                 key={conv.id}
                 onClick={() => switchConversation(conv.id)}
-                className={`slideConversation block w-full px-4 py-2 text-center rounded-md
-  transition-all duration-500 transition-colors
-  ${
-    conv.id === currentConversationId
-      ? darkMode
-        ? "bg-green-900 text-white scale-110"
-        : "bg-green-500 text-white scale-110"
-      : darkMode
-      ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
-      : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-  }
-`}
+                className={`slideConversation block w-full px-4 py-2 rounded-md text-center
+      transition-all duration-500 transition-colors
+      ${
+        conv.id === currentConversationId
+          ? darkMode
+            ? "bg-green-900 text-white scale-110"
+            : "bg-green-500 text-white scale-110"
+          : darkMode
+          ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
+          : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+      }
+      `}
               >
                 <b>{conv.title}</b>
               </button>
             ))}
         </div>
 
-        {/* Botão de alternar tema fixo no rodapé */}-
+        {/* Botão de alternar tema fixo no rodapé */}
         <div className="absolute bottom-4 left-0 w-full flex justify-center">
           <button
             onClick={() => setDarkMode((prev) => !prev)}
             className={`
-              w-14 h-7 flex items-center rounded-full p-1
-              transition-colors duration-500
-              ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
-            `}
+        w-14 h-7 flex items-center rounded-full p-1
+        transition-colors duration-500
+        ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
+      `}
             aria-label="Alternar modo escuro"
           >
             <div
               className={`
-                w-6 h-6 rounded-full bg-white shadow-md transform
-                transition-transform duration-300 flex items-center justify-center
-                ${darkMode ? "translate-x-7" : "translate-x-0"}
-              `}
+          w-6 h-6 rounded-full bg-white shadow-md transform
+          transition-transform duration-300 flex items-center justify-center
+          ${darkMode ? "translate-x-7" : "translate-x-0"}
+        `}
             >
               {darkMode ? (
                 <span
