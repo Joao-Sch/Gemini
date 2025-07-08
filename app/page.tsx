@@ -11,6 +11,8 @@ import { IoDocumentAttachOutline } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { db } from "@/lib/firebase";
+import { collection, doc, setDoc, getDoc } from "firebase/firestore";
 
 //#region TIPOS
 type UIMessage = {
@@ -46,7 +48,6 @@ type Delivery = {
 };
 
 //#endregion
-
 async function generateTitleWithGemini(
   userMessage: string,
   aiInstance: GoogleGenAI
@@ -83,6 +84,25 @@ function extrairEndereco(enderecoCompleto: string) {
   return null;
 }
 
+// Salvar conversas
+async function salvarConversasNoFirebase(
+  userId: string,
+  conversations: Conversation[]
+) {
+  await setDoc(doc(collection(db, "conversations"), userId), { conversations });
+}
+
+// Carregar conversas
+async function carregarConversasDoFirebase(
+  userId: string
+): Promise<Conversation[] | null> {
+  const docSnap = await getDoc(doc(collection(db, "conversations"), userId));
+  if (docSnap.exists()) {
+    return docSnap.data().conversations as Conversation[];
+  }
+  return null;
+}
+
 export default function Page() {
   //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -95,12 +115,8 @@ export default function Page() {
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [deliveries, setDeliveries] = useState<any[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [deliveryStep, setDeliveryStep] = useState<
-    null | "destino" | "responsavel"
-  >(null);
-  const [pendingDelivery, setPendingDelivery] = useState<{
-    enderecoDestino?: Delivery["enderecoDestino"];
-  } | null>(null);
+  const [deliveryStep, setDeliveryStep] = useState<null | "destino" | "responsavel">(null);
+  const [pendingDelivery, setPendingDelivery] = useState<{enderecoDestino?: Delivery["enderecoDestino"];} | null>(null);
   const [showDeliveriesSidebar, setShowDeliveriesSidebar] = useState(false);
   const [openDelivery, setOpenDelivery] = useState<number | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -123,8 +139,8 @@ export default function Page() {
   //#region Funções de Conversa
   const createNewConversation = () => {
     const newConv: Conversation = {
-      id: `Conversa ${conversationCounter}`,
-      title: "Nova conversa", // título inicial
+      id: `Conversa ${conversationCounter}-${Date.now()}`, // <-- agora é único
+      title: "Nova conversa",
       messages: [],
     };
     setConversations((prev) => [...prev, newConv]);
@@ -132,11 +148,27 @@ export default function Page() {
     setConversationCounter((c) => c + 1);
   };
 
+  // Salvar:
   useEffect(() => {
-    if (conversations.length === 0) {
+    localStorage.setItem("currentConversationId", currentConversationId ?? "");
+  }, [currentConversationId]);
+
+  // Carregar:
+  useEffect(() => {
+    const saved = localStorage.getItem("conversations");
+    const savedId = localStorage.getItem("currentConversationId");
+    if (saved) {
+      setConversations(JSON.parse(saved));
+      if (savedId) setCurrentConversationId(savedId);
+      else {
+        const firstConv = JSON.parse(saved)[0];
+        if (firstConv) setCurrentConversationId(firstConv.id);
+      }
+    } else {
       createNewConversation();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const switchConversation = (id: string) => {
     setCurrentConversationId(id);
@@ -756,44 +788,67 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
   }
 
   const router = useRouter();
+  const userId = "demo"; // Troque para o ID real do usuário se usar autenticação
+
+  useEffect(() => {
+    localStorage.setItem("conversations", JSON.stringify(conversations));
+  }, [conversations]);
+
+  useEffect(() => {
+    if (userId) {
+      salvarConversasNoFirebase(userId, conversations);
+    }
+  }, [conversations, userId]);
+
+  useEffect(() => {
+    if (userId) {
+      carregarConversasDoFirebase(userId).then((convs) => {
+        if (convs) setConversations(convs);
+        else createNewConversation();
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
 
   return (
     <div className={`flex min-h-screen w-full ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}>
       {/* Botão tira lateral */}
       <button
-        onClick={() => router.push("/heatMap")}
-        className={`
-          fixed top-1/2 right-0 z-50
-          flex items-center
-          bg-green-600 text-white
-          rounded-l-full
-          shadow-lg
-          transition-all duration-300
-          pr-2 pl-4 py-2
-          -translate-y-1/2
-          group
-          hover:right-0 hover:pr-4
-          w-12 hover:w-40
-          cursor-pointer
-          overflow-hidden
-        `}
+        onClick={() => router.push("/heatMap")}        className={`
+    fixed top-1/2 right-0 z-50
+    flex items-center
+    bg-green-600 text-white
+    rounded-l-full
+    shadow-lg
+    transition-all duration-300
+    pr-2 pl-4 py-2
+    -translate-y-1/2
+    group
+    hover:bg-green-700 hover:scale-105
+    w-12 hover:w-40
+    cursor-pointer
+    overflow-hidden
+    border-2 border-green-700
+    focus:outline-none focus:ring-2 focus:ring-green-400
+  `}
         title="Ver HeatMap"
       >
         <span className="text-2xl">🗺️</span>
         <span
           className={`
-            ml-3 text-base font-bold opacity-0
-            group-hover:opacity-100
-            transition-opacity duration-300
-            whitespace-nowrap
-            pointer-events-none
-          `}
-          style={{ width: "0", display: "inline-block" }}
-        >
-          HeatMap
-        </span>
+      ml-3 text-base font-bold opacity-0
+      group-hover:opacity-100
+      transition-opacity duration-300
+      whitespace-nowrap
+      pointer-events-none
+    `}
+        style={{ width: "0", display: "inline-block" }}
+      >
+        HeatMap
+      </span>
       </button>
-
+            
       {/* Sidebar de conversas */}
       <div
         className={`
@@ -802,7 +857,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     fixed sm:static
     top-0 left-0 h-full z-50
     shadow-md p-4 overflow-y-auto
-    transition-transform duration-300
+    transition-transform duration-300 
     -translate-x-full
     sm:translate-x-0 sm:w-64 sm:h-auto sm:shadow-md
     ${sidebarOpen ? "translate-x-0" : ""}
@@ -825,7 +880,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           <Image
             src={darkMode ? "/i9White.png" : "/fb-og.png"}
             alt="Logo"
-            width={150}
+            width={150} 
             height={150}
             className="mx-auto transition-transform duration-300 hover:scale-110 cursor-pointer"
             onClick={handleLogoClick}
@@ -834,17 +889,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
           {logoClicked && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src="./motoboy.png"
+              src="/motoboy.png"
               alt="Motoboy"
               className="motoboy-global"
               style={{
                 left: "260px",
-                position: "fixed",
-                zIndex: 50,
-                pointerEvents: "none",
-                height: "80px",
-                width: "80px",
-                transform: "scaleX(-1)",
               }}
             />
           )}
@@ -919,17 +968,17 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 key={conv.id}
                 onClick={() => switchConversation(conv.id)}
                 className={`slideConversation block w-full px-4 py-2 rounded-md text-center
-      transition-all duration-500 transition-colors
-      ${
-        conv.id === currentConversationId
-          ? darkMode
-            ? "bg-green-900 text-white scale-110"
-            : "bg-green-500 text-white scale-110"
-          : darkMode
-          ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
-          : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
-      }
-      `}
+            transition-all duration-500 transition-colors
+            ${
+              conv.id === currentConversationId
+                ? darkMode
+                  ? "bg-green-900 text-white scale-110"
+                  : "bg-green-500 text-white scale-110"
+                : darkMode
+                ? "bg-gray-800 text-gray-100 hover:scale-105 hover:text-green-400"
+                : "bg-gray-200 text-gray-800 hover:scale-105 hover:text-green-600"
+            }
+          `}
               >
                 <b>{conv.title}</b>
               </button>

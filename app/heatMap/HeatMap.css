@@ -1,0 +1,29 @@
+.heatmap-btn {
+  background: #16a34a;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.7rem;   /* padding menor */
+  font-size: 0.92rem;        /* fonte menor */
+  border: 2px solid #15803d;
+  box-shadow: 0 2px 8px rgba(34,139,34,0.08);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.heatmap-btn:hover, .heatmap-btn:focus {
+  background: #15803d;
+  transform: scale(1.05);
+  outline: none;
+  box-shadow: 0 4px 16px rgba(34,139,34,0.15);
+}
+.heatmap-btn:active {
+  background: #14532d;
+}
+body.dark .heatmap-btn {
+  background: #14532d;
+  border-color: #166534;
+  color: #fff;
+}
+body.dark .heatmap-btn:hover, body.dark .heatmap-btn:focus {
+  background: #166534;
+}

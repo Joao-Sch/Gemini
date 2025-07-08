@@ -1,13 +1,16 @@
-import { GoogleMap, LoadScript, HeatmapLayer } from "@react-google-maps/api";
+import { GoogleMap, HeatmapLayer, useJsApiLoader } from "@react-google-maps/api";
 
 type HeatMapGoogleMapProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   containerStyle: any;
   center: { lat: number; lng: number };
   zoom: number;
   mapTypeId: string;
   handleMapLoad: () => void;
   showHeatmap: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   heatmapDataPoints: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gradients: any[];
   gradientIdx: number;
   radius: number | undefined;
@@ -29,34 +32,38 @@ export function HeatMapGoogleMap({
   opacity,
   apiKey,
 }: HeatMapGoogleMapProps) {
-  return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={["visualization"]}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={zoom}
-        mapTypeId={mapTypeId}
-        onLoad={handleMapLoad}
-        options={{
-          disableDefaultUI: true,
-          zoomControl: false,
-          streetViewControl: false,
-          mapTypeControl: true,
-          fullscreenControl: true,
-        }}
-      >
-        {showHeatmap && heatmapDataPoints.length > 0 && (
-          <HeatmapLayer
-            data={heatmapDataPoints}
-            options={{
-              gradient: gradients[gradientIdx] || undefined,
-              radius,
-              opacity,
-            }}
-          />
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: apiKey,
+    libraries: ["visualization"],
+  });
 
-        )}
-      </GoogleMap>
-    </LoadScript>
+  if (!isLoaded) return <div>Carregando mapa...</div>;
+
+  return (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={zoom}
+      mapTypeId={mapTypeId}
+      onLoad={handleMapLoad}
+      options={{
+        disableDefaultUI: true,
+        zoomControl: false,
+        streetViewControl: false,
+        mapTypeControl: true,
+        fullscreenControl: true,
+      }}
+    >
+      {showHeatmap && heatmapDataPoints.length > 0 && (
+        <HeatmapLayer
+          data={heatmapDataPoints}
+          options={{
+            gradient: gradients[gradientIdx] || undefined,
+            radius,
+            opacity,
+          }}
+        />
+      )}
+    </GoogleMap>
   );
 }

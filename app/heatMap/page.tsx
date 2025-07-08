@@ -5,7 +5,7 @@ import { useHeatMapViewModel, gradients } from "./useHeatMapViewModel";
 import { HeatMapControls } from "./HeatMapControls";
 import { HeatMapGoogleMap } from "./HeatMapGoogleMap";
 import entregasJson from "../../lib/entregas.json";
-import Image from "next/image"; // para usar a logo
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const containerStyle = {
@@ -14,7 +14,6 @@ const containerStyle = {
 };
 const center = { lat: -23.2645, lng: -47.2992 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extrairLatLngDeEntregas(jsonEntregas: any): { lat: number; lng: number }[] {
   const pontos: { lat: number; lng: number }[] = [];
   Object.values(jsonEntregas).forEach((entrega: any) => {
@@ -58,7 +57,6 @@ export default function HeatMapPage() {
 
   return (
     <div className={`min-h-screen w-full flex items-center justify-center ${darkMode ? "bg-[#222]" : "bg-gray-100"}`}>
-      {/* Botão de alternar tema fixo no topo direito */}
       <button
         onClick={() => setDarkMode((prev) => !prev)}
         className={`
@@ -99,7 +97,6 @@ export default function HeatMapPage() {
             : "0 8px 32px 0 rgba(0,0,0,0.15)",
         }}
       >
-        {/* Botão de voltar (opcional) */}
         <button
           onClick={() => router.push("/")}
           className={`
@@ -134,8 +131,6 @@ export default function HeatMapPage() {
             Chatbot
           </span>
         </button>
-
-        {/* Header verde igual ao chatbot */}
         <div className={`relative ${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex items-center justify-center transition-colors duration-500`}>
           <h1 className="text-xl font-bold w-full text-center">Mapa de Calor</h1>
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
