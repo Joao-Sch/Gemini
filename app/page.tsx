@@ -1408,7 +1408,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           {openDelivery === i && (
                             <div className="p-3">
                               {" "}
-                              {/* Adicione padding aqui para o conteúdo da div de detalhes */}
+                              {/* Adicionei padding aqui para o conteúdo da div de detalhes */}
                               <div className="mb-1">
                                 <b>Status:</b>{" "}
                                 {d.situation?.description ?? "Não informado"}
