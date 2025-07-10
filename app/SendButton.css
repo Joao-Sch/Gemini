@@ -441,3 +441,35 @@ html, body, #__next {
 .sidebar-entregas-animada--closing {
   animation: sidebarClose 0.4s cubic-bezier(.4, 0, .2, 1) forwards;
 }
+
+/* Scrollbar modo claro */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #16a34a #e5e7eb;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #16a34a;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #15803d;
+}
+
+/* Scrollbar modo escuro */
+.dark .custom-scrollbar {
+  scrollbar-color: #14532d #222;
+}
+.dark .custom-scrollbar::-webkit-scrollbar {
+  background: #222;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #14532d;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #178a46;
+}
