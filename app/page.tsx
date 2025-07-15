@@ -121,7 +121,8 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [themeLoaded, setThemeLoaded] = useState<boolean>(false);
   const [logoClicked, setLogoClicked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -187,8 +188,14 @@ export default function Page() {
     e.preventDefault();
     if (!currentConversationId || isLoading) return;
 
-    setIsSubmitClicked(true);
-    setIsLoading(true);
+    // Troca o tema se o comando for /theme
+    if (input.trim().toLowerCase() === "/theme") {
+      setDarkMode((prev) => !prev);
+      setInput("");
+      setIsSubmitClicked(false);
+      setIsLoading(false);
+      return;
+    }
 
     // Adiciona a mensagem do usuário ao chat
     const userMessage: UIMessage = {
@@ -789,6 +796,18 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
   }, [conversations]);
 
   useEffect(() => {
+    async function loadTheme() {
+      if (userId) {
+        const userDoc = await getDoc(doc(collection(db, "users"), userId));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          if (typeof data.darkMode === "boolean") setDarkMode(data.darkMode);
+        }
+      }
+      setThemeLoaded(true); // <- só libera o render depois de buscar o tema
+    }
+    loadTheme();
+
     if (userId) {
       carregarConversasDoFirebase(userId).then((convs) => {
         if (convs) setConversations(convs);
@@ -804,6 +823,16 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       salvarConversasNoFirebase(userId, conversations);
     }
   }, [conversations, userId, conversationsLoaded]);
+
+  useEffect(() => {
+    if (userId) {
+      setDoc(doc(collection(db, "users"), userId), { darkMode }, { merge: true });
+    }
+  }, [darkMode, userId]);
+
+  if (!themeLoaded) {
+    return <div />; // Ou um loader, se preferir
+  }
 
   return (
     <div className={`flex min-h-screen w-full ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}>
@@ -873,24 +902,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         }}
       >
         <div className="mb-4 relative flex items-center justify-center">
-          {/* Botão de tema à esquerda - só no mobile */}
-          <button
-            onClick={() => setDarkMode((prev) => !prev)}
-            className={`
-              mr-2 w-10 h-10 flex items-center justify-center rounded-full
-              transition-colors duration-500
-              ${darkMode ? "bg-[#14532d]" : "bg-gray-300"}
-              sm:hidden
-            `}
-            aria-label="Alternar modo escuro"
-            style={{ position: "absolute", left: 0 }}
-          >
-            {darkMode ? (
-              <span role="img" aria-label="Lua" className="text-yellow-400 text-xl">🌙</span>
-            ) : (
-              <span role="img" aria-label="Sol" className="text-yellow-500 text-xl">☀️</span>
-            )}
-          </button>
           {/* Logo centralizado */}
           <Image
             src={darkMode ? "/i9White.png" : "/fb-og.png"}
@@ -1363,7 +1374,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                             </span>
                             <span className="truncate">
                               {`Entrega ${i + 1} - `}
-                              <b>{destino.responsible ?? "Não informado"}</b>
                             </span>
                           </span>
                           <span className="ml-2 shrink-0">
