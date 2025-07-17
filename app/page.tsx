@@ -127,6 +127,7 @@ export default function Page() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -186,6 +187,11 @@ export default function Page() {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!input.trim()) {
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      return; // Não envia mensagem vazia
+    }
     if (!currentConversationId || isLoading) return;
 
     // Troca o tema se o comando for /theme
@@ -533,16 +539,23 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         },
       ];
 
+      const statusOptions = [
+        { description: "Pendente", type: 0 },
+        { description: "Entregue", type: 1 },
+        { description: "Cancelado", type: 2 },
+      ];
+      const randomStatus = statusOptions[Math.floor(Math.random() * statusOptions.length)];
+
       const newDelivery = {
         id: newId,
         addresses,
         deliveryman: randomEntrega?.deliveryman ?? null,
         price: randomEntrega?.price ?? null,
-        situation: { description: "Pendente", type: 0 },
+        situation: randomStatus, // <-- agora aleatório
       };
 
       setDeliveries((prev) => [...prev, newDelivery]);
-      setDeliveryStep(null);
+      setDeliveryStep(null);  
       setPendingDelivery(null);
       return "Entrega cadastrada com sucesso!";
     }
@@ -594,13 +607,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 2 - Sempre que precisar consultar informações sobre um entregador, use o código de evento: search_driver.
 
 # Inserir Entrega:
-1 - Quando o usuário pedir para adicionar ou inserir uma entrega, primeiro pergunte o nome da pessoa responsável.
-2 - Após receber o nome, pergunte o endereço de destino no formato: rua, número, bairro, cidade, CEP.
+1 - Quando o usuário pedir para adicionar ou inserir uma entrega, primeiro pergunte o endereço de destino no formato: rua, número, bairro, cidade, CEP.
+2 - Após receber o endereço, pergunte o nome do responsável pela entrega.
 3 - Depois de receber o endereço de destino, pergunte o endereço de origem (mesmo formato do destino) ou permita que o usuário digite "usar endereço padrão".
 4 - Sempre valide se o usuário forneceu todos os campos obrigatórios antes de confirmar a entrega.
 5 - Somente confirme o registro da entrega quando todas as informações estiverem completas e o usuário confirmar.
 6 - Se o usuário fornecer todas as informações em uma única mensagem, extraia os dados e confirme o registro.
-7 - Sempre responda em inglês.
 
 # Resposta Geral:
 1 - Se a mensagem do usuário não estiver relacionada a entregas ou entregadores, responda normalmente com base no contexto da mensagem.
@@ -1157,12 +1169,14 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                 </p>
                               );
                             })
-                          : m.content.split("\n").map((line, i) => (
-                              <span key={i}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
+                          : (typeof m.content === "string" ? m.content : "")
+    .split("\n")
+    .map((line, i) => (
+      <span key={i}>
+        {line}
+        <br />
+      </span>
+    ))}
 
                         {m.timestamp && (
                           <span className="text-xs text-gray-400 block mt-1">
@@ -1335,100 +1349,116 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   Nenhuma entrega registrada.
                 </p>
               ) : (
-                <ul className="entrega-lista shadow-lg rounded-xl bg-transparent p-0">
-                  {deliveries.map((d, i) => {
-                    const origem = d.addresses?.find((a: any) => a.position === 0) || {};
-                    const destino = d.addresses?.find((a: any) => a.position === 1) || {};
-                    return (
-                      <li key={d.id} className="entrega-item p-2">
-                        <button
-                          className={`
-                            w-full flex items-center justify-between
-                            font-bold rounded-lg shadow-sm p-3 mb-2
-                            ${
-                              d.situation?.description === "Pendente"
-                                ? darkMode
-                                  ? "bg-green-800 text-green-200"
-                                  : "bg-green-200 text-green-900"
-                                : d.situation?.description === "Entregue"
-                                ? darkMode
-                                  ? "bg-green-900 text-green-200"
-                                  : "bg-green-300 text-green-900"
-                                : d.situation?.description === "Cancelado"
-                                ? darkMode
-                                  ? "bg-red-900 text-red-200"
-                                  : "bg-red-200 text-red-900"
-                                : darkMode
-                                ? "bg-[#14532d] text-white"
-                                : "bg-[#178a46] text-white"
-                            }
-                            hover:opacity-90 transition-opacity duration-200
-                          `}
-                          onClick={() =>
-                            setOpenDelivery(openDelivery === i ? null : i)
-                          }
-                        >
-                          <span className="flex-1 min-w-0 flex items-center">
-                            <span className="entrega-icon mr-2 shrink-0">
-                              📦
-                            </span>
-                            <span className="truncate">
-                              {`Entrega ${i + 1} - `}
-                            </span>
-                          </span>
-                          <span className="ml-2 shrink-0">
-                            {openDelivery === i ? "▲" : "▼"}
-                          </span>
-                        </button>
-                        <div
-                          className={`
-                            entrega-details
-                            ${openDelivery === i ? "open" : ""}
-                            rounded-lg mt-2 p-0
-                            ${
-                              darkMode
-                                ? "bg-[#222] text-white"
-                                : "bg-[#f9f9f9] text-gray-800"
-                            }
-                          `}
-                        >
-                          {openDelivery === i && (
-                            <div className="p-3">
-                              <div className="mb-1">
-                                <b>Status:</b> {d.situation?.description ?? "Não informado"}
-                              </div>
-                              <div className="mb-1">
-                                <b>Motoboy:</b> {d.deliveryman?.name ?? "Não informado"}
-                              </div>
-                              <div className="mb-1">
-                                <b>Veículo:</b> {d.deliveryman?.vehicle?.model ?? "Não informado"}
-                              </div>
-                              <div className="mb-1">
-                                <b>Valor:</b> R$ {d.price ?? "Não informado"}
-                              </div>
-                              <div className="mb-1">
-                                <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
-                                {origem.number ?? "Não informado"},{" "}
-                                {origem.neighborhood ?? "Não informado"},{" "}
-                                {origem.city ?? "Não informado"},{" "}
-                                {origem.state ?? "Não informado"},{" "}
-                                {origem.zipCode ?? "Não informado"}
-                              </div>
-                              <div className="mb-1">
-                                <b>Destino:</b> {destino.street ?? "Não informado"},{" "}
-                                {destino.number ?? "Não informado"},{" "}
-                                {destino.neighborhood ?? "Não informado"},{" "}
-                                {destino.city ?? "Não informado"},{" "}
-                                {destino.state ?? "Não informado"},{" "}
-                                {destino.zipCode ?? "Não informado"}
-                              </div>
+                <>
+                  <div className="mb-4 flex gap-2">
+                    <select
+                      value={statusFilter}
+                      onChange={e => setStatusFilter(e.target.value)}
+                      className="border rounded px-2 py-1"
+                    >
+                      <option value="">Todos</option>
+                      <option value="Pendente">Pendente</option>
+                      <option value="Entregue">Entregue</option>
+                      <option value="Cancelado">Cancelado</option>
+                    </select>
+                  </div>
+                  <ul className="entrega-lista shadow-lg rounded-xl bg-transparent p-0">
+                    {deliveries
+                      .filter(d => !statusFilter || d.situation?.description === statusFilter)
+                      .map((d, i) => {
+                        const origem = d.addresses?.find((a: any) => a.position === 0) || {};
+                        const destino = d.addresses?.find((a: any) => a.position === 1) || {};
+                        return (
+                          <li key={d.id} className="entrega-item p-2">
+                            <button
+                              className={`
+                                w-full flex items-center justify-between
+                                font-bold rounded-lg shadow-sm p-3 mb-2
+                                ${
+                                  d.situation?.description === "Pendente"
+                                    ? darkMode
+                                      ? "bg-green-800 text-green-200"
+                                      : "bg-green-200 text-green-900"
+                                    : d.situation?.description === "Entregue"
+                                    ? darkMode
+                                      ? "bg-green-900 text-green-200"
+                                      : "bg-green-300 text-green-900"
+                                    : d.situation?.description === "Cancelado"
+                                    ? darkMode
+                                      ? "bg-red-900 text-red-200"
+                                      : "bg-red-200 text-red-900"
+                                    : darkMode
+                                    ? "bg-[#14532d] text-white"
+                                    : "bg-[#178a46] text-white"
+                                }
+                                hover:opacity-90 transition-opacity duration-200
+                              `}
+                              onClick={() =>
+                                setOpenDelivery(openDelivery === i ? null : i)
+                              }
+                            >
+                              <span className="flex-1 min-w-0 flex items-center">
+                                <span className="entrega-icon mr-2 shrink-0">
+                                  📦
+                                </span>
+                                <span className="truncate">
+                                  {`Entrega ${i + 1} - `}
+                                </span>
+                              </span>
+                              <span className="ml-2 shrink-0">
+                                {openDelivery === i ? "▲" : "▼"}
+                              </span>
+                            </button>
+                            <div
+                              className={`
+                                entrega-details
+                                ${openDelivery === i ? "open" : ""}
+                                rounded-lg mt-2 p-0
+                                ${
+                                  darkMode
+                                    ? "bg-[#222] text-white"
+                                    : "bg-[#f9f9f9] text-gray-800"
+                                }
+                              `}
+                            >
+                              {openDelivery === i && (
+                                <div className="p-3">
+                                  <div className="mb-1">
+                                    <b>Status:</b> {d.situation?.description ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-1">
+                                    <b>Motoboy:</b> {d.deliveryman?.name ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-1">
+                                    <b>Veículo:</b> {d.deliveryman?.vehicle?.model ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-1">
+                                    <b>Valor:</b> R$ {d.price ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-1">
+                                    <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
+                                    {origem.number ?? "Não informado"},{" "}
+                                    {origem.neighborhood ?? "Não informado"},{" "}
+                                    {origem.city ?? "Não informado"},{" "}
+                                    {origem.state ?? "Não informado"},{" "}
+                                    {origem.zipCode ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-1">
+                                    <b>Destino:</b> {destino.street ?? "Não informado"},{" "}
+                                    {destino.number ?? "Não informado"},{" "}
+                                    {destino.neighborhood ?? "Não informado"},{" "}
+                                    {destino.city ?? "Não informado"},{" "}
+                                    {destino.state ?? "Não informado"},{" "}
+                                    {destino.zipCode ?? "Não informado"}
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </>
               )}
             </div>
           </div>
