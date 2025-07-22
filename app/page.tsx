@@ -103,18 +103,39 @@ async function carregarConversasDoFirebase(
   return null;
 }
 
+// Salvar entregas
+async function salvarEntregasNoFirebase(userId: string, deliveries: any[]) {
+  await setDoc(doc(collection(db, "deliveries"), userId), { deliveries });
+}
+
+async function carregarEntregasDoFirebase(
+  userId: string
+): Promise<any[] | null> {
+  const docSnap = await getDoc(doc(collection(db, "deliveries"), userId));
+  if (docSnap.exists()) {
+    return docSnap.data().deliveries as any[];
+  }
+  return null;
+}
+
 export default function Page() {
   //#region States
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null);
   const [conversationCounter, setConversationCounter] = useState(1);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [deliveries, setDeliveries] = useState<any[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [deliveryStep, setDeliveryStep] = useState<null | "destino" | "responsavel">(null);
-  const [pendingDelivery, setPendingDelivery] = useState<{ enderecoDestino?: Delivery["enderecoDestino"] } | null>(null);
+  const [deliveryStep, setDeliveryStep] = useState<
+    null | "destino" | "responsavel"
+  >(null);
+  const [pendingDelivery, setPendingDelivery] = useState<{
+    enderecoDestino?: Delivery["enderecoDestino"];
+  } | null>(null);
   const [showDeliveriesSidebar, setShowDeliveriesSidebar] = useState(false);
   const [openDelivery, setOpenDelivery] = useState<number | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -128,6 +149,7 @@ export default function Page() {
   const [closing, setClosing] = useState(false);
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [deliveriesLoaded, setDeliveriesLoaded] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -194,6 +216,8 @@ export default function Page() {
     }
     if (!currentConversationId || isLoading) return;
 
+    setIsLoading(true); // Ativa o loading logo no início
+
     // Troca o tema se o comando for /theme
     if (input.trim().toLowerCase() === "/theme") {
       setDarkMode((prev) => !prev);
@@ -244,7 +268,6 @@ export default function Page() {
       const response = await handleInsertDelivery(input);
       sendResponse(response);
       setInput("");
-      setIsLoading(false);
       setIsSubmitClicked(false);
       return;
     }
@@ -258,7 +281,6 @@ export default function Page() {
           : "Veja a lista de entregas na aba à direita!"
       );
       setInput("");
-      setIsLoading(false);
       setIsSubmitClicked(false);
       return;
     }
@@ -296,12 +318,10 @@ export default function Page() {
       setUploadedImages([]);
       setInput("");
       setTimeout(() => setIsSubmitClicked(false), 500);
-      setIsLoading(false);
       return;
     }
 
     if (!input.trim()) {
-      setIsLoading(false);
       return;
     }
 
@@ -317,7 +337,6 @@ export default function Page() {
 
     setInput("");
     setTimeout(() => setIsSubmitClicked(false), 500);
-    setIsLoading(false);
   };
   //#endregion
 
@@ -544,18 +563,24 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         { description: "Entregue", type: 1 },
         { description: "Cancelado", type: 2 },
       ];
-      const randomStatus = statusOptions[Math.floor(Math.random() * statusOptions.length)];
+      const randomStatus =
+        statusOptions[Math.floor(Math.random() * statusOptions.length)];
 
       const newDelivery = {
         id: newId,
+        title: pendingDelivery.enderecoDestino.rua, // <-- título = rua do destino
         addresses,
         deliveryman: randomEntrega?.deliveryman ?? null,
         price: randomEntrega?.price ?? null,
-        situation: randomStatus, // <-- agora aleatório
+        situation: randomStatus,
       };
 
-      setDeliveries((prev) => [...prev, newDelivery]);
-      setDeliveryStep(null);  
+      setDeliveries((prev) => {
+        const novas = [...prev, newDelivery];
+        salvarEntregasNoFirebase(userId, novas); // Salva imediatamente no Firebase
+        return novas;
+      });
+      setDeliveryStep(null);
       setPendingDelivery(null);
       return "Entrega cadastrada com sucesso!";
     }
@@ -742,8 +767,9 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         index++;
       } else {
         clearInterval(interval);
+        setIsLoading(false);
       }
-    }, 20);
+    }, 5);
   };
   //#endregion
 
@@ -838,16 +864,41 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   useEffect(() => {
     if (userId) {
-      setDoc(doc(collection(db, "users"), userId), { darkMode }, { merge: true });
+      setDoc(
+        doc(collection(db, "users"), userId),
+        { darkMode },
+        { merge: true }
+      );
     }
   }, [darkMode, userId]);
+
+  useEffect(() => {
+    async function loadDeliveries() {
+      const entregasSalvas = await carregarEntregasDoFirebase(userId);
+      if (entregasSalvas) setDeliveries(entregasSalvas);
+      setDeliveriesLoaded(true); // <-- só depois de carregar
+    }
+    if (userId) {
+      loadDeliveries();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId && deliveriesLoaded) {
+      salvarEntregasNoFirebase(userId, deliveries);
+    }
+  }, [deliveries, userId, deliveriesLoaded]);
 
   if (!themeLoaded) {
     return <div />; // Ou um loader, se preferir
   }
 
   return (
-    <div className={`flex min-h-screen w-full ${darkMode ? "bg-[#333]" : "bg-gray-100"}`}>
+    <div
+      className={`flex min-h-screen w-full ${
+        darkMode ? "bg-[#333]" : "bg-gray-100"
+      }`}
+    >
       {/* Botão tira lateral */}
       <button
         onClick={() => router.push("/heatMap")}
@@ -1068,7 +1119,9 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               flex flex-col w-full h-full
               sm:rounded-lg sm:shadow-md
               overflow-hidden
-              ${darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"}
+              ${
+                darkMode ? "bg-[#222] text-white" : "bg-[#f9f9f9] text-gray-800"
+              }
             `}
             style={{
               boxShadow: darkMode
@@ -1144,8 +1197,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                               : "bg-gray-100 text-gray-600"
                           }`}
                       >
-                        {m.role === "user" &&
-                        m.content.includes("data:image/")
+                        {m.role === "user" && m.content.includes("data:image/")
                           ? m.content.split("\n").map((part, i) => {
                               const imageMatch = part.match(
                                 /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
@@ -1170,13 +1222,13 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                               );
                             })
                           : (typeof m.content === "string" ? m.content : "")
-    .split("\n")
-    .map((line, i) => (
-      <span key={i}>
-        {line}
-        <br />
-      </span>
-    ))}
+                              .split("\n")
+                              .map((line, i) => (
+                                <span key={i}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
 
                         {m.timestamp && (
                           <span className="text-xs text-gray-400 block mt-1">
@@ -1324,7 +1376,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               className={`
                 p-4 font-bold text-lg flex items-center justify-between
                 rounded-t-lg min-h-[3.5rem]
-                ${darkMode ? "bg-[#14532d] text-white" : "bg-[#178a46] text-white"}
+                ${
+                  darkMode
+                    ? "bg-[#14532d] text-white"
+                    : "bg-[#178a46] text-white"
+                }
               `}
             >
               <span>ENTREGAS</span>
@@ -1340,12 +1396,22 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
             <div
               className={`
                 flex-1 overflow-y-auto p-4
-                ${darkMode ? "bg-[var(--sidebar)] text-[var(--sidebar-foreground)]" : "bg-white text-gray-700"}
+                ${
+                  darkMode
+                    ? "bg-[var(--sidebar)] text-[var(--sidebar-foreground)]"
+                    : "bg-white text-gray-700"
+                }
                 overflow-x-hidden break-words
               `}
             >
               {deliveries.length === 0 ? (
-                <p className={`${darkMode ? "text-[var(--muted-foreground)]" : "text-gray-500"}`}>
+                <p
+                  className={`${
+                    darkMode
+                      ? "text-[var(--muted-foreground)]"
+                      : "text-gray-500"
+                  }`}
+                >
                   Nenhuma entrega registrada.
                 </p>
               ) : (
@@ -1353,7 +1419,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   <div className="mb-4 flex gap-2">
                     <select
                       value={statusFilter}
-                      onChange={e => setStatusFilter(e.target.value)}
+                      onChange={(e) => setStatusFilter(e.target.value)}
                       className="border rounded px-2 py-1"
                     >
                       <option value="">Todos</option>
@@ -1364,10 +1430,28 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   </div>
                   <ul className="entrega-lista shadow-lg rounded-xl bg-transparent p-0">
                     {deliveries
-                      .filter(d => !statusFilter || d.situation?.description === statusFilter)
+                      .filter(
+                        (d) =>
+                          !statusFilter ||
+                          d.situation?.description === statusFilter
+                      )
                       .map((d, i) => {
-                        const origem = d.addresses?.find((a: any) => a.position === 0) || {};
-                        const destino = d.addresses?.find((a: any) => a.position === 1) || {};
+                        const origem =
+                          d.addresses?.find((a: any) => a.position === 0) || {};
+                        const destino =
+                          d.addresses?.find((a: any) => a.position === 1) || {};
+
+                        const enderecoOrigem = encodeURIComponent(
+                          `${origem.street ?? ""}, ${origem.number ?? ""}, ${
+                            origem.neighborhood ?? ""
+                          }, ${origem.city ?? ""}, ${origem.zipCode ?? ""}`
+                        );
+                        const enderecoDestino = encodeURIComponent(
+                          `${destino.street ?? ""}, ${destino.number ?? ""}, ${
+                            destino.neighborhood ?? ""
+                          }, ${destino.city ?? ""}, ${destino.zipCode ?? ""}`
+                        );
+
                         return (
                           <li key={d.id} className="entrega-item p-2">
                             <button
@@ -1377,8 +1461,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                 ${
                                   d.situation?.description === "Pendente"
                                     ? darkMode
-                                      ? "bg-green-800 text-green-200"
-                                      : "bg-green-200 text-green-900"
+                                      ? "bg-yellow-700 text-yellow-100"
+                                      : "bg-yellow-100 text-yellow-900" // <-- amarelo claro no modo claro
                                     : d.situation?.description === "Entregue"
                                     ? darkMode
                                       ? "bg-green-900 text-green-200"
@@ -1402,7 +1486,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                   📦
                                 </span>
                                 <span className="truncate">
-                                  {`Entrega ${i + 1} - `}
+                                  {d.title || `Entrega ${i + 1} - `}
                                 </span>
                               </span>
                               <span className="ml-2 shrink-0">
@@ -1424,19 +1508,26 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                               {openDelivery === i && (
                                 <div className="p-3">
                                   <div className="mb-1">
-                                    <b>Status:</b> {d.situation?.description ?? "Não informado"}
+                                    <b>Status:</b>{" "}
+                                    {d.situation?.description ??
+                                      "Não informado"}
                                   </div>
                                   <div className="mb-1">
-                                    <b>Motoboy:</b> {d.deliveryman?.name ?? "Não informado"}
+                                    <b>Motoboy:</b>{" "}
+                                    {d.deliveryman?.name ?? "Não informado"}
                                   </div>
                                   <div className="mb-1">
-                                    <b>Veículo:</b> {d.deliveryman?.vehicle?.model ?? "Não informado"}
+                                    <b>Veículo:</b>{" "}
+                                    {d.deliveryman?.vehicle?.model ??
+                                      "Não informado"}
                                   </div>
                                   <div className="mb-1">
-                                    <b>Valor:</b> R$ {d.price ?? "Não informado"}
+                                    <b>Valor:</b> R${" "}
+                                    {d.price ?? "Não informado"}
                                   </div>
                                   <div className="mb-1">
-                                    <b>Origem:</b> {origem.street ?? "Não informado"},{" "}
+                                    <b>Origem:</b>{" "}
+                                    {origem.street ?? "Não informado"},{" "}
                                     {origem.number ?? "Não informado"},{" "}
                                     {origem.neighborhood ?? "Não informado"},{" "}
                                     {origem.city ?? "Não informado"},{" "}
@@ -1444,12 +1535,26 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                     {origem.zipCode ?? "Não informado"}
                                   </div>
                                   <div className="mb-1">
-                                    <b>Destino:</b> {destino.street ?? "Não informado"},{" "}
+                                    <b>Destino:</b>{" "}
+                                    {destino.street ?? "Não informado"},{" "}
                                     {destino.number ?? "Não informado"},{" "}
                                     {destino.neighborhood ?? "Não informado"},{" "}
                                     {destino.city ?? "Não informado"},{" "}
                                     {destino.state ?? "Não informado"},{" "}
                                     {destino.zipCode ?? "Não informado"}
+                                  </div>
+                                  <div className="mb-4">
+                                    <b>Rota:</b>
+                                    <iframe
+                                      width="100%"
+                                      height="190"
+                                      style={{ border: 0, borderRadius: "8px" }}
+                                      loading="lazy"
+                                      allowFullScreen
+                                      referrerPolicy="no-referrer-when-downgrade"
+                                      src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyDoHvawd_aRudxtYcxiyoDvyAcyJeFFA0w&origin=${enderecoOrigem}&destination=${enderecoDestino}`}
+                                      title="Rota da entrega"
+                                    />
                                   </div>
                                 </div>
                               )}
