@@ -1418,9 +1418,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 <>
                   <div className="mb-4 flex gap-2">
                     <select
-                      value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="border rounded px-2 py-1"
+                      className={`border rounded px-2 py-1 transition-colors duration-300 ${
+                        darkMode
+                          ? "bg-[#232b2b] text-white border-[#333] placeholder-white"
+                          : "bg-white text-black border-gray-300 placeholder-gray-400"
+                      }`}
                     >
                       <option value="">Todos</option>
                       <option value="Pendente">Pendente</option>

@@ -15,7 +15,9 @@ const containerStyle = {
 };
 const center = { lat: -23.2645, lng: -47.2992 };
 
-function extrairLatLngDeEntregas(jsonEntregas: any): { lat: number; lng: number }[] {
+function extrairLatLngDeEntregas(
+  jsonEntregas: any
+): { lat: number; lng: number }[] {
   const pontos: { lat: number; lng: number }[] = [];
   Object.values(jsonEntregas).forEach((entrega: any) => {
     if (Array.isArray(entrega.addresses)) {
@@ -112,9 +114,11 @@ export default function HeatMapPage() {
             flex flex-col w-full sm:max-w-2xl h-[80vh] sm:h-[90vh]
             rounded-2xl shadow-2xl overflow-hidden
             border
-            ${darkMode
-              ? "bg-[#232b2b] text-white border-[#333]"
-              : "bg-white text-gray-900 border-gray-200"}
+            ${
+              darkMode
+                ? "bg-[#232b2b] text-white border-[#333]"
+                : "bg-white text-gray-900 border-gray-200"
+            }
             transition-all duration-500
             relative
           `}
@@ -223,9 +227,15 @@ export default function HeatMapPage() {
             Filtros
           </button>
         )}
-        <div className={`heatmap-filter-card bg-white ${showFilterCard ? " open" : ""}`}>
+        <div
+          className={`heatmap-filter-card bg-white ${
+            showFilterCard ? " open" : ""
+          }`}
+        >
           <div
-            className={`relative ${darkMode ? "bg-green-900" : "bg-green-600"} text-white p-4 flex items-center justify-between transition-colors duration-500`}
+            className={`relative ${
+              darkMode ? "bg-green-900" : "bg-green-600"
+            } text-white p-4 flex items-center justify-between transition-colors duration-500`}
           >
             <h2 className="text-lg font-bold w-full text-center">
               Filtros do Mapa
@@ -239,15 +249,53 @@ export default function HeatMapPage() {
               ✕
             </button>
           </div>
-          <div className={`p-4 ${darkMode ? "bg-[#232b2b]" : "bg-white"} transition-colors duration-500 flex-1`}>
+          <div
+            className={`p-4 ${
+              darkMode ? "bg-[#232b2b]" : "bg-white"
+            } transition-colors duration-500 flex-1`}
+          >
             <label className="block mb-2 font-semibold">Cidade</label>
             <input
               type="text"
-              className="w-full p-2 rounded border mb-4"
+              className={`w-full p-2 rounded border mb-4 ${
+                darkMode ? "placeholder-white" : "placeholder-gray-400"
+              }`}
               placeholder="Digite a cidade"
               value={cidadeFiltro}
-              onChange={(e) => setCidadeFiltro(e.target.value)} // 2. Atualiza estado
+              onChange={(e) => setCidadeFiltro(e.target.value)}
             />
+            <label className="block mb-2 font-semibold">Bairro</label>
+            <input
+              type="text"
+              className={`w-full p-2 rounded border mb-4 ${
+                darkMode ? "placeholder-white" : "placeholder-gray-400"
+              }`}
+              placeholder="Digite o bairro"
+            />
+
+            <label className="block mb-2 font-semibold">Data da Entrega</label>
+            <input
+              type="date"
+              className={`w-full p-2 rounded border mb-4 ${
+                darkMode ? "placeholder-white" : "placeholder-gray-400"
+              }`}
+            />
+
+            <label className="block mb-2 font-semibold">Status</label>
+            <select
+              className={`w-full p-2 rounded border mb-4 ${
+                darkMode
+                  ? "bg-[#232b2b] text-white placeholder-white border-[#333]"
+                  : "bg-white text-black placeholder-gray-400 border-gray-300"
+              }`}
+            >
+              <option value="">Selecione</option>
+              <option value="pendente">Pendente</option>
+              <option value="concluida">Concluída</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+            {/* Fim dos novos filtros */}
+
             <button
               className="w-full bg-green-600 text-white rounded py-2 font-bold hover:bg-green-700 transition"
               disabled={!cidadeFiltro.trim()}
@@ -261,7 +309,9 @@ export default function HeatMapPage() {
                         typeof addr.lat === "number" &&
                         typeof addr.lng === "number" &&
                         typeof addr.city === "string" &&
-                        addr.city.toLowerCase().includes(cidadeFiltro.trim().toLowerCase())
+                        addr.city
+                          .toLowerCase()
+                          .includes(cidadeFiltro.trim().toLowerCase())
                       ) {
                         pontos.push({ lat: addr.lat, lng: addr.lng });
                       }
