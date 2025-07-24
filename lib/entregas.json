@@ -3955,5 +3955,2613 @@
     "transfer": 6,
     "type": "fast",
     "vehicleType": 1
+  },
+  "1497234": {
+    "addresses": [
+      {
+        "city": "Sorocaba",
+        "complement": "",
+        "goal": "Buscar mercadoria",
+        "lat": -23.5015,
+        "lng": -47.4526,
+        "neighborhood": "Centro",
+        "number": "100",
+        "position": 0,
+        "responsible": "Sorocaba Farma",
+        "retDescription": "",
+        "returnTypeTxt": "Nenhum",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua da Penha"
+      },
+      {
+        "city": "Sorocaba",
+        "complement": "",
+        "goal": "",
+        "lat": -23.5078,
+        "lng": -47.4552,
+        "neighborhood": "Jardim Santa Rosália",
+        "number": "200",
+        "pointType": 1,
+        "position": 1,
+        "responsible": "Maria Oliveira",
+        "retDescription": "",
+        "returnTypeTxt": "Maquininha",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Dom Aguirre"
+      }
+    ],
+    "date": "2025-05-20T18:10:00",
+    "deliveryTime": 15,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5030,
+        "lng": -47.4530
+      },
+      "id": 23001,
+      "image": "p-23001.jpg",
+      "name": "Carlos Silva",
+      "phone": "(15) 99999-0000",
+      "vehicle": {
+        "color": "preta",
+        "id": 13001,
+        "model": "CG 160",
+        "plate": "ABC-1234"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.5,
+      "way": 2.5
+    },
+    "domain": {
+      "merchantId": 30001,
+      "name": "sorofarma"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:10:00",
+        "description": "Entrega solicitada por Sorocaba Farma"
+      },
+      "-OQjX1abcde123456789": {
+        "authorId": 23001,
+        "authorType": "driver",
+        "coordinates": {
+          "lat": -23.5030,
+          "lng": -47.4530
+        },
+        "date": "2025-05-20T18:12:00",
+        "description": "O Entregador aceitou o seu pedido",
+        "event": "assignDriver"
+      }
+    },
+    "id": 1497234,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "12.00",
+    "priority": 2,
+    "requester": {
+      "city": "Sorocaba",
+      "id": 30001,
+      "image": "p-30001.png",
+      "name": "Sorocaba Farma",
+      "phone": "(15) 3333-4444",
+      "region": 1
+    },
+    "route": "abcdEfghijKlmnoPqrstUvwxyz",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "8.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497235": {
+    "addresses": [
+      {
+        "city": "Sorocaba",
+        "goal": "Buscar mercadoria",
+        "lat": -23.4951,
+        "lng": -47.4702,
+        "neighborhood": "Jardim Vergueiro",
+        "number": "50",
+        "position": 0,
+        "responsible": "Farmácia Vergueiro",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua João Wagner Wey"
+      },
+      {
+        "city": "Sorocaba",
+        "goal": "",
+        "lat": -23.4902,
+        "lng": -47.4658,
+        "neighborhood": "Vila Santana",
+        "number": "120",
+        "position": 1,
+        "responsible": "João Souza",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua São Bento"
+      }
+    ],
+    "date": "2025-05-20T18:15:00",
+    "deliveryTime": 10,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.4951,
+        "lng": -47.4702
+      },
+      "id": 23002,
+      "image": "p-23002.jpg",
+      "name": "Ana Paula",
+      "phone": "(15) 98888-1111",
+      "vehicle": {
+        "color": "azul",
+        "id": 13002,
+        "model": "Biz 125",
+        "plate": "DEF-5678"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.1,
+      "way": 2.1
+    },
+    "domain": {
+      "merchantId": 30002,
+      "name": "farmaciavergueiro"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:15:00",
+        "description": "Entrega solicitada por Farmácia Vergueiro"
+      }
+    },
+    "id": 1497235,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "11.00",
+    "priority": 2,
+    "requester": {
+      "city": "Sorocaba",
+      "id": 30002,
+      "image": "p-30002.png",
+      "name": "Farmácia Vergueiro",
+      "phone": "(15) 3222-5555",
+      "region": 1
+    },
+    "route": "efghIjklmnOpqrstUvwx",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "7.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497236": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2645,
+        "lng": -47.2999,
+        "neighborhood": "Centro",
+        "number": "300",
+        "position": 0,
+        "responsible": "Padaria Central",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Floriano Peixoto"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2701,
+        "lng": -47.3055,
+        "neighborhood": "Jardim Novo",
+        "number": "45",
+        "position": 1,
+        "responsible": "Carlos Mendes",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Palmeiras"
+      }
+    ],
+    "date": "2025-05-20T18:20:00",
+    "deliveryTime": 12,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2645,
+        "lng": -47.2999
+      },
+      "id": 23003,
+      "image": "p-23003.jpg",
+      "name": "Bruno Lima",
+      "phone": "(11) 97777-2222",
+      "vehicle": {
+        "color": "preta",
+        "id": 13003,
+        "model": "CG 150",
+        "plate": "GHI-9012"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.8,
+      "way": 2.8
+    },
+    "domain": {
+      "merchantId": 30003,
+      "name": "padariacentral"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:20:00",
+        "description": "Entrega solicitada por Padaria Central"
+      }
+    },
+    "id": 1497236,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.00",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30003,
+      "image": "p-30003.png",
+      "name": "Padaria Central",
+      "phone": "(11) 4022-3333",
+      "region": 1
+    },
+    "route": "ijklMnopqrStuvwxYz",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497237": {
+    "addresses": [
+      {
+        "city": "Salto",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2001,
+        "lng": -47.2950,
+        "neighborhood": "Centro",
+        "number": "800",
+        "position": 0,
+        "responsible": "Mercado Salto",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua 9 de Julho"
+      },
+      {
+        "city": "Salto",
+        "goal": "",
+        "lat": -23.2102,
+        "lng": -47.3005,
+        "neighborhood": "Jardim América",
+        "number": "210",
+        "position": 1,
+        "responsible": "Fernanda Alves",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Acácias"
+      }
+    ],
+    "date": "2025-05-20T18:25:00",
+    "deliveryTime": 14,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2001,
+        "lng": -47.2950
+      },
+      "id": 23004,
+      "image": "p-23004.jpg",
+      "name": "Fernando Souza",
+      "phone": "(11) 98888-3333",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 13004,
+        "model": "Fan 160",
+        "plate": "JKL-3456"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.2,
+      "way": 3.2
+    },
+    "domain": {
+      "merchantId": 30004,
+      "name": "mercadosalto"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:25:00",
+        "description": "Entrega solicitada por Mercado Salto"
+      }
+    },
+    "id": 1497237,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "14.00",
+    "priority": 2,
+    "requester": {
+      "city": "Salto",
+      "id": 30004,
+      "image": "p-30004.png",
+      "name": "Mercado Salto",
+      "phone": "(11) 4029-4444",
+      "region": 2
+    },
+    "route": "mnopQrstuvWxYzabcd",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "10.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497238": {
+    "addresses": [
+      {
+        "city": "Indaiatuba",
+        "goal": "Buscar mercadoria",
+        "lat": -23.0900,
+        "lng": -47.2100,
+        "neighborhood": "Centro",
+        "number": "100",
+        "position": 0,
+        "responsible": "Farmácia Indaiá",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Flores"
+      },
+      {
+        "city": "Indaiatuba",
+        "goal": "",
+        "lat": -23.0955,
+        "lng": -47.2155,
+        "neighborhood": "Jardim Morada do Sol",
+        "number": "200",
+        "position": 1,
+        "responsible": "Mariana Costa",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Rosas"
+      }
+    ],
+    "date": "2025-05-20T18:30:00",
+    "deliveryTime": 8,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.0900,
+        "lng": -47.2100
+      },
+      "id": 23005,
+      "image": "p-23005.jpg",
+      "name": "Lucas Pereira",
+      "phone": "(19) 99999-4444",
+      "vehicle": {
+        "color": "branca",
+        "id": 13005,
+        "model": "PCX 150",
+        "plate": "MNO-7890"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.8,
+      "way": 1.8
+    },
+    "domain": {
+      "merchantId": 30005,
+      "name": "farmaciaindaia"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:30:00",
+        "description": "Entrega solicitada por Farmácia Indaiá"
+      }
+    },
+    "id": 1497238,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "10.00",
+    "priority": 2,
+    "requester": {
+      "city": "Indaiatuba",
+      "id": 30005,
+      "image": "p-30005.png",
+      "name": "Farmácia Indaiá",
+      "phone": "(19) 3816-5555",
+      "region": 3
+    },
+    "route": "qrstUvwxYzAbcdefgh",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "6.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497239": {
+    "addresses": [
+      {
+        "city": "Itapetininga",
+        "goal": "Buscar mercadoria",
+        "lat": -23.5900,
+        "lng": -48.0600,
+        "neighborhood": "Centro",
+        "number": "400",
+        "position": 0,
+        "responsible": "Drogaria Central",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua São João"
+      },
+      {
+        "city": "Itapetininga",
+        "goal": "",
+        "lat": -23.5955,
+        "lng": -48.0655,
+        "neighborhood": "Jardim Europa",
+        "number": "150",
+        "position": 1,
+        "responsible": "Paulo Henrique",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Paris"
+      }
+    ],
+    "date": "2025-05-20T18:35:00",
+    "deliveryTime": 9,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5900,
+        "lng": -48.0600
+      },
+      "id": 23006,
+      "image": "p-23006.jpg",
+      "name": "Juliana Martins",
+      "phone": "(15) 98888-5555",
+      "vehicle": {
+        "color": "prata",
+        "id": 13006,
+        "model": "YBR 125",
+        "plate": "PQR-2345"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.3,
+      "way": 2.3
+    },
+    "domain": {
+      "merchantId": 30006,
+      "name": "drogariacentral"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:35:00",
+        "description": "Entrega solicitada por Drogaria Central"
+      }
+    },
+    "id": 1497239,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "11.50",
+    "priority": 2,
+    "requester": {
+      "city": "Itapetininga",
+      "id": 30006,
+      "image": "p-30006.png",
+      "name": "Drogaria Central",
+      "phone": "(15) 3271-6666",
+      "region": 13
+    },
+    "route": "uvwxYzAbcDefghIjkl",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "7.50",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497240": {
+    "addresses": [
+      {
+        "city": "Cerquilho",
+        "goal": "Buscar mercadoria",
+        "lat": -23.1600,
+        "lng": -47.7400,
+        "neighborhood": "Centro",
+        "number": "60",
+        "position": 0,
+        "responsible": "Supermercado Cerquilho",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua XV de Novembro"
+      },
+      {
+        "city": "Cerquilho",
+        "goal": "",
+        "lat": -23.1655,
+        "lng": -47.7455,
+        "neighborhood": "Jardim Primavera",
+        "number": "80",
+        "position": 1,
+        "responsible": "Rafael Silva",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Orquídeas"
+      }
+    ],
+    "date": "2025-05-20T18:40:00",
+    "deliveryTime": 7,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1600,
+        "lng": -47.7400
+      },
+      "id": 23007,
+      "image": "p-23007.jpg",
+      "name": "Patrícia Gomes",
+      "phone": "(15) 98888-6666",
+      "vehicle": {
+        "color": "preta",
+        "id": 13007,
+        "model": "CG 160",
+        "plate": "STU-6789"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.6,
+      "way": 1.6
+    },
+    "domain": {
+      "merchantId": 30007,
+      "name": "supercerquilho"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:40:00",
+        "description": "Entrega solicitada por Supermercado Cerquilho"
+      }
+    },
+    "id": 1497240,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "9.00",
+    "priority": 2,
+    "requester": {
+      "city": "Cerquilho",
+      "id": 30007,
+      "image": "p-30007.png",
+      "name": "Supermercado Cerquilho",
+      "phone": "(15) 3284-7777",
+      "region": 13
+    },
+    "route": "yzAbcDefghIjklMnop",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "5.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497241": {
+    "addresses": [
+      {
+        "city": "Leme",
+        "goal": "Buscar mercadoria",
+        "lat": -22.1850,
+        "lng": -47.3850,
+        "neighborhood": "Centro",
+        "number": "90",
+        "position": 0,
+        "responsible": "Farmácia Leme",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua 29 de Agosto"
+      },
+      {
+        "city": "Leme",
+        "goal": "",
+        "lat": -22.1905,
+        "lng": -47.3905,
+        "neighborhood": "Jardim do Sol",
+        "number": "200",
+        "position": 1,
+        "responsible": "Patrícia Souza",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Maria Fercem"
+      }
+    ],
+    "date": "2025-05-20T18:45:00",
+    "deliveryTime": 6,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.1850,
+        "lng": -47.3850
+      },
+      "id": 23008,
+      "image": "p-23008.jpg",
+      "name": "Ricardo Lopes",
+      "phone": "(19) 98888-7777",
+      "vehicle": {
+        "color": "azul",
+        "id": 13008,
+        "model": "Biz 125",
+        "plate": "VWX-1234"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 1.3,
+      "way": 1.3
+    },
+    "domain": {
+      "merchantId": 30008,
+      "name": "farmacialeme"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:45:00",
+        "description": "Entrega solicitada por Farmácia Leme"
+      }
+    },
+    "id": 1497241,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "8.00",
+    "priority": 2,
+    "requester": {
+      "city": "Leme",
+      "id": 30008,
+      "image": "p-30008.png",
+      "name": "Farmácia Leme",
+      "phone": "(19) 3571-8888",
+      "region": 1
+    },
+    "route": "AbcDefghIjklMnopqr",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "4.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497242": {
+    "addresses": [
+      {
+        "city": "Franco da Rocha",
+        "goal": "Buscar mercadoria",
+        "lat": -23.3300,
+        "lng": -46.7300,
+        "neighborhood": "Centro",
+        "number": "300",
+        "position": 0,
+        "responsible": "Farmácia Franco",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Basilio Fazzi"
+      },
+      {
+        "city": "Franco da Rocha",
+        "goal": "",
+        "lat": -23.3355,
+        "lng": -46.7355,
+        "neighborhood": "Jardim São José",
+        "number": "400",
+        "position": 1,
+        "responsible": "Gabriel Oliveira",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Estrada do Alto"
+      }
+    ],
+    "date": "2025-05-20T18:50:00",
+    "deliveryTime": 11,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.3300,
+        "lng": -46.7300
+      },
+      "id": 23009,
+      "image": "p-23009.jpg",
+      "name": "Gabriela Santos",
+      "phone": "(11) 98888-8888",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 13009,
+        "model": "CG 160",
+        "plate": "YZA-5678"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.5,
+      "way": 2.5
+    },
+    "domain": {
+      "merchantId": 30009,
+      "name": "farmaciafranco"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:50:00",
+        "description": "Entrega solicitada por Farmácia Franco"
+      }
+    },
+    "id": 1497242,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "12.00",
+    "priority": 2,
+    "requester": {
+      "city": "Franco da Rocha",
+      "id": 30009,
+      "image": "p-30009.png",
+      "name": "Farmácia Franco",
+      "phone": "(11) 4444-9999",
+      "region": 1
+    },
+    "route": "DefghIjklMnopqrstU",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "8.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497243": {
+    "addresses": [
+      {
+        "city": "Sorocaba",
+        "goal": "Buscar mercadoria",
+        "lat": -23.5100,
+        "lng": -47.4600,
+        "neighborhood": "Centro",
+        "number": "200",
+        "position": 0,
+        "responsible": "Mercado Sorocaba",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua da Penha"
+      },
+      {
+        "city": "Sorocaba",
+        "goal": "",
+        "lat": -23.5155,
+        "lng": -47.4655,
+        "neighborhood": "Jardim Santa Rosália",
+        "number": "300",
+        "position": 1,
+        "responsible": "Lucas Martins",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Dom Aguirre"
+      }
+    ],
+    "date": "2025-05-20T18:55:00",
+    "deliveryTime": 13,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5100,
+        "lng": -47.4600
+      },
+      "id": 23010,
+      "image": "p-23010.jpg",
+      "name": "Marcos Silva",
+      "phone": "(15) 98888-9999",
+      "vehicle": {
+        "color": "preta",
+        "id": 13010,
+        "model": "CG 160",
+        "plate": "BCD-4321"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.7,
+      "way": 2.7
+    },
+    "domain": {
+      "merchantId": 30010,
+      "name": "mercadosorocaba"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-20T18:55:00",
+        "description": "Entrega solicitada por Mercado Sorocaba"
+      }
+    },
+    "id": 1497243,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.00",
+    "priority": 2,
+    "requester": {
+      "city": "Sorocaba",
+      "id": 30010,
+      "image": "p-30010.png",
+      "name": "Mercado Sorocaba",
+      "phone": "(15) 3222-1111",
+      "region": 1
+    },
+    "route": "ghIjklMnopqrstUvwx",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497244": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2640,
+        "lng": -47.2980,
+        "neighborhood": "Centro",
+        "number": "101",
+        "position": 0,
+        "responsible": "Padaria Itu",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Floriano Peixoto"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2675,
+        "lng": -47.3020,
+        "neighborhood": "Jardim Novo",
+        "number": "202",
+        "position": 1,
+        "responsible": "José Almeida",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Palmeiras"
+      }
+    ],
+    "date": "2025-05-21T09:10:00",
+    "deliveryTime": 12,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2640,
+        "lng": -47.2980
+      },
+      "id": 23011,
+      "image": "p-23011.jpg",
+      "name": "Bruna Costa",
+      "phone": "(11) 98888-1112",
+      "vehicle": {
+        "color": "azul",
+        "id": 13011,
+        "model": "Biz 125",
+        "plate": "DEF-5679"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.2,
+      "way": 2.2
+    },
+    "domain": {
+      "merchantId": 30011,
+      "name": "padariaitu"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-21T09:10:00",
+        "description": "Entrega solicitada por Padaria Itu"
+      }
+    },
+    "id": 1497244,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "12.00",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30011,
+      "image": "p-30011.png",
+      "name": "Padaria Itu",
+      "phone": "(11) 4022-3334",
+      "region": 1
+    },
+    "route": "itu1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "8.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497245": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2650,
+        "lng": -47.2990,
+        "neighborhood": "Vila Nova",
+        "number": "150",
+        "position": 0,
+        "responsible": "Mercado Vila Nova",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Dom Pedro"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2680,
+        "lng": -47.3030,
+        "neighborhood": "Jardim América",
+        "number": "300",
+        "position": 1,
+        "responsible": "Ana Souza",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Acácias"
+      }
+    ],
+    "date": "2025-05-21T10:00:00",
+    "deliveryTime": 15,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2650,
+        "lng": -47.2990
+      },
+      "id": 23012,
+      "image": "p-23012.jpg",
+      "name": "Carlos Mendes",
+      "phone": "(11) 97777-2223",
+      "vehicle": {
+        "color": "preta",
+        "id": 13012,
+        "model": "CG 150",
+        "plate": "GHI-9013"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.5,
+      "way": 2.5
+    },
+    "domain": {
+      "merchantId": 30012,
+      "name": "mercadovilanova"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-21T10:00:00",
+        "description": "Entrega solicitada por Mercado Vila Nova"
+      }
+    },
+    "id": 1497245,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.50",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30012,
+      "image": "p-30012.png",
+      "name": "Mercado Vila Nova",
+      "phone": "(11) 4022-3335",
+      "region": 1
+    },
+    "route": "itu2",
+    "situation": {
+      "description": "Pendente",
+      "type": 0
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497246": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2660,
+        "lng": -47.3000,
+        "neighborhood": "Centro",
+        "number": "200",
+        "position": 0,
+        "responsible": "Farmácia Central",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua 7 de Setembro"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2690,
+        "lng": -47.3040,
+        "neighborhood": "Jardim Paulista",
+        "number": "400",
+        "position": 1,
+        "responsible": "Marcos Lima",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Oliveiras"
+      }
+    ],
+    "date": "2025-05-21T11:00:00",
+    "deliveryTime": 10,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2660,
+        "lng": -47.3000
+      },
+      "id": 23013,
+      "image": "p-23013.jpg",
+      "name": "Fernanda Souza",
+      "phone": "(11) 98888-3334",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 13013,
+        "model": "Fan 160",
+        "plate": "JKL-3457"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.8,
+      "way": 2.8
+    },
+    "domain": {
+      "merchantId": 30013,
+      "name": "farmaciacentral"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-21T11:00:00",
+        "description": "Entrega solicitada por Farmácia Central"
+      }
+    },
+    "id": 1497246,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "14.00",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30013,
+      "image": "p-30013.png",
+      "name": "Farmácia Central",
+      "phone": "(11) 4022-3336",
+      "region": 1
+    },
+    "route": "itu3",
+    "situation": {
+      "description": "Entregue",
+      "type": 1
+    },
+    "transfer": "10.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497247": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.2670,
+        "lng": -47.3010,
+        "neighborhood": "Vila Nova",
+        "number": "250",
+        "position": 0,
+        "responsible": "Supermercado Itu",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Dom Pedro II"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2700,
+        "lng": -47.3050,
+        "neighborhood": "Jardim América",
+        "number": "500",
+        "position": 1,
+        "responsible": "Patrícia Oliveira",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Acácias"
+      }
+    ],
+    "date": "2025-05-21T12:00:00",
+    "deliveryTime": 14,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2670,
+        "lng": -47.3010
+      },
+      "id": 23014,
+      "image": "p-23014.jpg",
+      "name": "Lucas Pereira",
+      "phone": "(11) 99999-4445",
+      "vehicle": {
+        "color": "branca",
+        "id": 13014,
+        "model": "PCX 150",
+        "plate": "MNO-7891"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.0,
+      "way": 3.0
+    },
+    "domain": {
+      "merchantId": 30014,
+      "name": "supermercadoitu"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-21T12:00:00",
+        "description": "Entrega solicitada por Supermercado Itu"
+      }
+    },
+    "id": 1497247,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "15.00",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30014,
+      "image": "p-30014.png",
+      "name": "Supermercado Itu",
+      "phone": "(11) 4022-3337",
+      "region": 1
+    },
+    "route": "itu4",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "11.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497248": {
+    "addresses": [
+      {
+        "city": "Itu",
+        "goal": "Buscar mercadoria",
+        "lat": -23.267500,
+        "lng": -47.302000,
+        "neighborhood": "Centro",
+        "number": "300",
+        "position": 0,
+        "responsible": "Drogaria Itu",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua 9 de Julho"
+      },
+      {
+        "city": "Itu",
+        "goal": "",
+        "lat": -23.2710,
+        "lng": -47.3060,
+        "neighborhood": "Jardim Novo",
+        "number": "600",
+        "position": 1,
+        "responsible": "Gabriel Santos",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua das Palmeiras"
+      }
+    ],
+    "date": "2025-05-21T13:00:00",
+    "deliveryTime": 11,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.2680,
+        "lng": -47.3020
+      },
+      "id": 23015,
+      "image": "p-23015.jpg",
+      "name": "Juliana Martins",
+      "phone": "(11) 98888-5556",
+      "vehicle": {
+        "color": "prata",
+        "id": 13015,
+        "model": "YBR 125",
+        "plate": "PQR-2346"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.9,
+      "way": 2.9
+    },
+    "domain": {
+      "merchantId": 30015,
+      "name": "drogariaitu"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-05-21T13:00:00",
+        "description": "Entrega solicitada por Drogaria Itu"
+      }
+    },
+    "id": 1497248,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.00",
+    "priority": 2,
+    "requester": {
+      "city": "Itu",
+      "id": 30015,
+      "image": "p-30015.png",
+      "name": "Drogaria Itu",
+      "phone": "(11) 4022-3338",
+      "region": 1
+    },
+    "route": "itu5",
+    "situation": {
+      "description": "Pendente",
+      "type": 0
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497249": {
+    "addresses": [
+      {
+        "city": "Campinas",
+        "goal": "Buscar mercadoria",
+        "lat": -22.9056,
+        "lng": -47.0608,
+        "neighborhood": "Centro",
+        "number": "100",
+        "position": 0,
+        "responsible": "Mercado Campinas",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Barão de Jaguara"
+      },
+      {
+        "city": "Campinas",
+        "goal": "",
+        "lat": -22.9087,
+        "lng": -47.0622,
+        "neighborhood": "Cambuí",
+        "number": "200",
+        "position": 1,
+        "responsible": "João Silva",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Coronel Quirino"
+      }
+    ],
+    "date": "2025-07-24T09:00:00",
+    "deliveryTime": 10,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.9056,
+        "lng": -47.0608
+      },
+      "id": 24001,
+      "image": "p-24001.jpg",
+      "name": "Pedro Oliveira",
+      "phone": "(19) 98888-0001",
+      "vehicle": {
+        "color": "preta",
+        "id": 14001,
+        "model": "CG 160",
+        "plate": "SPX-1001"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.5,
+      "way": 2.5
+    },
+    "domain": {
+      "merchantId": 40001,
+      "name": "mercadocampinas"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T09:00:00",
+        "description": "Entrega solicitada por Mercado Campinas"
+      }
+    },
+    "id": 1497249,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "15.00",
+    "priority": 2,
+    "requester": {
+      "city": "Campinas",
+      "id": 40001,
+      "image": "p-40001.png",
+      "name": "Mercado Campinas",
+      "phone": "(19) 4000-1000",
+      "region": 1
+    },
+    "route": "campinas1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "10.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497250": {
+    "addresses": [
+      {
+        "city": "Sorocaba",
+        "goal": "Buscar mercadoria",
+        "lat": -23.5015,
+        "lng": -47.4526,
+        "neighborhood": "Centro",
+        "number": "150",
+        "position": 0,
+        "responsible": "Padaria Sorocaba",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua da Penha"
+      },
+      {
+        "city": "Sorocaba",
+        "goal": "",
+        "lat": -23.5078,
+        "lng": -47.4552,
+        "neighborhood": "Jardim Santa Rosália",
+        "number": "250",
+        "position": 1,
+        "responsible": "Maria Oliveira",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Dom Aguirre"
+      }
+    ],
+    "date": "2025-07-24T09:30:00",
+    "deliveryTime": 12,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5015,
+        "lng": -47.4526
+      },
+      "id": 24002,
+      "image": "p-24002.jpg",
+      "name": "Lucas Lima",
+      "phone": "(15) 98888-0002",
+      "vehicle": {
+        "color": "azul",
+        "id": 14002,
+        "model": "Biz 125",
+        "plate": "SOR-1002"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.8,
+      "way": 2.8
+    },
+    "domain": {
+      "merchantId": 40002,
+      "name": "padariasorocaba"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T09:30:00",
+        "description": "Entrega solicitada por Padaria Sorocaba"
+      }
+    },
+    "id": 1497250,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "16.00",
+    "priority": 2,
+    "requester": {
+      "city": "Sorocaba",
+      "id": 40002,
+      "image": "p-40002.png",
+      "name": "Padaria Sorocaba",
+      "phone": "(15) 4000-2000",
+      "region": 1
+    },
+    "route": "sorocaba1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "11.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497251": {
+    "addresses": [
+      {
+        "city": "Ribeirão Preto",
+        "goal": "Buscar mercadoria",
+        "lat": -21.1775,
+        "lng": -47.8103,
+        "neighborhood": "Centro",
+        "number": "200",
+        "position": 0,
+        "responsible": "Farmácia Ribeirão",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua General Osório"
+      },
+      {
+        "city": "Ribeirão Preto",
+        "goal": "",
+        "lat": -21.1800,
+        "lng": -47.8130,
+        "neighborhood": "Jardim Paulista",
+        "number": "300",
+        "position": 1,
+        "responsible": "Carlos Pereira",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua São José"
+      }
+    ],
+    "date": "2025-07-24T10:00:00",
+    "deliveryTime": 15,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -21.1775,
+        "lng": -47.8103
+      },
+      "id": 24003,
+      "image": "p-24003.jpg",
+      "name": "Fernanda Alves",
+      "phone": "(16) 98888-0003",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 14003,
+        "model": "Fan 160",
+        "plate": "RIB-1003"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.0,
+      "way": 3.0
+    },
+    "domain": {
+      "merchantId": 40003,
+      "name": "farmaciaribeirao"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T10:00:00",
+        "description": "Entrega solicitada por Farmácia Ribeirão"
+      }
+    },
+    "id": 1497251,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "17.00",
+    "priority": 2,
+    "requester": {
+      "city": "Ribeirão Preto",
+      "id": 40003,
+      "image": "p-40003.png",
+      "name": "Farmácia Ribeirão",
+      "phone": "(16) 4000-3000",
+      "region": 1
+    },
+    "route": "ribeirao1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "12.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497252": {
+    "addresses": [
+      {
+        "city": "Bauru",
+        "goal": "Buscar mercadoria",
+        "lat": -22.3145,
+        "lng": -49.0581,
+        "neighborhood": "Centro",
+        "number": "300",
+        "position": 0,
+        "responsible": "Supermercado Bauru",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Batista de Carvalho"
+      },
+      {
+        "city": "Bauru",
+        "goal": "",
+        "lat": -22.3170,
+        "lng": -49.0600,
+        "neighborhood": "Vila Falcão",
+        "number": "400",
+        "position": 1,
+        "responsible": "Patrícia Lima",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Gustavo Maciel"
+      }
+    ],
+    "date": "2025-07-24T10:30:00",
+    "deliveryTime": 18,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.3145,
+        "lng": -49.0581
+      },
+      "id": 24004,
+      "image": "p-24004.jpg",
+      "name": "Juliana Costa",
+      "phone": "(14) 98888-0004",
+      "vehicle": {
+        "color": "branca",
+        "id": 14004,
+        "model": "PCX 150",
+        "plate": "BAU-1004"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.2,
+      "way": 3.2
+    },
+    "domain": {
+      "merchantId": 40004,
+      "name": "superbauru"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T10:30:00",
+        "description": "Entrega solicitada por Supermercado Bauru"
+      }
+    },
+    "id": 1497252,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "18.00",
+    "priority": 2,
+    "requester": {
+      "city": "Bauru",
+      "id": 40004,
+      "image": "p-40004.png",
+      "name": "Supermercado Bauru",
+      "phone": "(14) 4000-4000",
+      "region": 1
+    },
+    "route": "bauru1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "13.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497253": {
+    "addresses": [
+      {
+        "city": "Jundiaí",
+        "goal": "Buscar mercadoria",
+        "lat": -23.1857,
+        "lng": -46.8978,
+        "neighborhood": "Centro",
+        "number": "400",
+        "position": 0,
+        "responsible": "Farmácia Jundiaí",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Barão de Jundiaí"
+      },
+      {
+        "city": "Jundiaí",
+        "goal": "",
+        "lat": -23.1880,
+        "lng": -46.9000,
+        "neighborhood": "Vila Arens",
+        "number": "500",
+        "position": 1,
+        "responsible": "Rafael Souza",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Vigário João José Rodrigues"
+      }
+    ],
+    "date": "2025-07-24T11:00:00",
+    "deliveryTime": 20,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1857,
+        "lng": -46.8978
+      },
+      "id": 24005,
+      "image": "p-24005.jpg",
+      "name": "Rafael Gomes",
+      "phone": "(11) 98888-0005",
+      "vehicle": {
+        "color": "prata",
+        "id": 14005,
+        "model": "YBR 125",
+        "plate": "JUN-1005"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.5,
+      "way": 3.5
+    },
+    "domain": {
+      "merchantId": 40005,
+      "name": "farmaciajundiai"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T11:00:00",
+        "description": "Entrega solicitada por Farmácia Jundiaí"
+      }
+    },
+    "id": 1497253,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "19.00",
+    "priority": 2,
+    "requester": {
+      "city": "Jundiaí",
+      "id": 40005,
+      "image": "p-40005.png",
+      "name": "Farmácia Jundiaí",
+      "phone": "(11) 4000-5000",
+      "region": 1
+    },
+    "route": "jundiai1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "14.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497254": {
+    "addresses": [
+      {
+        "city": "São Paulo",
+        "lat": -23.5505,
+        "lng": -46.6333,
+        "neighborhood": "Sé",
+        "number": "100",
+        "position": 0,
+        "responsible": "Mercado Sé",
+        "state": "SP",
+        "status": 1,
+        "street": "Praça da Sé"
+      }
+    ],
+    "date": "2025-07-24T12:00:00",
+    "deliveryTime": 10,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.5505,
+        "lng": -46.6333
+      },
+      "id": 24006,
+      "image": "p-24006.jpg",
+      "name": "João Silva",
+      "phone": "(11) 98888-0006",
+      "vehicle": {
+        "color": "preta",
+        "id": 14006,
+        "model": "CG 160",
+        "plate": "SPX-1006"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.5,
+      "way": 2.5
+    },
+    "domain": {
+      "merchantId": 40006,
+      "name": "mercadose"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:00:00",
+        "description": "Entrega solicitada por Mercado Sé"
+      }
+    },
+    "id": 1497254,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "15.00",
+    "priority": 2,
+    "requester": {
+      "city": "São Paulo",
+      "id": 40006,
+      "image": "p-40006.png",
+      "name": "Mercado Sé",
+      "phone": "(11) 4000-6000",
+      "region": 1
+    },
+    "route": "sp6",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "10.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497255": {
+    "addresses": [
+      {
+        "city": "Campinas",
+        "lat": -22.9056,
+        "lng": -47.0608,
+        "neighborhood": "Centro",
+        "number": "200",
+        "position": 0,
+        "responsible": "Padaria Campinas",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Barão de Jaguara"
+      }
+    ],
+    "date": "2025-07-24T12:10:00",
+    "deliveryTime": 12,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.9056,
+        "lng": -47.0608
+      },
+      "id": 24007,
+      "image": "p-24007.jpg",
+      "name": "Maria Souza",
+      "phone": "(19) 98888-0007",
+      "vehicle": {
+        "color": "azul",
+        "id": 14007,
+        "model": "Biz 125",
+        "plate": "CPX-1007"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.8,
+      "way": 2.8
+    },
+    "domain": {
+      "merchantId": 40007,
+      "name": "padariacampinas"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:10:00",
+        "description": "Entrega solicitada por Padaria Campinas"
+      }
+    },
+    "id": 1497255,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "16.00",
+    "priority": 2,
+    "requester": {
+      "city": "Campinas",
+      "id": 40007,
+      "image": "p-40007.png",
+      "name": "Padaria Campinas",
+      "phone": "(19) 4000-7000",
+      "region": 1
+    },
+    "route": "campinas2",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "11.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497256": {
+    "addresses": [
+      {
+        "city": "Ribeirão Preto",
+        "lat": -21.1775,
+        "lng": -47.8103,
+        "neighborhood": "Centro",
+        "number": "300",
+        "position": 0,
+        "responsible": "Farmácia Ribeirão",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua General Osório"
+      }
+    ],
+    "date": "2025-07-24T12:20:00",
+    "deliveryTime": 15,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -21.1775,
+        "lng": -47.8103
+      },
+      "id": 24008,
+      "image": "p-24008.jpg",
+      "name": "Carlos Pereira",
+      "phone": "(16) 98888-0008",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 14008,
+        "model": "Fan 160",
+        "plate": "RPX-1008"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.0,
+      "way": 3.0
+    },
+    "domain": {
+      "merchantId": 40008,
+      "name": "farmaciaribeirao"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:20:00",
+        "description": "Entrega solicitada por Farmácia Ribeirão"
+      }
+    },
+    "id": 1497256,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "17.00",
+    "priority": 2,
+    "requester": {
+      "city": "Ribeirão Preto",
+      "id": 40008,
+      "image": "p-40008.png",
+      "name": "Farmácia Ribeirão",
+      "phone": "(16) 4000-8000",
+      "region": 1
+    },
+    "route": "ribeirao2",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "12.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497257": {
+    "addresses": [
+      {
+        "city": "Bauru",
+        "lat": -22.3145,
+        "lng": -49.0581,
+        "neighborhood": "Centro",
+        "number": "400",
+        "position": 0,
+        "responsible": "Supermercado Bauru",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Batista de Carvalho"
+      }
+    ],
+    "date": "2025-07-24T12:30:00",
+    "deliveryTime": 18,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.3145,
+        "lng": -49.0581
+      },
+      "id": 24009,
+      "image": "p-24009.jpg",
+      "name": "Juliana Costa",
+      "phone": "(14) 98888-0009",
+      "vehicle": {
+        "color": "branca",
+        "id": 14009,
+        "model": "PCX 150",
+        "plate": "BUX-1009"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.2,
+      "way": 3.2
+    },
+    "domain": {
+      "merchantId": 40009,
+      "name": "superbauru"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:30:00",
+        "description": "Entrega solicitada por Supermercado Bauru"
+      }
+    },
+    "id": 1497257,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "18.00",
+    "priority": 2,
+    "requester": {
+      "city": "Bauru",
+      "id": 40009,
+      "image": "p-40009.png",
+      "name": "Supermercado Bauru",
+      "phone": "(14) 4000-9000",
+      "region": 1
+    },
+    "route": "bauru2",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "13.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497258": {
+    "addresses": [
+      {
+        "city": "Jundiaí",
+        "lat": -23.1857,
+        "lng": -46.8978,
+        "neighborhood": "Centro",
+        "number": "500",
+        "position": 0,
+        "responsible": "Farmácia Jundiaí",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Barão de Jundiaí"
+      }
+    ],
+    "date": "2025-07-24T12:40:00",
+    "deliveryTime": 20,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.1857,
+        "lng": -46.8978
+      },
+      "id": 24010,
+      "image": "p-24010.jpg",
+      "name": "Rafael Gomes",
+      "phone": "(11) 98888-0010",
+      "vehicle": {
+        "color": "prata",
+        "id": 14010,
+        "model": "YBR 125",
+        "plate": "JUX-1010"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.5,
+      "way": 3.5
+    },
+    "domain": {
+      "merchantId": 40010,
+      "name": "farmaciajundiai"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:40:00",
+        "description": "Entrega solicitada por Farmácia Jundiaí"
+      }
+    },
+    "id": 1497258,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "19.00",
+    "priority": 2,
+    "requester": {
+      "city": "Jundiaí",
+      "id": 40010,
+      "image": "p-40010.png",
+      "name": "Farmácia Jundiaí",
+      "phone": "(11) 4000-10010",
+      "region": 1
+    },
+    "route": "jundiai2",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "14.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497259": {
+    "addresses": [
+      {
+        "city": "Presidente Prudente",
+        "lat": -22.1200,
+        "lng": -51.3925,
+        "neighborhood": "Centro",
+        "number": "600",
+        "position": 0,
+        "responsible": "Mercado Prudente",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Tenente Nicolau Maffei"
+      }
+    ],
+    "date": "2025-07-24T12:50:00",
+    "deliveryTime": 14,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.1200,
+        "lng": -51.3925
+      },
+      "id": 24011,
+      "image": "p-24011.jpg",
+      "name": "Ana Paula",
+      "phone": "(18) 98888-0011",
+      "vehicle": {
+        "color": "preta",
+        "id": 14011,
+        "model": "CG 160",
+        "plate": "PPX-1011"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.7,
+      "way": 2.7
+    },
+    "domain": {
+      "merchantId": 40011,
+      "name": "mercadoprudente"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T12:50:00",
+        "description": "Entrega solicitada por Mercado Prudente"
+      }
+    },
+    "id": 1497259,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.00",
+    "priority": 2,
+    "requester": {
+      "city": "Presidente Prudente",
+      "id": 40011,
+      "image": "p-40011.png",
+      "name": "Mercado Prudente",
+      "phone": "(18) 4000-1011",
+      "region": 1
+    },
+    "route": "prudente1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497260": {
+    "addresses": [
+      {
+        "city": "Araçatuba",
+        "lat": -21.2081,
+        "lng": -50.4326,
+        "neighborhood": "Centro",
+        "number": "700",
+        "position": 0,
+        "responsible": "Padaria Araçatuba",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua do Fico"
+      }
+    ],
+    "date": "2025-07-24T13:00:00",
+    "deliveryTime": 16,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -21.2081,
+        "lng": -50.4326
+      },
+      "id": 24012,
+      "image": "p-24012.jpg",
+      "name": "Bruno Lima",
+      "phone": "(18) 98888-0012",
+      "vehicle": {
+        "color": "azul",
+        "id": 14012,
+        "model": "Biz 125",
+        "plate": "ARX-1012"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.9,
+      "way": 2.9
+    },
+    "domain": {
+      "merchantId": 40012,
+      "name": "padariaaracatuba"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T13:00:00",
+        "description": "Entrega solicitada por Padaria Araçatuba"
+      }
+    },
+    "id": 1497260,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "14.00",
+    "priority": 2,
+    "requester": {
+      "city": "Araçatuba",
+      "id": 40012,
+      "image": "p-40012.png",
+      "name": "Padaria Araçatuba",
+      "phone": "(18) 4000-1012",
+      "region": 1
+    },
+    "route": "aracatuba1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "10.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497261": {
+    "addresses": [
+      {
+        "city": "São José do Rio Preto",
+        "lat": -20.8197,
+        "lng": -49.3797,
+        "neighborhood": "Centro",
+        "number": "800",
+        "position": 0,
+        "responsible": "Farmácia Rio Preto",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua Bernardino de Campos"
+      }
+    ],
+    "date": "2025-07-24T13:10:00",
+    "deliveryTime": 17,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -20.8197,
+        "lng": -49.3797
+      },
+      "id": 24013,
+      "image": "p-24013.jpg",
+      "name": "Fernanda Souza",
+      "phone": "(17) 98888-0013",
+      "vehicle": {
+        "color": "vermelha",
+        "id": 14013,
+        "model": "Fan 160",
+        "plate": "SJX-1013"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.1,
+      "way": 3.1
+    },
+    "domain": {
+      "merchantId": 40013,
+      "name": "farmaciariopreto"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T13:10:00",
+        "description": "Entrega solicitada por Farmácia Rio Preto"
+      }
+    },
+    "id": 1497261,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "15.00",
+    "priority": 2,
+    "requester": {
+      "city": "São José do Rio Preto",
+      "id": 40013,
+      "image": "p-40013.png",
+      "name": "Farmácia Rio Preto",
+      "phone": "(17) 4000-1013",
+      "region": 1
+    },
+    "route": "riopreto1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "11.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497262": {
+    "addresses": [
+      {
+        "city": "Piracicaba",
+        "lat": -22.7338,
+        "lng": -47.6476,
+        "neighborhood": "Centro",
+        "number": "900",
+        "position": 0,
+        "responsible": "Mercado Piracicaba",
+        "state": "SP",
+        "status": 1,
+        "street": "Rua do Porto"
+      }
+    ],
+    "date": "2025-07-24T13:20:00",
+    "deliveryTime": 13,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -22.7338,
+        "lng": -47.6476
+      },
+      "id": 24014,
+      "image": "p-24014.jpg",
+      "name": "Patrícia Oliveira",
+      "phone": "(19) 98888-0014",
+      "vehicle": {
+        "color": "preta",
+        "id": 14014,
+        "model": "CG 160",
+        "plate": "PIX-1014"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 2.6,
+      "way": 2.6
+    },
+    "domain": {
+      "merchantId": 40014,
+      "name": "mercadopiracicaba"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T13:20:00",
+        "description": "Entrega solicitada por Mercado Piracicaba"
+      }
+    },
+    "id": 1497262,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "13.00",
+    "priority": 2,
+    "requester": {
+      "city": "Piracicaba",
+      "id": 40014,
+      "image": "p-40014.png",
+      "name": "Mercado Piracicaba",
+      "phone": "(19) 4000-1014",
+      "region": 1
+    },
+    "route": "piracicaba1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "9.00",
+    "type": "fast",
+    "vehicleType": "1"
+  },
+  "1497263": {
+    "addresses": [
+      {
+        "city": "Santos",
+        "lat": -23.9608,
+        "lng": -46.3336,
+        "neighborhood": "Centro",
+        "number": "1000",
+        "position": 0,
+        "responsible": "Farmácia Santos",
+        "state": "SP",
+        "status": 1,
+        "street": "Avenida Ana Costa"
+      }
+    ],
+    "date": "2025-07-24T13:30:00",
+    "deliveryTime": 19,
+    "deliveryman": {
+      "coordinates": {
+        "lat": -23.9608,
+        "lng": -46.3336
+      },
+      "id": 24015,
+      "image": "p-24015.jpg",
+      "name": "Gabriel Lima",
+      "phone": "(13) 98888-0015",
+      "vehicle": {
+        "color": "branca",
+        "id": 14015,
+        "model": "PCX 150",
+        "plate": "SAX-1015"
+      }
+    },
+    "distance": {
+      "back": 0,
+      "total": 3.3,
+      "way": 3.3
+    },
+    "domain": {
+      "merchantId": 40015,
+      "name": "farmaciasantos"
+    },
+    "hasReturn": false,
+    "historic": {
+      "0": {
+        "date": "2025-07-24T13:30:00",
+        "description": "Entrega solicitada por Farmácia Santos"
+      }
+    },
+    "id": 1497263,
+    "note": "",
+    "object": {
+      "depth": "0",
+      "height": "1",
+      "type": "0",
+      "weight": "0",
+      "width": "0"
+    },
+    "price": "18.00",
+    "priority": 2,
+    "requester": {
+      "city": "Santos",
+      "id": 40015,
+      "image": "p-40015.png",
+      "name": "Farmácia Santos",
+      "phone": "(13) 4000-1015",
+      "region": 1
+    },
+    "route": "santos1",
+    "situation": {
+      "description": "Em Trânsito",
+      "type": 2
+    },
+    "transfer": "13.00",
+    "type": "fast",
+    "vehicleType": "1"
   }
 }
