@@ -12,7 +12,14 @@ import { FiSearch } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import { useDeliveriesViewModel } from "@/app/viewmodel/useDeliverysViewModel"; 
 
 //#region TIPOS
 type UIMessage = {
@@ -23,7 +30,7 @@ type UIMessage = {
   type?: "text" | "delivery-form";
 };
 
-type Conversation = {
+export type Conversation = {
   id: string;
   title: string;
   messages: UIMessage[];
@@ -93,29 +100,19 @@ async function salvarConversasNoFirebase(
 }
 
 // Carregar conversas
-async function carregarConversasDoFirebase(
-  userId: string
-): Promise<Conversation[] | null> {
-  const docSnap = await getDoc(doc(collection(db, "conversations"), userId));
-  if (docSnap.exists()) {
-    return docSnap.data().conversations as Conversation[];
-  }
-  return null;
-}
+// async function carregarConversasDoFirebase(
+//   userId: string
+// ): Promise<Conversation[] | null> {
+//   const docSnap = await getDoc(doc(collection(db, "conversations"), userId));
+//   if (docSnap.exists()) {
+//     return docSnap.data().conversations as Conversation[];
+//   }
+//   return null;
+// }
 
 // Salvar entregas
 async function salvarEntregasNoFirebase(userId: string, deliveries: any[]) {
   await setDoc(doc(collection(db, "deliveries"), userId), { deliveries });
-}
-
-async function carregarEntregasDoFirebase(
-  userId: string
-): Promise<any[] | null> {
-  const docSnap = await getDoc(doc(collection(db, "deliveries"), userId));
-  if (docSnap.exists()) {
-    return docSnap.data().deliveries as any[];
-  }
-  return null;
 }
 
 export default function Page() {
@@ -128,7 +125,6 @@ export default function Page() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  const [deliveries, setDeliveries] = useState<any[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [deliveryStep, setDeliveryStep] = useState<
     null | "destino" | "responsavel"
@@ -144,12 +140,11 @@ export default function Page() {
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [themeLoaded, setThemeLoaded] = useState<boolean>(false);
-  const [logoClicked, setLogoClicked] = useState(false);
+  const [, setLogoClicked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("");
-  const [deliveriesLoaded, setDeliveriesLoaded] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -158,6 +153,15 @@ export default function Page() {
   const ai = new GoogleGenAI({
     apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
   });
+
+  const loadConversations = () => {
+    const unsub = onSnapshot(doc(db, "conversations", userId), (doc) => {
+      if (doc.exists()) {
+        setConversations(doc.data().conversations);
+      }
+    });
+    return unsub;
+  };
 
   //#region Funções de Conversa
   const createNewConversation = () => {
@@ -828,6 +832,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   const router = useRouter();
   const userId = "demo";
+  const { deliveries, setDeliveries, deliveriesLoaded } = useDeliveriesViewModel(userId);
 
   useEffect(() => {
     localStorage.setItem("conversations", JSON.stringify(conversations));
@@ -847,13 +852,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     loadTheme();
 
     if (userId) {
-      carregarConversasDoFirebase(userId).then((convs) => {
-        if (convs) setConversations(convs);
-        else createNewConversation();
-        setConversationsLoaded(true);
-      });
+      const unsubscribe = loadConversations();
+      return () => unsubscribe();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setConversationsLoaded(true);
   }, [userId]);
 
   useEffect(() => {
@@ -873,24 +875,13 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
   }, [darkMode, userId]);
 
   useEffect(() => {
-    async function loadDeliveries() {
-      const entregasSalvas = await carregarEntregasDoFirebase(userId);
-      if (entregasSalvas) setDeliveries(entregasSalvas);
-      setDeliveriesLoaded(true); // <-- só depois de carregar
-    }
-    if (userId) {
-      loadDeliveries();
-    }
-  }, [userId]);
-
-  useEffect(() => {
     if (userId && deliveriesLoaded) {
       salvarEntregasNoFirebase(userId, deliveries);
     }
   }, [deliveries, userId, deliveriesLoaded]);
 
   if (!themeLoaded) {
-    return <div />; // Ou um loader, se preferir
+    return <div />;
   }
 
   return (
@@ -1069,8 +1060,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               </button>
             ))}
         </div>
-
-        {/* Botão de alternar tema fixo no rodapé - só no desktop */}
         <div className="absolute bottom-4 left-0 w-full justify-center hidden sm:flex">
           <button
             onClick={() => setDarkMode((prev) => !prev)}
@@ -1135,7 +1124,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 darkMode ? "bg-green-900" : "bg-green-600"
               } text-white p-4 flex items-center justify-center relative transition-colors duration-500 shrink-0`}
             >
-              {/* Botão hambúrguer só no mobile */}
               <button
                 className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
                 onClick={() => setSidebarOpen((open) => !open)}
@@ -1150,11 +1138,9 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   />
                 </svg>
               </button>
-              {/* Título centralizado */}
               <h1 className="text-xl font-bold w-full text-center">
                 Chatbot I9
               </h1>
-              {/* Logo à direita (opcional) */}
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                 <Image
                   src="/logo_i9delivery.png"
@@ -1465,7 +1451,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                   d.situation?.description === "Pendente"
                                     ? darkMode
                                       ? "bg-yellow-700 text-yellow-100"
-                                      : "bg-yellow-100 text-yellow-900" // <-- amarelo claro no modo claro
+                                      : "bg-yellow-100 text-yellow-900"
                                     : d.situation?.description === "Entregue"
                                     ? darkMode
                                       ? "bg-green-900 text-green-200"
