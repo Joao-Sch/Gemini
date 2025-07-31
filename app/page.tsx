@@ -17,9 +17,11 @@ import {
   doc,
   setDoc,
   getDoc,
-  onSnapshot,
+  getDocs,
+  query,
+  where,
+  writeBatch,
 } from "firebase/firestore";
-import { useDeliveriesViewModel } from "@/app/viewmodel/useDeliverysViewModel"; 
 
 //#region TIPOS
 type UIMessage = {
@@ -30,10 +32,21 @@ type UIMessage = {
   type?: "text" | "delivery-form";
 };
 
-export type Conversation = {
+type Conversation = {
   id: string;
   title: string;
   messages: UIMessage[];
+  participantes?: string[];
+  participantesInfo?: {
+    bot?: {
+      avatarUrl?: string;
+      displayName?: string;
+    };
+    user?: {
+      avatarUrl?: string;
+      displayName?: string;
+    };
+  };
 };
 
 type Delivery = {
@@ -60,7 +73,8 @@ async function generateTitleWithGemini(
   aiInstance: GoogleGenAI
 ): Promise<string> {
   const prompt = `
-Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem do usuário para nomear uma conversa de chat. Não use pontuação no final.
+    Gere um título curto (máximo 5 palavras) que resuma o assunto da seguinte mensagem
+    do usuário para nomear uma conversa de chat. Não use pontuação no final.
 
 Mensagem: "${userMessage}"
 Título:
@@ -99,20 +113,93 @@ async function salvarConversasNoFirebase(
   await setDoc(doc(collection(db, "conversations"), userId), { conversations });
 }
 
-// Carregar conversas
-// async function carregarConversasDoFirebase(
-//   userId: string
-// ): Promise<Conversation[] | null> {
-//   const docSnap = await getDoc(doc(collection(db, "conversations"), userId));
-//   if (docSnap.exists()) {
-//     return docSnap.data().conversations as Conversation[];
-//   }
-//   return null;
-// }
+// Salvar conversa individualmente
+// Salva conversa (sem messages) e salva cada mensagem como doc na subcoleção
+async function salvarConversaNoFirebase(
+  userId: string,
+  conversation: Conversation
+) {
+  const { messages, ...convData } = conversation;
 
-// Salvar entregas
-async function salvarEntregasNoFirebase(userId: string, deliveries: any[]) {
-  await setDoc(doc(collection(db, "deliveries"), userId), { deliveries });
+  // Extrai o número da conversa do ID (exemplo: "Conversa 3-1699999999999")
+  let numeroConversa = "1";
+  const match = conversation.id.match(/Conversa\s*(\d+)/i);
+  if (match && match[1]) {
+    numeroConversa = match[1];
+  }
+
+  const participantesInfo = {
+    bot: {
+      avatarUrl: "/roboIcon.png",
+      displayName: "BOT",
+    },
+    user: {
+      avatarUrl: `https://i.pravatar.cc/150?u=user${numeroConversa}`,
+      displayName: "demo",
+    },
+  };
+
+  await setDoc(doc(collection(db, "conversations"), conversation.id), {
+    ...convData,
+    userId,
+    participantes: ["bot", "user"],
+    participantesInfo,
+  });
+
+  // Salva mensagens na subcoleção
+  const batch = writeBatch(db);
+  const messagesRef = collection(
+    db,
+    "conversations",
+    conversation.id,
+    "messages"
+  );
+  const oldMessages = await getDocs(messagesRef);
+  oldMessages.forEach((msg) => batch.delete(msg.ref));
+  messages.forEach((msg) => {
+    batch.set(doc(messagesRef, msg.id), msg);
+  });
+  await batch.commit();
+}
+
+// Carregar todas as conversas do usuário
+async function carregarConversasDoFirebase(
+  userId: string
+): Promise<Conversation[]> {
+  const q = query(
+    collection(db, "conversations"),
+    where("userId", "==", userId)
+  );
+  const querySnapshot = await getDocs(q);
+
+  const conversations: Conversation[] = [];
+  for (const docSnap of querySnapshot.docs) {
+    const convData = docSnap.data();
+    // Busca as mensagens da subcoleção
+    const messagesSnap = await getDocs(
+      collection(db, "conversations", docSnap.id, "messages")
+    );
+    const messages = messagesSnap.docs
+      .map((msg) => msg.data() as UIMessage)
+      .sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? ""));
+    conversations.push({
+      ...(convData as Omit<Conversation, "messages">),
+      id: docSnap.id,
+      messages,
+    });
+  }
+  return conversations;
+}
+
+// Carregar entregas
+async function carregarEntregasDoFirebase(
+  userId: string
+): Promise<any[] | null> {
+  const docSnap = await getDoc(doc(collection(db, "deliveries"), userId));
+  if (docSnap.exists()) {
+    return docSnap.data().deliveries as any[];
+  }
+  return null;
 }
 
 export default function Page() {
@@ -125,6 +212,7 @@ export default function Page() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [deliveryStep, setDeliveryStep] = useState<
     null | "destino" | "responsavel"
@@ -145,6 +233,7 @@ export default function Page() {
   const [closing, setClosing] = useState(false);
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [deliveriesLoaded, setDeliveriesLoaded] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -154,21 +243,26 @@ export default function Page() {
     apiKey: "AIzaSyBvKRmd0mWD6fgZXXmBLXLgIaqV-fMBQmQ",
   });
 
-  const loadConversations = () => {
-    const unsub = onSnapshot(doc(db, "conversations", userId), (doc) => {
-      if (doc.exists()) {
-        setConversations(doc.data().conversations);
-      }
-    });
-    return unsub;
-  };
-
   //#region Funções de Conversa
   const createNewConversation = () => {
+    // Extrai o número da próxima conversa
+    const numeroConversa = conversationCounter;
+
     const newConv: Conversation = {
-      id: `Conversa ${conversationCounter}-${Date.now()}`,
+      id: `Conversa ${numeroConversa}-${Date.now()}`,
       title: "Nova conversa",
       messages: [],
+      participantes: ["bot", "user"],
+      participantesInfo: {
+        bot: {
+          avatarUrl: "/roboIcon.png",
+          displayName: "BOT",
+        },
+        user: {
+          avatarUrl: `https://i.pravatar.cc/150?u=user${numeroConversa}`,
+          displayName: "demo",
+        },
+      },
     };
     setConversations((prev) => [...prev, newConv]);
     setCurrentConversationId(newConv.id);
@@ -204,6 +298,8 @@ export default function Page() {
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId
   );
+  const participantesInfo = currentConversation?.participantesInfo || {};
+
   //#endregion
 
   //#region Funções de Input
@@ -581,7 +677,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
       setDeliveries((prev) => {
         const novas = [...prev, newDelivery];
-        salvarEntregasNoFirebase(userId, novas); // Salva imediatamente no Firebase
+        // salvarEntregasNoFirebase(userId, novas); // Salva imediatamente no Firebase
         return novas;
       });
       setDeliveryStep(null);
@@ -832,7 +928,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   const router = useRouter();
   const userId = "demo";
-  const { deliveries, setDeliveries, deliveriesLoaded } = useDeliveriesViewModel(userId);
 
   useEffect(() => {
     localStorage.setItem("conversations", JSON.stringify(conversations));
@@ -852,10 +947,13 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     loadTheme();
 
     if (userId) {
-      const unsubscribe = loadConversations();
-      return () => unsubscribe();
+      carregarConversasDoFirebase(userId).then((convs) => {
+        if (convs) setConversations(convs);
+        else createNewConversation();
+        setConversationsLoaded(true);
+      });
     }
-    setConversationsLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   useEffect(() => {
@@ -863,6 +961,15 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       salvarConversasNoFirebase(userId, conversations);
     }
   }, [conversations, userId, conversationsLoaded]);
+
+  useEffect(() => {
+    if (userId && conversationsLoaded && currentConversationId) {
+      const conv = conversations.find((c) => c.id === currentConversationId);
+      if (conv) {
+        salvarConversaNoFirebase(userId, conv);
+      }
+    }
+  }, [conversations, userId, conversationsLoaded, currentConversationId]);
 
   useEffect(() => {
     if (userId) {
@@ -875,13 +982,24 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
   }, [darkMode, userId]);
 
   useEffect(() => {
+    async function loadDeliveries() {
+      const entregasSalvas = await carregarEntregasDoFirebase(userId);
+      if (entregasSalvas) setDeliveries(entregasSalvas);
+      setDeliveriesLoaded(true); // <-- só depois de carregar
+    }
+    if (userId) {
+      loadDeliveries();
+    }
+  }, [userId]);
+
+  useEffect(() => {
     if (userId && deliveriesLoaded) {
-      salvarEntregasNoFirebase(userId, deliveries);
+      //salvarEntregasNoFirebase(userId, deliveries);
     }
   }, [deliveries, userId, deliveriesLoaded]);
 
   if (!themeLoaded) {
-    return <div />;
+    return <div />; // Ou um loader, se preferir
   }
 
   return (
@@ -1060,6 +1178,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
               </button>
             ))}
         </div>
+
+        {/* Botão de alternar tema fixo no rodapé - só no desktop */}
         <div className="absolute bottom-4 left-0 w-full justify-center hidden sm:flex">
           <button
             onClick={() => setDarkMode((prev) => !prev)}
@@ -1124,6 +1244,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                 darkMode ? "bg-green-900" : "bg-green-600"
               } text-white p-4 flex items-center justify-center relative transition-colors duration-500 shrink-0`}
             >
+              {/* Botão hambúrguer só no mobile */}
               <button
                 className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-transparent p-1"
                 onClick={() => setSidebarOpen((open) => !open)}
@@ -1138,9 +1259,11 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                   />
                 </svg>
               </button>
+              {/* Título centralizado */}
               <h1 className="text-xl font-bold w-full text-center">
                 Chatbot I9
               </h1>
+              {/* Logo à direita (opcional) */}
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                 <Image
                   src="/logo_i9delivery.png"
@@ -1170,60 +1293,82 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         m.role === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
-                      <div
-                        className={`max-w-[80%] sm:max-w-[75%] p-3 rounded-lg break-words
-                          transition-colors duration-500
-                          ${
+                      <div className="relative max-w-[80%] sm:max-w-[75%]">
+                        <Image
+                          src={
                             m.role === "user"
-                              ? darkMode
-                                ? "bg-green-900 text-white"
-                                : "bg-green-800 text-white"
-                              : darkMode
-                              ? "bg-gray-800 text-gray-100"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
-                      >
-                        {m.role === "user" && m.content.includes("data:image/")
-                          ? m.content.split("\n").map((part, i) => {
-                              const imageMatch = part.match(
-                                /!\[image\]\((data:image\/[a-zA-Z]+;base64,[^\)]+)\)/
-                              );
-                              if (imageMatch) {
-                                return (
-                                  <Image
-                                    key={i}
-                                    src={imageMatch[1]}
-                                    alt={`Imagem enviada pelo usuário ${i + 1}`}
-                                    width={200}
-                                    height={200}
-                                    className="imgUser rounded-md mb-4 mr-2"
-                                    unoptimized
-                                  />
-                                );
-                              }
-                              return (
-                                <p key={i} className="text-sm text-white">
-                                  {part}
-                                </p>
-                              );
-                            })
-                          : (typeof m.content === "string" ? m.content : "")
-                              .split("\n")
-                              .map((line, i) => (
-                                <span key={i}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-
-                        {m.timestamp && (
-                          <span className="text-xs text-gray-400 block mt-1">
-                            {new Date(m.timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        )}
+                              ? participantesInfo.user?.avatarUrl || "/default-user.png"
+                              : "/roboIcon.png"
+                          }
+                          alt={m.role === "user" ? "User Avatar" : "Bot Avatar"}
+                          width={32}
+                          height={32}
+                          className={`
+                            rounded-full
+                            absolute
+                            z-20
+                            shadow
+                            ${
+                              m.role === "user"
+                                ? `${
+                                    darkMode
+                                      ? "ring-2 ring-[#222] bg-[#222]"
+                                      : "ring-2 ring-[#f9f9f9] bg-[#f9f9f9]"
+                                  } right-3 -top-4`
+                                : `${
+                                    darkMode
+                                      ? "ring-2 ring-green-900 bg-green-900"
+                                      : "ring-2 ring-green-600 bg-green-600"
+                                  } left-3 -top-4`
+                            }
+                          `}
+                          style={{
+                            background:
+                              m.role === "user"
+                                ? darkMode
+                                  ? "#222"
+                                  : "#f9f9f9"
+                                : darkMode
+                                ? "#14532d"
+                                : "#16a34a",
+                          }}
+                          unoptimized
+                        />
+                        {/* Balão da mensagem */}
+                        <div
+                          className={`
+                            relative z-10 p-3 rounded-lg break-words
+                            transition-colors duration-500
+                            ${
+                              m.role === "user"
+                                ? darkMode
+                                  ? "bg-green-900 text-white"
+                                  : "bg-green-800 text-white"
+                                : darkMode
+                                ? "bg-gray-800 text-gray-100"
+                                : "bg-gray-100 text-gray-600"
+                            }
+                          `}
+                          style={{ paddingTop: "1.5rem" }} // espaço para o avatar
+                        >
+                          {/* Conteúdo da mensagem */}
+                          {(typeof m.content === "string" ? m.content : "")
+                            .split("\n")
+                            .map((line, i) => (
+                              <span key={i}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
+                          {m.timestamp && (
+                            <span className="text-xs text-gray-400 block mt-1">
+                              {new Date(m.timestamp).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))
@@ -1433,121 +1578,54 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         const enderecoOrigem = encodeURIComponent(
                           `${origem.street ?? ""}, ${origem.number ?? ""}, ${
                             origem.neighborhood ?? ""
-                          }, ${origem.city ?? ""}, ${origem.zipCode ?? ""}`
+                          }, ${origem.city ?? ""}, ${origem.state ?? ""}, ${
+                            origem.zipCode ?? ""
+                          }`
                         );
                         const enderecoDestino = encodeURIComponent(
                           `${destino.street ?? ""}, ${destino.number ?? ""}, ${
                             destino.neighborhood ?? ""
-                          }, ${destino.city ?? ""}, ${destino.zipCode ?? ""}`
+                          }, ${destino.city ?? ""}, ${destino.state ?? ""}, ${
+                            destino.zipCode ?? ""
+                          }`
                         );
 
                         return (
-                          <li key={d.id} className="entrega-item p-2">
-                            <button
-                              className={`
-                                w-full flex items-center justify-between
-                                font-bold rounded-lg shadow-sm p-3 mb-2
-                                ${
-                                  d.situation?.description === "Pendente"
-                                    ? darkMode
-                                      ? "bg-yellow-700 text-yellow-100"
-                                      : "bg-yellow-100 text-yellow-900"
-                                    : d.situation?.description === "Entregue"
-                                    ? darkMode
-                                      ? "bg-green-900 text-green-200"
-                                      : "bg-green-300 text-green-900"
-                                    : d.situation?.description === "Cancelado"
-                                    ? darkMode
-                                      ? "bg-red-900 text-red-200"
-                                      : "bg-red-200 text-red-900"
-                                    : darkMode
-                                    ? "bg-[#14532d] text-white"
-                                    : "bg-[#178a46] text-white"
-                                }
-                                hover:opacity-90 transition-opacity duration-200
-                              `}
-                              onClick={() =>
-                                setOpenDelivery(openDelivery === i ? null : i)
+                          <li
+                            key={d.id}
+                            className={`
+                              mb-2 rounded-lg
+                              transition-all duration-300
+                              ${
+                                d.situation?.description === "Entregue"
+                                  ? darkMode
+                                    ? "bg-green-900 text-green-200"
+                                    : "bg-green-300 text-green-900"
+                                  : d.situation?.description === "Cancelado"
+                                  ? darkMode
+                                    ? "bg-red-900 text-red-200"
+                                    : "bg-red-200 text-red-900"
+                                  : darkMode
+                                  ? "bg-[#14532d] text-white"
+                                  : "bg-[#178a46] text-white"
                               }
-                            >
-                              <span className="flex-1 min-w-0 flex items-center">
-                                <span className="entrega-icon mr-2 shrink-0">
-                                  📦
-                                </span>
-                                <span className="truncate">
-                                  {d.title || `Entrega ${i + 1} - `}
-                                </span>
+                              hover:opacity-90 transition-opacity duration-200
+                            `}
+                            onClick={() =>
+                              setOpenDelivery(openDelivery === i ? null : i)
+                            }
+                          >
+                            <span className="flex-1 min-w-0 flex items-center">
+                              <span className="entrega-icon mr-2 shrink-0">
+                                📦
                               </span>
-                              <span className="ml-2 shrink-0">
-                                {openDelivery === i ? "▲" : "▼"}
+                              <span className="truncate">
+                                {d.title || `Entrega ${i + 1} - `}
                               </span>
-                            </button>
-                            <div
-                              className={`
-                                entrega-details
-                                ${openDelivery === i ? "open" : ""}
-                                rounded-lg mt-2 p-0
-                                ${
-                                  darkMode
-                                    ? "bg-[#222] text-white"
-                                    : "bg-[#f9f9f9] text-gray-800"
-                                }
-                              `}
-                            >
-                              {openDelivery === i && (
-                                <div className="p-3">
-                                  <div className="mb-1">
-                                    <b>Status:</b>{" "}
-                                    {d.situation?.description ??
-                                      "Não informado"}
-                                  </div>
-                                  <div className="mb-1">
-                                    <b>Motoboy:</b>{" "}
-                                    {d.deliveryman?.name ?? "Não informado"}
-                                  </div>
-                                  <div className="mb-1">
-                                    <b>Veículo:</b>{" "}
-                                    {d.deliveryman?.vehicle?.model ??
-                                      "Não informado"}
-                                  </div>
-                                  <div className="mb-1">
-                                    <b>Valor:</b> R${" "}
-                                    {d.price ?? "Não informado"}
-                                  </div>
-                                  <div className="mb-1">
-                                    <b>Origem:</b>{" "}
-                                    {origem.street ?? "Não informado"},{" "}
-                                    {origem.number ?? "Não informado"},{" "}
-                                    {origem.neighborhood ?? "Não informado"},{" "}
-                                    {origem.city ?? "Não informado"},{" "}
-                                    {origem.state ?? "Não informado"},{" "}
-                                    {origem.zipCode ?? "Não informado"}
-                                  </div>
-                                  <div className="mb-1">
-                                    <b>Destino:</b>{" "}
-                                    {destino.street ?? "Não informado"},{" "}
-                                    {destino.number ?? "Não informado"},{" "}
-                                    {destino.neighborhood ?? "Não informado"},{" "}
-                                    {destino.city ?? "Não informado"},{" "}
-                                    {destino.state ?? "Não informado"},{" "}
-                                    {destino.zipCode ?? "Não informado"}
-                                  </div>
-                                  <div className="mb-4">
-                                    <b>Rota:</b>
-                                    <iframe
-                                      width="100%"
-                                      height="190"
-                                      style={{ border: 0, borderRadius: "8px" }}
-                                      loading="lazy"
-                                      allowFullScreen
-                                      referrerPolicy="no-referrer-when-downgrade"
-                                      src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyDoHvawd_aRudxtYcxiyoDvyAcyJeFFA0w&origin=${enderecoOrigem}&destination=${enderecoDestino}`}
-                                      title="Rota da entrega"
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
+                            </span>
+                            <span className="ml-2 shrink-0">
+                              {openDelivery === i ? "▲" : "▼"}
+                            </span>
                           </li>
                         );
                       })}
@@ -1574,12 +1652,10 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       )}
 
       {/* Overlay para fechar sidebar de entregas no mobile */}
-      {showDeliveriesSidebar && (
-        <div
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
-          onClick={() => setShowDeliveriesSidebar(false)}
-        />
-      )}
+      <div
+        className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
+        onClick={() => setShowDeliveriesSidebar(false)}
+      />
     </div>
   );
 }
