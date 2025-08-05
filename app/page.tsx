@@ -1045,6 +1045,43 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
         </span>
       </button>
 
+      {/* Botão de troca de perfil */}
+      <button
+        onClick={() => router.push("/profile")}
+        className={`
+          fixed top-[60%] right-0 z-50
+          flex items-center
+          bg-blue-600 text-white
+          rounded-l-full
+          shadow-lg
+          transition-all duration-300
+          pr-2 pl-4 py-2
+          -translate-y-1/2
+          group
+          hover:bg-blue-700 hover:scale-105
+          w-12 hover:w-40
+          cursor-pointer
+          overflow-hidden
+          border-2 border-blue-700
+          focus:outline-none focus:ring-2 focus:ring-blue-400
+        `}
+        title="Trocar Perfil"
+      >
+        <span className="text-2xl">👤</span>
+        <span
+          className={`
+            ml-3 text-base font-bold opacity-0
+            group-hover:opacity-100
+            transition-opacity duration-300
+            whitespace-nowrap
+            pointer-events-none
+          `}
+          style={{ width: "0", display: "inline-block" }}
+        >
+          Trocar Perfil
+        </span>
+      </button>
+
       {/* Sidebar de conversas */}
       <div
         className={`
@@ -1570,25 +1607,25 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                           d.situation?.description === statusFilter
                       )
                       .map((d, i) => {
-                        const origem =
-                          d.addresses?.find((a: any) => a.position === 0) || {};
-                        const destino =
-                          d.addresses?.find((a: any) => a.position === 1) || {};
+                        // const origem =
+                        //   d.addresses?.find((a: any) => a.position === 0) || {};
+                        // const destino =
+                        //   d.addresses?.find((a: any) => a.position === 1) || {};
 
-                        const enderecoOrigem = encodeURIComponent(
-                          `${origem.street ?? ""}, ${origem.number ?? ""}, ${
-                            origem.neighborhood ?? ""
-                          }, ${origem.city ?? ""}, ${origem.state ?? ""}, ${
-                            origem.zipCode ?? ""
-                          }`
-                        );
-                        const enderecoDestino = encodeURIComponent(
-                          `${destino.street ?? ""}, ${destino.number ?? ""}, ${
-                            destino.neighborhood ?? ""
-                          }, ${destino.city ?? ""}, ${destino.state ?? ""}, ${
-                            destino.zipCode ?? ""
-                          }`
-                        );
+                        // const enderecoOrigem = encodeURIComponent(
+                        //   `${origem.street ?? ""}, ${origem.number ?? ""}, ${
+                        //     origem.neighborhood ?? ""
+                        //   }, ${origem.city ?? ""}, ${origem.state ?? ""}, ${
+                        //     origem.zipCode ?? ""
+                        //   }`
+                        // );
+                        // const enderecoDestino = encodeURIComponent(
+                        //   `${destino.street ?? ""}, ${destino.number ?? ""}, ${
+                        //     destino.neighborhood ?? ""
+                        //   }, ${destino.city ?? ""}, ${destino.state ?? ""}, ${
+                        //     destino.zipCode ?? ""
+                        //   }`
+                        // );
 
                         return (
                           <li
