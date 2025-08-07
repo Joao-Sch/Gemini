@@ -25,7 +25,10 @@ export default function ProfilePage() {
               key={profile.type}
               onClick={() => {
                 selectProfile(profile.type);
-                setTimeout(() => router.push("/"), 400);
+                localStorage.setItem("profileType", profile.type);
+                setTimeout(() => {
+                  router.push(profile.type === "admin" ? "/admin" : "/");
+                }, 400);
               }}
               className={`
                 flex items-center gap-4 w-full px-6 py-4 rounded-lg shadow

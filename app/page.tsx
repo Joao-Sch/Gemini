@@ -21,6 +21,7 @@ import {
   query,
   where,
   writeBatch,
+  onSnapshot,
 } from "firebase/firestore";
 
 //#region TIPOS
@@ -234,6 +235,7 @@ export default function Page() {
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [deliveriesLoaded, setDeliveriesLoaded] = useState(false);
+  const [isBotPaused, setIsBotPaused] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -998,6 +1000,27 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
     }
   }, [deliveries, userId, deliveriesLoaded]);
 
+  useEffect(() => {
+    if (!currentConversationId) return;
+
+    // Listener em tempo real para as mensagens da conversa atual
+    const messagesRef = collection(db, "conversations", currentConversationId, "messages");
+    const unsub = onSnapshot(messagesRef, (snapshot) => {
+      const messages = snapshot.docs
+        .map((doc) => doc.data() as UIMessage)
+        .sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? ""));
+      setConversations((prevConvs) =>
+        prevConvs.map((conv) =>
+          conv.id === currentConversationId
+            ? { ...conv, messages }
+            : conv
+        )
+      );
+    });
+
+    return () => unsub();
+  }, [currentConversationId, db]);
+
   if (!themeLoaded) {
     return <div />; // Ou um loader, se preferir
   }
@@ -1366,8 +1389,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                   ? "#222"
                                   : "#f9f9f9"
                                 : darkMode
-                                ? "#14532d"
-                                : "#16a34a",
+                                ? "#222"
+                                : "#ffffff",
                           }}
                           unoptimized
                         />
@@ -1383,7 +1406,7 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                                   : "bg-green-800 text-white"
                                 : darkMode
                                 ? "bg-gray-800 text-gray-100"
-                                : "bg-gray-100 text-gray-600"
+                                : "bg-gray-200 text-gray-600"
                             }
                           `}
                           style={{ paddingTop: "1.5rem" }} // espaço para o avatar
@@ -1633,19 +1656,6 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                             className={`
                               mb-2 rounded-lg
                               transition-all duration-300
-                              ${
-                                d.situation?.description === "Entregue"
-                                  ? darkMode
-                                    ? "bg-green-900 text-green-200"
-                                    : "bg-green-300 text-green-900"
-                                  : d.situation?.description === "Cancelado"
-                                  ? darkMode
-                                    ? "bg-red-900 text-red-200"
-                                    : "bg-red-200 text-red-900"
-                                  : darkMode
-                                  ? "bg-[#14532d] text-white"
-                                  : "bg-[#178a46] text-white"
-                              }
                               hover:opacity-90 transition-opacity duration-200
                             `}
                             onClick={() =>
