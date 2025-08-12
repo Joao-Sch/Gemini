@@ -6,8 +6,8 @@ import entregas from "@/lib/entregas.json";
 import motoBoys from "@/lib/motoboys.json";
 import users from "@/lib/users.json";
 import Image from "next/image";
-import "./SendButton.css";
 import { IoDocumentAttachOutline } from "react-icons/io5";
+import "./SendButton.css";
 import { FiSearch } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -236,6 +236,7 @@ export default function Page() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [deliveriesLoaded, setDeliveriesLoaded] = useState(false);
   const [isBotPaused, setIsBotPaused] = useState(false);
+  const [botPausado, setBotPausado] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const placeholderInterval = useRef<NodeJS.Timeout | null>(null);
@@ -311,12 +312,20 @@ export default function Page() {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!input.trim()) {
       setIsLoading(false);
       setIsSubmitClicked(false);
       return; // Não envia mensagem vazia
     }
     if (!currentConversationId || isLoading) return;
+
+    if (botPausado) {
+      setIsLoading(false);
+      setIsSubmitClicked(false);
+      setInput("");
+      return; // Bot está pausado, não responde
+    }
 
     setIsLoading(true); // Ativa o loading logo no início
 
@@ -1002,24 +1011,15 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   useEffect(() => {
     if (!currentConversationId) return;
-
-    // Listener em tempo real para as mensagens da conversa atual
-    const messagesRef = collection(db, "conversations", currentConversationId, "messages");
-    const unsub = onSnapshot(messagesRef, (snapshot) => {
-      const messages = snapshot.docs
-        .map((doc) => doc.data() as UIMessage)
-        .sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? ""));
-      setConversations((prevConvs) =>
-        prevConvs.map((conv) =>
-          conv.id === currentConversationId
-            ? { ...conv, messages }
-            : conv
-        )
-      );
-    });
-
+    const unsub = onSnapshot(
+      doc(db, "conversations", currentConversationId),
+      (docSnap) => {
+        setIsBotPaused(docSnap.data()?.isBotPaused ?? false);
+        setBotPausado(docSnap.data()?.botPausado ?? false);
+      }
+    );
     return () => unsub();
-  }, [currentConversationId, db]);
+  }, [currentConversationId]);
 
   if (!themeLoaded) {
     return <div />; // Ou um loader, se preferir
@@ -1357,7 +1357,8 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
                         <Image
                           src={
                             m.role === "user"
-                              ? participantesInfo.user?.avatarUrl || "/default-user.png"
+                              ? participantesInfo.user?.avatarUrl ||
+                                "/default-user.png"
                               : "/roboIcon.png"
                           }
                           alt={m.role === "user" ? "User Avatar" : "Bot Avatar"}
@@ -1699,10 +1700,12 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
       )}
 
       {/* Overlay para fechar sidebar de entregas no mobile */}
-      <div
-        className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
-        onClick={() => setShowDeliveriesSidebar(false)}
-      />
+      {showDeliveriesSidebar && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
+          onClick={() => setShowDeliveriesSidebar(false)}
+        />
+      )}
     </div>
   );
 }

@@ -24,6 +24,7 @@ type Conversation = {
   id: string;
   title: string;
   messages: UIMessage[];
+  botPausado?: boolean; // <-- Adicione isso
   participantes?: string[];
   participantesInfo?: {
     bot?: {
@@ -77,6 +78,7 @@ export default function AdminPage() {
           ...(convData as Omit<Conversation, "messages">),
           id: convId,
           messages: [],
+          botPausado: convData.botPausado ?? false, // <-- Adicione isso
         });
       });
 
@@ -110,7 +112,6 @@ export default function AdminPage() {
       unsubscribe();
       Object.values(messageUnsubsRef.current).forEach(unsub => unsub());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentConversationId]);
 
   const switchConversation = (id: string) => setCurrentConversationId(id);
@@ -462,23 +463,20 @@ export default function AdminPage() {
   <div className="flex justify-end p-2">
     <button
       onClick={async () => {
-        const newState = !assumindoComoBot;
-        setAssumindoComoBot(newState);
-        if (currentConversationId) {
-          await setDoc(
-            doc(db, "conversations", currentConversationId),
-            { isBotPaused: newState },
-            { merge: true }
-          );
-        }
+        const newState = !currentConversation.botPausado;
+        await setDoc(
+          doc(db, "conversations", currentConversation.id),
+          { botPausado: newState },
+          { merge: true }
+        );
       }}
       className={`px-4 py-2 rounded font-bold transition
-        ${assumindoComoBot
+        ${currentConversation.botPausado
           ? "bg-red-600 text-white hover:bg-red-700"
           : "bg-blue-600 text-white hover:bg-blue-700"}
       `}
     >
-      {assumindoComoBot ? "Parar de responder como Bot" : "Assumir como Bot"}
+      {currentConversation.botPausado ? "Despausar Bot" : "Pausar Bot"}
     </button>
   </div>
 )}
