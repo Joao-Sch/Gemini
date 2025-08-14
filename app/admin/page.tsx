@@ -480,7 +480,7 @@ export default function AdminPage() {
     </button>
   </div>
 )}
-{assumindoComoBot && (
+{currentConversation && currentConversation.botPausado && (
   <form
     onSubmit={async (e) => {
       e.preventDefault();
@@ -492,7 +492,6 @@ export default function AdminPage() {
         content: inputAdmin,
         timestamp: new Date().toISOString(),
       };
-      // Salva no Firestore (ou atualiza o estado, conforme seu fluxo)
       await setDoc(
         doc(
           db,

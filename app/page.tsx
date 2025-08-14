@@ -319,12 +319,20 @@ export default function Page() {
       return; // Não envia mensagem vazia
     }
     if (!currentConversationId || isLoading) return;
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === currentConversationId
+          ? { ...conv, messages: [...conv.messages, userMessage] }
+          : conv
+      )
+    );
 
+    // Se o bot está pausado, não chama Gemini nem sendResponse
     if (botPausado) {
+      setInput("");
       setIsLoading(false);
       setIsSubmitClicked(false);
-      setInput("");
-      return; // Bot está pausado, não responde
+      return;
     }
 
     setIsLoading(true); // Ativa o loading logo no início
@@ -1011,16 +1019,21 @@ Por favor, gere uma mensagem clara, amigável para o cliente com essas informaç
 
   useEffect(() => {
     if (!currentConversationId) return;
-    const unsub = onSnapshot(
-      doc(db, "conversations", currentConversationId),
-      (docSnap) => {
-        setIsBotPaused(docSnap.data()?.isBotPaused ?? false);
-        setBotPausado(docSnap.data()?.botPausado ?? false);
-      }
-    );
+    const messagesRef = collection(db, "conversations", currentConversationId, "messages");
+    const unsub = onSnapshot(messagesRef, (snapshot) => {
+      const messages = snapshot.docs
+        .map((doc) => doc.data() as UIMessage)
+        .sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? ""));
+      setConversations((prevConvs) =>
+        prevConvs.map((conv) =>
+          conv.id === currentConversationId
+            ? { ...conv, messages }
+            : conv
+        )
+      );
+    });
     return () => unsub();
   }, [currentConversationId]);
-
   if (!themeLoaded) {
     return <div />; // Ou um loader, se preferir
   }
